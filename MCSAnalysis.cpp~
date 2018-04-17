@@ -588,7 +588,7 @@ void MCSAnalysis::dataSelection2(){
 
     tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
+    rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
     pass_TOF01->Fill(rawTOF01HitTime);
     if ( rawTOF01HitTime < TOF_lower_limit ||
 	 rawTOF01HitTime > TOF_upper_limit) {
