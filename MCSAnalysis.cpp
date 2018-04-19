@@ -365,7 +365,7 @@ void MCSAnalysis::dataSelection2(){
     std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-//    if (i>=1000) break;
+    if (i>=1000) break;
     cuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -376,10 +376,10 @@ void MCSAnalysis::dataSelection2(){
     globalVars.UStrackerUS53=reset_Vars();
     globalVars.USend_of_DStracker=reset_Vars();
     globalVars.DScentre_absorber=reset_Vars();
-    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
-    display_Vars(globalVars.UScentre_absorber);
-    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
-    display_Vars(globalVars.DScentre_absorber);
+//    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
+//    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
 
 
 //----------------------------------------------------------------------
@@ -399,13 +399,13 @@ void MCSAnalysis::dataSelection2(){
       pass_Tof1->Fill("Fail",1);
       continue;
     }
-    std::cerr<<"Adding to AllTOF"<<std::endl;
-    display_Vars(globalVars.UScentre_absorber);
+//    std::cerr<<"Adding to AllTOF"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
     USAllTOF.append_instance(globalVars.UScentre_absorber);
-    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-    display_Vars(globalVars.DScentre_absorber);
+//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
     DSAllTOF.append_instance(globalVars.DScentre_absorber);
-    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
+//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     cuts_accept->Fill("1 TOF1",1);
     pass_Tof1->Fill("Pass",1);
 
@@ -838,7 +838,7 @@ void MCSAnalysis::referenceSelection2(){
     std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     mcchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-//    if (i>=1000) break;
+    if (i>=1000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -849,10 +849,10 @@ void MCSAnalysis::referenceSelection2(){
     globalVars.UStrackerUS53=reset_Vars();
     globalVars.USend_of_DStracker=reset_Vars();
     globalVars.DScentre_absorber=reset_Vars();
-    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
-    display_Vars(globalVars.UScentre_absorber);
-    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
-    display_Vars(globalVars.DScentre_absorber);
+//    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
+//    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
 
 
 //----------------------------------------------------------------------
@@ -872,13 +872,13 @@ void MCSAnalysis::referenceSelection2(){
       mcpass_Tof1->Fill("Fail",1);
       continue;
     }
-    std::cerr<<"Adding to AllTOF"<<std::endl;
-    display_Vars(globalVars.UScentre_absorber);
+//    std::cerr<<"Adding to AllTOF"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
     USAllTOF.append_instance(globalVars.UScentre_absorber);
-    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-    display_Vars(globalVars.DScentre_absorber);
+//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
     DSAllTOF.append_instance(globalVars.DScentre_absorber);
-    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
+//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     mccuts_accept->Fill("1 TOF1",1);
     mcpass_Tof1->Fill("Pass",1);
 
@@ -3914,6 +3914,7 @@ multiVars MCSAnalysis::read_globals(){
     tempMV.DScentre_absorber.Z=_sys["abspos"];
     tempMV.UStrackerUS11.Z=_sys["US11"];
     tempMV.UStrackerUS53.Z=_sys["US53"];
+     
     
 //    std::cerr << "Globals..."<<std::endl;
 
@@ -3932,10 +3933,10 @@ multiVars MCSAnalysis::read_globals(){
     for(auto pchains_iterator = pchains->begin(); pchains_iterator != pchains->end(); ++ pchains_iterator){
         MAUS::DataStructure::Global::PrimaryChain* chain = (*pchains_iterator);
 //        std::cerr << "iterating? Chain: "<< chain->get_chain_type() <<" looking for "<< chain_type <<std::endl;
-//	std::cerr<<chain->get_chain_type()<<" ";
+	std::cerr<<"Chain type: "<<chain->get_chain_type()<<std::endl;
         if(chain->get_chain_type() == 5){
-            MAUS::DataStructure::Global::PrimaryChain* USchain=chain->GetUSDaughter();
-            std::vector<MAUS::DataStructure::Global::Track*> some_tracks = USchain->GetMatchedTracks();
+//            MAUS::DataStructure::Global::PrimaryChain* USchain=chain->GetUSDaughter();
+            std::vector<MAUS::DataStructure::Global::Track*> some_tracks = chain->GetMatchedTracks();
             std::vector<MAUS::DataStructure::Global::Track*>::iterator some_track_iterator;
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
@@ -3945,26 +3946,33 @@ multiVars MCSAnalysis::read_globals(){
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
+
 //                            std::cerr<<"Time: "<< a_track_pos.T()<<std::endl;
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-//                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                             if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
@@ -3989,7 +3997,7 @@ multiVars MCSAnalysis::read_globals(){
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= _sys["DS11"]-dz && a_track_pos.Z() <= _sys["DS11"]+dz){
-//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
@@ -4011,22 +4019,28 @@ multiVars MCSAnalysis::read_globals(){
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                             if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
@@ -4071,7 +4085,7 @@ double MCSAnalysis::Check_Radius_US(double low_z, double high_z)
     for(auto pchains_iterator = pchains->begin(); pchains_iterator != pchains->end(); ++ pchains_iterator){
         MAUS::DataStructure::Global::PrimaryChain* chain = (*pchains_iterator);
         if((chain->get_chain_type() == 5) || (chain->get_chain_type() == 3) || (chain->get_chain_type() == 1)){
-            std::cerr<<"Found Chain "<< chain->get_chain_type()<<std::endl;
+//            std::cerr<<"Found Chain "<< chain->get_chain_type()<<std::endl;
             MAUS::DataStructure::Global::PrimaryChain* USchain;
             if(chain->get_chain_type() == 5){
               USchain=chain->GetUSDaughter();
@@ -4083,9 +4097,9 @@ double MCSAnalysis::Check_Radius_US(double low_z, double high_z)
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
-                    std::cerr<<"Tracks Found"<<std::endl;
+//                    std::cerr<<"Tracks Found"<<std::endl;
                     if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
-                        std::cerr<<"Correct pid"<<std::endl;
+//                        std::cerr<<"Correct pid"<<std::endl;
                         std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints();
                         for(int p = 0; p < track_points.size(); p++){
  //                           std::cerr<<"Scanning track points"<<std::endl;
@@ -4093,7 +4107,7 @@ double MCSAnalysis::Check_Radius_US(double low_z, double high_z)
                             if(a_track_pos.Z() >= low_z-dz && a_track_pos.Z() <= high_z+dz){
                               found_tracks=true;
                               double track_rad = sqrt((a_track_pos.X()*a_track_pos.X())+(a_track_pos.Y()*a_track_pos.Y()));
-                              std::cerr<<"track point found. Track radius is "<<track_rad<<std::endl;
+//                              std::cerr<<"track point found. Track radius is "<<track_rad<<std::endl;
                               if(track_rad >= max_rad){
                                 max_rad = track_rad;
                               }
