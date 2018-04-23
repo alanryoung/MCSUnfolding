@@ -260,7 +260,7 @@ class MCSAnalysis {
   Json::Value SetupConfig(int verbose_level, std::string geometry);
   Vars PropagateVarsMu(Vars event, double z0);
   Vars FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_pos, int pid);
-  multiVars read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos);
+  multiVars read_globals(DS11, DS53, US53, US11, diffuserlow, diffuserhigh, TOF0pos, TOF1pos);
   double Check_Radius_US(double low_z, double high_z);
   Vars reset_Vars();
   void display_Vars(Vars tmpVars);

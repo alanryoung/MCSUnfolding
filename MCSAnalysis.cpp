@@ -30,14 +30,25 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
   _sys["Nevents"]  = -1.;
   _sys["FracEvents"] = 1.;
   _sys["project"] = true;
-  _sys["DS11"] = 18836.9;
-  _sys["DS53"] = 19937.9;
-  _sys["US53"] = 13967.7;
-  _sys["US11"] = 15068.9;
-  _sys["diffuserlow"] = 13726.2;
-  _sys["diffuserhigh"] = 13746.2;
-  _sys["TOF0pos"] = 5287.25;
-  _sys["TOF1pos"] = 12929.6;
+
+  _sys["dataDS11"] = 18836.9;
+  _sys["dataDS53"] = 19937.9;
+  _sys["dataUS53"] = 13967.7;
+  _sys["dataUS11"] = 15068.9;
+  _sys["datadiffuserlow"] = 13726.2;
+  _sys["datadiffuserhigh"] = 13746.2;
+  _sys["dataTOF0pos"] = 5287.25;
+  _sys["dataTOF1pos"] = 12929.6;
+
+  _sys["refDS11"] = 18848.4;
+  _sys["refDS53"] = 19949.4;
+  _sys["refUS53"] = 13961.7;
+  _sys["refUS11"] = 15062.9;
+  _sys["refdiffuserlow"] = 13720.2;
+  _sys["refdiffuserhigh"] = 13740.2;
+  _sys["refTOF0pos"] = 5287.25;
+  _sys["refTOF1pos"] = 12929.6;
+
 
 
   modelname1 = "Cobb";
@@ -352,6 +363,16 @@ void MCSAnalysis::dataSelection2(){
   chain->SetBranchAddress("EMRBranch", &emrevent);
   chain->SetBranchAddress("GlobalBranch", &globalevent);
 
+  double dataDS11 = _sys["dataDS11"];
+  double dataDS53 = _sys["dataDS53"];
+  double dataUS53 = _sys["dataUS53"];
+  double dataUS11 = _sys["dataUS11"];
+  double datadiffuserlow = _sys["datadiffuserlow"];
+  double datadiffuserhigh = _sys["datadiffuserhigh"];
+  double dataTOF0pos = _sys["dataTOF0pos"];
+  double dataTOF1pos = _sys["dataTOF1pos"];
+
+
   int Nentries = chain->GetEntries();
 
   Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
@@ -440,6 +461,20 @@ void MCSAnalysis::dataSelection2(){
 //---------------------------------------------------------------------------------------
 // Require only 1 US track
 //---------------------------------------------------------------------------------------
+
+
+  std::cerr<<" Number of upstream tracks: "<<scifievent->scifitracks().size()<<std::endl;
+  if (scifievent->scifitracks().size()==0){
+    std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
+    pass_TKU->Fill("Fail",1);
+    continue;    
+  } else if(scifievent->scifitracks().size()>1){
+    std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
+    pass_TKU->Fill("Fail",1);
+    continue;   
+  }
+
+/*
   int nUStracks= 0;
   if (scifievent->scifitracks().size()>=1){
     for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
@@ -455,6 +490,7 @@ void MCSAnalysis::dataSelection2(){
     pass_TKU->Fill("Fail",1);
     continue;
   }
+*/
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostTKU.append_instance(globalVars.UScentre_absorber);
@@ -499,7 +535,7 @@ void MCSAnalysis::dataSelection2(){
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
 
-    globalVars=read_globals();
+    globalVars=read_globals(dataDS11, dataDS53, dataUS53, dataUS11, datadiffuserlow, datadiffuserhigh, dataTOF0pos, dataTOF1pos);
 //    std::cerr<<"centre_absorber_US has updated globals data"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
 //    display_Vars(globalVars.DScentre_absorber);
@@ -718,111 +754,30 @@ void MCSAnalysis::dataSelection2(){
 
 }
 
-void MCSAnalysis::dataSelection(){
-  /*
-  dataSelection makes 3 cuts to the data
-        - All events that don't have tracks in US tracker are cut 
-        - All events need to have the travel time from TOF0 to TOF1 fall in a particular range or be cut
-        - A Fiducial cut - where muons would not reach the downstream tracker if there was no absorber 
-          based on their trajectory from the upstream tracker are removed.
-  */
+/////////////////////////////////////////////////////////////////////
+// Function Reference Selection
+/////////////////////////////////////////////////////////////////////
 
-  // Set addresses for tree selection
-  chain->SetBranchAddress("RunNumber", &runnumber);
-  chain->SetBranchAddress("TOFBranch", &tofevent);
-  chain->SetBranchAddress("SciFiBranch", &scifievent);
-  chain->SetBranchAddress("CkovBranch", &ckovevent);
-  chain->SetBranchAddress("KLBranch", &klevent);
-  chain->SetBranchAddress("EMRBranch", &emrevent);
-  chain->SetBranchAddress("GlobalBranch", &globalevent);
-
-  // Restrict the number of entries to less than or equal to the mcchain entries
-  
-  int Nentries = chain->GetEntries();
-  
-  // Loop over all tree entries.
-  Collection USAllTOF, DSAllTOF, USPreRadSel, DSPreRadSel;
-  double pz = 0.;
-  int Nevents = 0;
-  // Nentries *= int(_sys["FracEvents"]) > 0 ? _sys["FracEvents"] : 1.0;
-  for (int i=0; i<Nentries; i++){
-    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
-    chain->GetEntry(i);
-    if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-//    std::vector<MAUS::DataStructure::Global::PrimaryChain*> *globalchains = globalevent->get_primary_chains();
-//    int number_global_tracks = 0;
-//    for (auto global_chain_iter = globalchains->begin(); global_chain_iter != globalchains->end(); ++global_chain_iter)
-//    {
-//       number_global_tracks++;
-//    }
-//    std::cerr<<"Number of global tracks: " << number_global_tracks << std::endl;
-    // Set cuts based on the TOFs, ckov, kl, and EMR information
-    // Locate the tracker reference planes. To be agnostic locate
-    // the downstream most station of the upstream tracker and the
-    // upstream most station of the downstream tracker.
-    cuts_accept->Fill("All Events",1);
-    // if (scifievent->scifitracks().size() != 2) continue;
-    // if ( !SelectMomentum() ) continue;
-    if ( !MatchUSDS() ) {
-      if (jUS == -1 || kUS == -1){
-	continue;
-      } 
-    }
-//    std::cerr<<"Completed US cut ";
-    cuts_accept->Fill("US Track Found",1);
-//    std::cerr<<" - Before Fill Collection";    
-    FillCollectionSciFi(USAllTOF, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(DSAllTOF, jDS, kDS, pz, 1,_sys["project"]);
-//    std::cerr<<" - After Fill Collection";
-    if ( !PIDSelection(true) ) continue;
-//    std::cerr<<"Completed TOF cut"<<std::endl;
-    pz = MomentumFromTOF(true);
-    cuts_accept->Fill("TOF Selection",1);
-    FillCollectionSciFi(USPreRadSel, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(DSPreRadSel, jDS, kDS, pz, 1,_sys["project"]);
-    if ( !RadialSelection(pz) ) continue;
-//    std::cerr<<"Completed Fiducial Cut"<<std::endl;
-    cuts_accept->Fill("Fiducial Selection",1);
-    if (jDS != -1 && kDS != -1) { 
-        // double pz_cor = CorMomFromTOF(pz);
-    }
-    if ( _sys["psel_lcut"] > 0 && _sys["psel_ucut"] > 0 ){
-      if ( pz < _sys["psel_lcut"] || pz > _sys["psel_ucut"] ) 
-	// Cut out events to evaluate systematic uncertainties.
-	continue;
-    }
-    Nevents++;
-    //
-    if(_sys["Nevents"] > 0 && Nevents > int(_sys["Nevents"]))
-      break;
-    FillCollectionSciFi(_USset, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(_DSset, jDS, kDS, pz, 1,_sys["project"]);
-    FillCollectionSciFi(_UStmpset, jUS, kUS, pz, 0,_sys["project"]);
-    if (runnumber != LastRunNumber){
-      UpdateRunInfo();
-    }
-  }
-  std::cerr<<"Making Beam histograms"<<std::endl;
-  make_beam_histograms(USAllTOF, "Upstream, Data", "dataUS_alltof");
-  make_beam_histograms(DSAllTOF, "Downstream, Data", "dataDS_alltof");
-  make_beam_histograms(USPreRadSel, "Upstream, Data", "dataUS_prerad");
-  make_beam_histograms(DSPreRadSel, "Downstream, Data", "dataDS_prerad");
-  make_beam_histograms(_USset, "Upstream, Data", "dataUS");
-  make_beam_histograms(_DSset, "Downstream, Data", "dataDS");
-  std::cerr<<"Beam Histograms made, Creating Acceptance Histograms" <<std::endl;
-  make_acceptance_histograms(USAllTOF, DSAllTOF, 
-			     "Data Projection", "dataAcc_alltof");
-  make_acceptance_histograms(_USset, _DSset, "Data Projection", "dataAcc");
-  PlotRunInfo();
-}
 
 void MCSAnalysis::referenceSelection2(){
   // Set addresses for tree selection
+  mcchain->SetBranchAddress("RunNumber", &runnumber);
   mcchain->SetBranchAddress("TOFBranch", &tofevent);
   mcchain->SetBranchAddress("SciFiBranch", &scifievent);
   mcchain->SetBranchAddress("CkovBranch", &ckovevent);
   mcchain->SetBranchAddress("KLBranch", &klevent);
   mcchain->SetBranchAddress("EMRBranch", &emrevent);
+  mcchain->SetBranchAddress("GlobalBranch", &globalevent);
+
+  double refDS11 = _sys["refDS11"];
+  double refDS53 = _sys["refDS53"];
+  double refUS53 = _sys["refUS53"];
+  double refUS11 = _sys["refUS11"];
+  double refdiffuserlow = _sys["refdiffuserlow"];
+  double refdiffuserhigh = _sys["refdiffuserhigh"];
+  double refTOF0pos = _sys["refTOF0pos"];
+  double refTOF1pos = _sys["refTOF1pos"];
+
 
   // Restrict the number of entries to less than or equal to the mcchain entries
   
@@ -913,6 +868,19 @@ void MCSAnalysis::referenceSelection2(){
 //---------------------------------------------------------------------------------------
 // Require only 1 US track
 //---------------------------------------------------------------------------------------
+
+  std::cerr<<" Number of upstream tracks: "<<scifievent->scifitracks().size()<<std::endl;
+  if (scifievent->scifitracks().size()==0){
+    std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
+    mcpass_TKU->Fill("Fail",1);
+    continue;    
+  } else if(scifievent->scifitracks().size()>1){
+    std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
+    mcpass_TKU->Fill("Fail",1);
+    continue;   
+  }
+
+/*
   int nUStracks= 0;
   if (scifievent->scifitracks().size()>=1){
     for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
@@ -928,6 +896,7 @@ void MCSAnalysis::referenceSelection2(){
     mcpass_TKU->Fill("Fail",1);
     continue;
   }
+*/
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostTKU.append_instance(globalVars.UScentre_absorber);
@@ -944,7 +913,12 @@ void MCSAnalysis::referenceSelection2(){
 
     std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
     std::vector<MAUS::SciFiTrack*>::iterator track_iter;
-    if(tracks.size() != 0){ // use if only want to take the first track
+
+    if(tracks.size() == 0){
+      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
+      continue;
+    }else{ 
+      // use if only want to take the first track
         track_iter = tracks.begin();
         double TKU_chiSquare = (*track_iter)->chi2();
         int TKU_ndof = (*track_iter)->ndf();
@@ -954,9 +928,6 @@ void MCSAnalysis::referenceSelection2(){
           std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
           continue;
         }
-    }else{ 
-      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
-      continue;
     }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -972,7 +943,7 @@ void MCSAnalysis::referenceSelection2(){
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
 
-    globalVars=read_globals();
+    globalVars=read_globals(refDS11, refDS53, refUS53, refUS11, refdiffuserlow, refdiffuserhigh, refTOF0pos, refTOF1pos);
 //    std::cerr<<"centre_absorber_US has updated globals data"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
 //    display_Vars(globalVars.DScentre_absorber);
@@ -3898,7 +3869,11 @@ Vars MCSAnalysis::FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_po
   return tempVars;
 }
 
-multiVars MCSAnalysis::read_globals(){
+//Vars Find_Track_Point(TLorentzVector pos, TLorentzVector mom, MAUS::DataStructure::Global::DetectorPoint Detector){
+//}
+
+
+multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos){
     double dz = 0.2;
     multiVars tempMV;
     tempMV.UScentre_absorber=reset_Vars();
@@ -3908,15 +3883,15 @@ multiVars MCSAnalysis::read_globals(){
     tempMV.DScentre_absorber=reset_Vars();
     tempMV.UStrackerUS11=reset_Vars();
     tempMV.UScentre_absorber.Z=_sys["abspos"];
-    tempMV.USend_of_DStracker.Z=_sys["DS53"];
-    tempMV.USTOF0.Z=_sys["TOF0pos"];
-    tempMV.USTOF1.Z=_sys["TOF1pos"];
+    tempMV.USend_of_DStracker.Z= DS53;
+    tempMV.USTOF0.Z= TOF0pos;
+    tempMV.USTOF1.Z= TOF1pos;
     tempMV.DScentre_absorber.Z=_sys["abspos"];
-    tempMV.UStrackerUS11.Z=_sys["US11"];
-    tempMV.UStrackerUS53.Z=_sys["US53"];
+    tempMV.UStrackerUS11.Z= US11;
+    tempMV.UStrackerUS53.Z= US53;
      
     
-//    std::cerr << "Globals..."<<std::endl;
+    std::cerr << "Globals..."<<std::endl;
 
     std::vector<MAUS::DataStructure::Global::PrimaryChain*>* pchains = globalevent->get_primary_chains();
 //    std::vector<MAUS::DataStructure::Global::PrimaryChain*>::iterator pchains_iterator;
@@ -3933,7 +3908,7 @@ multiVars MCSAnalysis::read_globals(){
     for(auto pchains_iterator = pchains->begin(); pchains_iterator != pchains->end(); ++ pchains_iterator){
         MAUS::DataStructure::Global::PrimaryChain* chain = (*pchains_iterator);
 //        std::cerr << "iterating? Chain: "<< chain->get_chain_type() <<" looking for "<< chain_type <<std::endl;
-	std::cerr<<"Chain type: "<<chain->get_chain_type()<<std::endl;
+        std::cerr<<"Chain type: "<<chain->get_chain_type()<<std::endl;
         if(chain->get_chain_type() == 5){
 //            MAUS::DataStructure::Global::PrimaryChain* USchain=chain->GetUSDaughter();
             std::vector<MAUS::DataStructure::Global::Track*> some_tracks = chain->GetMatchedTracks();
@@ -3946,38 +3921,42 @@ multiVars MCSAnalysis::read_globals(){
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
+                            if ( track_points.at(p)->get_detector() == 1){
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+                            }
 
 //                            std::cerr<<"Time: "<< a_track_pos.T()<<std::endl;
-//                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
+                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
+//                                      " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
                                 std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
                                 std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                             if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
                                  && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
-                              std::cerr<<"Found all trackpoints"<<std::endl;
+//                              std::cerr<<"Found all trackpoints"<<std::endl;
                               break;
                             }
                         }
@@ -3996,8 +3975,8 @@ multiVars MCSAnalysis::read_globals(){
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
-                            if(a_track_pos.Z() >= _sys["DS11"]-dz && a_track_pos.Z() <= _sys["DS11"]+dz){
-                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
+                            if(a_track_pos.Z() >= DS11-dz && a_track_pos.Z() <= DS11+dz){
+//                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
@@ -4016,27 +3995,28 @@ multiVars MCSAnalysis::read_globals(){
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
+                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
                                 std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
@@ -4059,16 +4039,16 @@ multiVars MCSAnalysis::read_globals(){
          tempMV.UScentre_absorber=PropagateVarsMu(tempMV.UStrackerUS11,_sys["abspos"]);
        }
        if(tempMV.USend_of_DStracker.isgood==false){
-         tempMV.USend_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11,_sys["DS53"]);
+         tempMV.USend_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11, DS53);
        }              
        if(tempMV.USTOF0.isgood==false){
-         tempMV.USTOF0=PropagateVarsMu(tempMV.UStrackerUS11,_sys["TOF0pos"]);
+         tempMV.USTOF0=PropagateVarsMu(tempMV.UStrackerUS11, TOF0pos);
        }              
        if(tempMV.USTOF1.isgood==false){
-         tempMV.USTOF1=PropagateVarsMu(tempMV.UStrackerUS11,_sys["TOF1pos"]);
+         tempMV.USTOF1=PropagateVarsMu(tempMV.UStrackerUS11, TOF1pos);
        }              
        if(tempMV.UStrackerUS53.isgood==false){
-         tempMV.UStrackerUS53=PropagateVarsMu(tempMV.UStrackerUS11,_sys["US53"]);
+         tempMV.UStrackerUS53=PropagateVarsMu(tempMV.UStrackerUS11, US53);
        }              
     }
     return tempMV;
