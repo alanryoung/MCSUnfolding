@@ -339,7 +339,6 @@ int main(int argc, char* argv[]) {
           std::cout<<"physics event detected"<<std::endl;
 	  // Each recon event corresponds to a particle trigger; data in the
 	  // recon event should all have the same trigger
-          std::cout<<"type "<<type<<std::endl;
 	  if(type.find("data")!=std::string::npos){
             std::cout<<"type data"<<std::endl;
 	    RunNumber = spill->GetRunNumber();

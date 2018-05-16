@@ -40,12 +40,12 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
   _sys["dataTOF0pos"] = 5287.25;
   _sys["dataTOF1pos"] = 12929.6;
 
-  _sys["refDS11"] = 18836.9;
-  _sys["refDS53"] = 19937.9;
-  _sys["refUS53"] = 13967.7;
-  _sys["refUS11"] = 15068.9;
-  _sys["refdiffuserlow"] = 13726.2;
-  _sys["refdiffuserhigh"] = 13746.2;
+  _sys["refDS11"] = 18848.4;
+  _sys["refDS53"] = 19949.4;
+  _sys["refUS53"] = 13961.7;
+  _sys["refUS11"] = 15062.9;
+  _sys["refdiffuserlow"] = 13720.2;
+  _sys["refdiffuserhigh"] = 13740.2;
   _sys["refTOF0pos"] = 5287.25;
   _sys["refTOF1pos"] = 12929.6;
 
@@ -125,29 +125,29 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
 			   ";Selection Criteria; Surviving Events", 14, 0, 14  );
   mccuts_accept = new TH1D("mccuts_accept", 
 			   ";Selection Criteria; Surviving Events", 14, 0, 14);
-  pass_Tof1 = new TH1D("pass_TOF1",";Passed Cut; Events",3, 0, 3);
-  pass_Tof0 = new TH1D("pass_TOF0",";Passed Cut; Events",3, 0, 3);
-  pass_TKU = new TH1D("pass_TKU",";Passed Cut; Events",3, 0, 3);
-  pass_TKUrad = new TH1D("pass_TKUrad",";Passed Cut; Events",100, 0, 200);
-  pass_Diff = new TH1D("pass_Diff",";Passed Cut; Events",100, 0, 150);
-  pass_Fid = new TH1D("pass_Fid",";Passed Cut; Events",100, 0, 200);
-  pass_ExtTKU0 = new TH1D("pass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
-  pass_TOF01 = new TH1D("pass_TOF01",";Passed Cut; Events",100, 0, 40);
-  pass_TOF01Ex = new TH1D("pass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
-  pass_mom = new TH1D("pass_mom",";Passed Cut; Events",100, 100, 300);
-  pass_chi2= new TH1D("pass_chi2",";Chi2/dof; Events",50, 0, 10);
+  pass_Tof1 = new TH1D("datapass_TOF1",";Passed Cut; Events",3, 0, 3);
+  pass_Tof0 = new TH1D("datapass_TOF0",";Passed Cut; Events",3, 0, 3);
+  pass_TKU = new TH1D("datapass_TKU",";Passed Cut; Events",3, 0, 3);
+  pass_TKUrad = new TH1D("datapass_TKUrad",";Passed Cut; Events",100, 0, 200);
+  pass_Diff = new TH1D("datapass_Diff",";Passed Cut; Events",100, 0, 150);
+  pass_Fid = new TH1D("datapass_Fid",";Passed Cut; Events",100, 0, 200);
+  pass_ExtTKU0 = new TH1D("datapass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
+  pass_TOF01 = new TH1D("datapass_TOF01",";Passed Cut; Events",100, 0, 40);
+  pass_TOF01Ex = new TH1D("datapass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
+  pass_mom = new TH1D("datapass_mom",";Passed Cut; Events",100, 100, 300);
+  pass_chi2= new TH1D("datapass_chi2",";Chi2/dof; Events",50, 0, 10);
 
-  mcpass_Tof1 = new TH1D("pass_TOF1",";Passed Cut; Events",3, 0, 3);
-  mcpass_Tof0 = new TH1D("pass_TOF0",";Passed Cut; Events",3, 0, 3);
-  mcpass_TKU = new TH1D("pass_TKU",";Passed Cut; Events",3, 0, 3);
-  mcpass_TKUrad = new TH1D("pass_TKUrad",";Passed Cut; Events",100, 0, 200);
-  mcpass_Diff = new TH1D("pass_Diff",";Passed Cut; Events",100, 0, 150);
-  mcpass_Fid = new TH1D("pass_Fid",";Passed Cut; Events",100, 0, 200);
-  mcpass_ExtTKU0 = new TH1D("pass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
-  mcpass_TOF01 = new TH1D("pass_TOF01",";Passed Cut; Events",100, 0, 40);
-  mcpass_TOF01Ex = new TH1D("pass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
-  mcpass_mom = new TH1D("pass_mom",";Passed Cut; Events",100, 100, 300);
-  mcpass_chi2= new TH1D("pass_chi2",";Chi2/dof; Events",50, 0, 10);
+  mcpass_Tof1 = new TH1D("refpass_TOF1",";Passed Cut; Events",3, 0, 3);
+  mcpass_Tof0 = new TH1D("refpass_TOF0",";Passed Cut; Events",3, 0, 3);
+  mcpass_TKU = new TH1D("refpass_TKU",";Passed Cut; Events",3, 0, 3);
+  mcpass_TKUrad = new TH1D("refpass_TKUrad",";Passed Cut; Events",100, 0, 200);
+  mcpass_Diff = new TH1D("refpass_Diff",";Passed Cut; Events",100, 0, 150);
+  mcpass_Fid = new TH1D("refpass_Fid",";Passed Cut; Events",100, 0, 200);
+  mcpass_ExtTKU0 = new TH1D("refpass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
+  mcpass_TOF01 = new TH1D("refpass_TOF01",";Passed Cut; Events",100, 0, 40);
+  mcpass_TOF01Ex = new TH1D("refpass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
+  mcpass_mom = new TH1D("refpass_mom",";Passed Cut; Events",100, 100, 300);
+  mcpass_chi2= new TH1D("refpass_chi2",";Chi2/dof; Events",50, 0, 10);
 
   scattering_pos_x =
     new TH1D("scattering_pos_x",
@@ -343,8 +343,8 @@ void MCSAnalysis::Execute(int mode=0){
     referenceSelection();
     ConvolveWithInputDistribution(modelname1.c_str());
     DoDeconvolution(modelname1.c_str(), mode);
-    } */
-  else {
+  } */
+else {
     std::cout<<"Unknown operation mode"<<std::endl;
   } 
 }
@@ -372,6 +372,21 @@ void MCSAnalysis::dataSelection2(){
   double dataTOF0pos = _sys["dataTOF0pos"];
   double dataTOF1pos = _sys["dataTOF1pos"];
 
+  // Cuts to apply to data
+
+  bool cut_TOF1_1sp = true;
+  bool cut_TOF0_1sp = true;
+  bool cut_TKU_1track = true;
+  bool cut_CHi2_dof = false;
+  bool cut_TKU_radial = true;
+  bool cut_diffuser_radial = true;
+  bool cut_fiducial = true;
+  bool cut_TOF01 = true;
+  bool cut_TOF01ext = true;
+  bool cut_absorber_momentum = true;
+  bool cut_ext_TKU_TOF0 = true;
+  
+
 
   int Nentries = chain->GetEntries();
 
@@ -386,7 +401,7 @@ void MCSAnalysis::dataSelection2(){
     std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-    if (i>=1000) break;
+//    if (i>=10000) break;
     cuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -414,11 +429,11 @@ void MCSAnalysis::dataSelection2(){
     }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
       std::cerr<<"**Multiple TOF1 hits - cutting"<<std::endl;
       pass_Tof1->Fill("Fail",1);
-      continue;
+      if (cut_TOF1_1sp) continue;
     }else{
       std::cerr<<"**No TOF1 hit"<<std::endl;
       pass_Tof1->Fill("Fail",1);
-      continue;
+      if (cut_TOF1_1sp) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -442,12 +457,13 @@ void MCSAnalysis::dataSelection2(){
     }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
       std::cerr<<"**Multiple TOF0 hits - cutting"<<std::endl;
       pass_Tof0->Fill("Fail",1);
-      continue;
+      if (cut_TOF0_1sp) continue;
     }else{
       std::cerr<<"**No TOF0 hit"<<std::endl;
       pass_Tof0->Fill("Fail",1);
-      continue;
+      if (cut_TOF0_1sp) continue;
     }
+    
 //    std::cerr<<"Adding to PostTOF0"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostTOF0.append_instance(globalVars.UScentre_absorber);
@@ -463,17 +479,22 @@ void MCSAnalysis::dataSelection2(){
 //---------------------------------------------------------------------------------------
 
 
-  std::cerr<<" Number of upstream tracks: "<<scifievent->scifitracks().size()<<std::endl;
-  if (scifievent->scifitracks().size()==0){
+  std::cerr<<" Number of tracks: "<<scifievent->scifitracks().size()<<std::endl;
+  int number_upstream_tracks=0;
+  for(size_t j=0; j<scifievent->scifitracks().size(); j++){
+      int tracker = scifievent->scifitracks()[j]->tracker();
+      if(tracker==0) number_upstream_tracks++;  
+  }
+  std::cerr<<"Number of Upstream tracks: "<< number_upstream_tracks << std::endl;
+  if (number_upstream_tracks==0){
     std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
     pass_TKU->Fill("Fail",1);
-    continue;    
-  } else if(scifievent->scifitracks().size()>1){
+    if (cut_TKU_1track) continue;    
+  } else if(number_upstream_tracks>1){
     std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
     pass_TKU->Fill("Fail",1);
-    continue;   
-  }
-
+    if (cut_TKU_1track) continue;
+  }   
 /*
   int nUStracks= 0;
   if (scifievent->scifitracks().size()>=1){
@@ -508,18 +529,18 @@ void MCSAnalysis::dataSelection2(){
     std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
     std::vector<MAUS::SciFiTrack*>::iterator track_iter;
     if(tracks.size() != 0){ // use if only want to take the first track
-        track_iter = tracks.begin();
-        double TKU_chiSquare = (*track_iter)->chi2();
-        int TKU_ndof = (*track_iter)->ndf();
-        double TKU_chiSquare_per_ndof = TKU_chiSquare / (1.0*TKU_ndof);
-        pass_chi2->Fill(TKU_chiSquare_per_ndof);  
-        if (TKU_chiSquare_per_ndof>5){
-          std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
-          continue;
-        }
+      track_iter = tracks.begin();
+      double TKU_chiSquare = (*track_iter)->chi2();
+      int TKU_ndof = (*track_iter)->ndf();
+      double TKU_chiSquare_per_ndof = TKU_chiSquare / (1.0*TKU_ndof);
+      pass_chi2->Fill(TKU_chiSquare_per_ndof);  
+      if (TKU_chiSquare_per_ndof>5){
+        std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
+        if (cut_CHi2_dof) continue;
+      }
     }else{ 
       std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
-      continue;
+      if (cut_CHi2_dof) continue;
     }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -540,8 +561,11 @@ void MCSAnalysis::dataSelection2(){
 //    display_Vars(globalVars.UScentre_absorber);
 //    display_Vars(globalVars.DScentre_absorber);
     if (!globalVars.UScentre_absorber.isgood) {
-    std::cerr<<"**Failed US track Cut - Why not cut earlier ********************"<<std::endl;
-    continue;
+      std::cerr<<"**Failed US track Cut - Why not cut earlier ********************"<<std::endl;
+      continue;
+    }
+    if (!globalVars.DScentre_absorber.isgood) {
+      std::cerr<<"**No DS ********************"<<std::endl;
     }
     cuts_accept->Fill("US Track",1);
 
@@ -553,7 +577,7 @@ void MCSAnalysis::dataSelection2(){
     pass_TKUrad->Fill(TKU_max_rad);
     if (TKU_max_rad>150.0){
       std::cerr<<"**Failed US Tracker Radial Cut"<<std::endl;
-      continue;
+      if (cut_TKU_radial) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -573,7 +597,7 @@ void MCSAnalysis::dataSelection2(){
     pass_Diff->Fill(diff_max_rad);
     if (diff_max_rad >100.0){
       std::cerr<<"**Failed Diffuser Cut"<<std::endl;
-      continue;
+      if (cut_diffuser_radial) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -592,7 +616,7 @@ void MCSAnalysis::dataSelection2(){
     pass_Fid->Fill(fiducial_radius);
     if ( fiducial_radius > meanp){
       std::cerr<<"**Failed Fiducial Cut"<<std::endl;
-      continue;
+      if (cut_fiducial) continue;
     } else {
 //      display_Vars(globalVars.USend_of_DStracker);
 //      std::cerr<<sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y)<<std::endl;
@@ -612,7 +636,7 @@ void MCSAnalysis::dataSelection2(){
 // TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
 //---------------------------------------------------------------------------------------
 
-    double rawTOF2HitTime;
+    double rawTOF2HitTime;     
     if ( tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize() >= 1 ){
       rawTOF2HitTime = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
 //      std::cerr<<"TOF2 time: "<<rawTOF2HitTime<<std::endl;
@@ -621,15 +645,15 @@ void MCSAnalysis::dataSelection2(){
       rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
     }
 
-
+    
     tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
     double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
     pass_TOF01->Fill(rawTOF01HitTime);
     if ( rawTOF01HitTime < TOF_lower_limit ||
-	 rawTOF01HitTime > TOF_upper_limit) {
-      std::cerr<<"**Failed TOF01 Cut"<<std::endl;
-      continue;
+         rawTOF01HitTime > TOF_upper_limit) {
+    std::cerr<<"**Failed TOF01 Cut"<<std::endl;
+    if (cut_TOF01) continue;
     }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -653,7 +677,7 @@ void MCSAnalysis::dataSelection2(){
   pass_TOF01Ex->Fill(TOF01Ext);
   if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
     std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
-    continue;
+    if(cut_TOF01ext) continue;
   }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -676,7 +700,7 @@ void MCSAnalysis::dataSelection2(){
   pass_mom->Fill(momentum_absorber);
   if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
     std::cerr<<"**Failed momentum Cut"<<std::endl;
-    continue;
+    if (cut_absorber_momentum) continue;
   }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -695,7 +719,7 @@ void MCSAnalysis::dataSelection2(){
     if (globalVars.USTOF0.isgood==false){
       std::cerr<<"**Failed extrapolation from TKU to TOF0"<<std::endl;
       pass_ExtTKU0->Fill("Fail",1);
-      continue;
+      if (cut_ext_TKU_TOF0) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -778,6 +802,18 @@ void MCSAnalysis::referenceSelection2(){
   double refTOF0pos = _sys["refTOF0pos"];
   double refTOF1pos = _sys["refTOF1pos"];
 
+  bool cut_TOF1_1sp = true;
+  bool cut_TOF0_1sp = true;
+  bool cut_TKU_1track = true;
+  bool cut_CHi2_dof = false;
+  bool cut_TKU_radial = true;
+  bool cut_diffuser_radial = true;
+  bool cut_fiducial = true;
+  bool cut_TOF01 = true;
+  bool cut_TOF01ext = true;
+  bool cut_absorber_momentum = true;
+  bool cut_ext_TKU_TOF0 = true;
+  
 
   // Restrict the number of entries to less than or equal to the mcchain entries
   
@@ -793,7 +829,7 @@ void MCSAnalysis::referenceSelection2(){
     std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     mcchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-    if (i>=1000) break;
+//    if (i>=10000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -821,11 +857,11 @@ void MCSAnalysis::referenceSelection2(){
     }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
       std::cerr<<"**Multiple TOF1 hits - cutting"<<std::endl;
       mcpass_Tof1->Fill("Fail",1);
-      continue;
+      if(cut_TOF1_1sp) continue;
     }else{
       std::cerr<<"**No TOF1 hit"<<std::endl;
       mcpass_Tof1->Fill("Fail",1);
-      continue;
+      if(cut_TOF1_1sp) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -849,11 +885,11 @@ void MCSAnalysis::referenceSelection2(){
     }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
       std::cerr<<"**Multiple TOF0 hits - cutting"<<std::endl;
       mcpass_Tof0->Fill("Fail",1);
-      continue;
+      if(cut_TOF0_1sp) continue;
     }else{
       std::cerr<<"**No TOF0 hit"<<std::endl;
       mcpass_Tof0->Fill("Fail",1);
-      continue;
+      if(cut_TOF0_1sp) continue;
     }
 //    std::cerr<<"Adding to PostTOF0"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -869,15 +905,20 @@ void MCSAnalysis::referenceSelection2(){
 // Require only 1 US track
 //---------------------------------------------------------------------------------------
 
-  std::cerr<<" Number of upstream tracks: "<<scifievent->scifitracks().size()<<std::endl;
-  if (scifievent->scifitracks().size()==0){
+  std::cerr<<" Number of tracks: "<<scifievent->scifitracks().size()<<std::endl;
+  int number_upstream_tracks=0;
+  for(size_t j=0; j<scifievent->scifitracks().size(); j++){
+      int tracker = scifievent->scifitracks()[j]->tracker();
+      if(tracker==0) number_upstream_tracks++;  
+  }
+  if (number_upstream_tracks==0){
     std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
     mcpass_TKU->Fill("Fail",1);
-    continue;    
-  } else if(scifievent->scifitracks().size()>1){
+    if(cut_TKU_1track) continue;    
+  } else if(number_upstream_tracks>1){
     std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
     mcpass_TKU->Fill("Fail",1);
-    continue;   
+    if(cut_TKU_1track) continue;   
   }
 
 /*
@@ -916,7 +957,7 @@ void MCSAnalysis::referenceSelection2(){
 
     if(tracks.size() == 0){
       std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
-      continue;
+      if(cut_CHi2_dof) continue;
     }else{ 
       // use if only want to take the first track
         track_iter = tracks.begin();
@@ -926,7 +967,7 @@ void MCSAnalysis::referenceSelection2(){
         mcpass_chi2->Fill(TKU_chiSquare_per_ndof);  
         if (TKU_chiSquare_per_ndof>5){
           std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
-          continue;
+          if(cut_CHi2_dof) continue;
         }
     }
 
@@ -961,7 +1002,7 @@ void MCSAnalysis::referenceSelection2(){
     mcpass_TKUrad->Fill(TKU_max_rad);
     if (TKU_max_rad>150.0){
       std::cerr<<"**Failed US Tracker Radial Cut"<<std::endl;
-      continue;
+      if(cut_TKU_radial) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -981,7 +1022,7 @@ void MCSAnalysis::referenceSelection2(){
     mcpass_Diff->Fill(diff_max_rad);
     if (diff_max_rad >100.0){
       std::cerr<<"**Failed Diffuser Cut"<<std::endl;
-      continue;
+      if(cut_diffuser_radial) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -1000,7 +1041,7 @@ void MCSAnalysis::referenceSelection2(){
     mcpass_Fid->Fill(fiducial_radius);
     if ( fiducial_radius > meanp){
       std::cerr<<"**Failed Fiducial Cut"<<std::endl;
-      continue;
+      if(cut_fiducial) continue;
     } else {
 //      display_Vars(globalVars.USend_of_DStracker);
 //      std::cerr<<sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y)<<std::endl;
@@ -1037,7 +1078,7 @@ void MCSAnalysis::referenceSelection2(){
     if ( rawTOF01HitTime < TOF_lower_limit ||
 	 rawTOF01HitTime > TOF_upper_limit) {
       std::cerr<<"**Failed TOF01 Cut"<<std::endl;
-      continue;
+      if(cut_TOF01) continue;
     }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -1061,7 +1102,7 @@ void MCSAnalysis::referenceSelection2(){
   mcpass_TOF01Ex->Fill(TOF01Ext);  
   if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
     std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
-    continue;
+    if(cut_TOF01ext) continue;
   }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -1084,7 +1125,7 @@ void MCSAnalysis::referenceSelection2(){
   mcpass_mom->Fill(momentum_absorber);
   if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
     std::cerr<<"**Failed momentum Cut"<<std::endl;
-    continue;
+    if(cut_absorber_momentum) continue;
   }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -1103,7 +1144,7 @@ void MCSAnalysis::referenceSelection2(){
     if (globalVars.USTOF0.isgood==false){
       std::cerr<<"**Failed extrapolation from TKU to TOF0"<<std::endl;
       pass_ExtTKU0->Fill("Fail",1);
-      continue;
+      if(cut_ext_TKU_TOF0) continue;
     }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -3926,7 +3967,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                             }
 
 //                            std::cerr<<"Time: "<< a_track_pos.T()<<std::endl;
-                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
+//                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
 //                                      " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
@@ -3946,8 +3987,8 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
 //                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
@@ -3995,7 +4036,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
-                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
+//                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
@@ -4019,13 +4060,13 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                             if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
                                  && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
-                              std::cerr<<"Found all trackpoints"<<std::endl;
+//                              std::cerr<<"Found all trackpoints"<<std::endl;
                               break;
                             }
                         }
