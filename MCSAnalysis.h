@@ -95,6 +95,19 @@ class MCSAnalysis {
   void SetFFTBinLimit(int a) { binlimit=a; }
   void SetFileName(std::string a) {outfilename=a; }
 
+  void SetCutTOF1SP1(bool a){cut_TOF1_1sp = a;}
+  void SetCutTOF0SP1(bool a){cut_TOF0_1sp = a;}
+  void SetCutTKU1track(bool a){cut_TKU_1track = a;}
+  void SetCutCHI2DOF(bool a){cut_CHi2_dof = a;}
+  void SetCutTKURadial(bool a){cut_TKU_radial = a;}
+  void SetCutDiffuserRadial(bool a){cut_diffuser_radial = a;}
+  void SetCutFiducial(bool a){cut_fiducial = a;}
+  void SetCutTOF01(bool a){cut_TOF01 = a;}
+  void SetCutTOF01ext(bool a){cut_TOF01ext = a;}
+  void SetCutAbsorberMomentum(bool a){cut_absorber_momentum = a;}
+  void SetCutExtrudeTKUTOF0(bool a){cut_ext_TKU_TOF0 = a;}
+
+
   void SetSysOffset(std::string eff, double val) { _sys[eff] = val; }
 
  private:
@@ -105,6 +118,19 @@ class MCSAnalysis {
   double TOF_upper_limit;
   double momentum_lower_limit;
   double momentum_upper_limit;
+
+  bool cut_TOF1_1sp;
+  bool cut_TOF0_1sp;
+  bool cut_TKU_1track;
+  bool cut_CHi2_dof;
+  bool cut_TKU_radial;
+  bool cut_diffuser_radial;
+  bool cut_fiducial;
+  bool cut_TOF01;
+  bool cut_TOF01ext;
+  bool cut_absorber_momentum;
+  bool cut_ext_TKU_TOF0;
+
   
   double meanp;
   double sigmap;
@@ -259,6 +285,7 @@ class MCSAnalysis {
 					     std::string suffix);
   Json::Value SetupConfig(int verbose_level, std::string geometry);
   Vars PropagateVarsMu(Vars event, double z0);
+  Vars PropagateVarsMuVerbose(Vars event, double z0);
   Vars FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_pos, int pid);
   multiVars read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos);
   double Check_Radius_US(double low_z, double high_z);

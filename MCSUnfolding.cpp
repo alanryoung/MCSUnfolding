@@ -26,6 +26,18 @@ struct specvals {
   double fid_grad;
   double fid_rad;
   int    mode;
+  bool cut_TOF1_1sp;
+  bool cut_TOF0_1sp;
+  bool cut_TKU1track;
+  bool cut_CHI2DOF;
+  bool cut_TKURadial;
+  bool cut_DiffuserRadial;
+  bool cut_Fiducial;
+  bool cut_TOF01;
+  bool cut_TOF01ext;
+  bool cut_AbsorberMomentum;
+  bool cut_ExtrudeTKUTOF0;
+  
 }; 
 
 static void print_element_names(xmlNode * a_node, specvals& spec)
@@ -80,6 +92,28 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.fid_rad = std::atof((char*)xmlGetProp(cur_node, vl));
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("mode")) ){
 	  spec.mode = std::atof((char*)xmlGetProp(cur_node, vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TOF1_1sp"))){
+          spec.cut_TOF1_1sp = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TOF0_1sp"))){
+          spec.cut_TOF0_1sp = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TKU1track"))){
+          spec.cut_TKU1track = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_CHI2DOF"))){
+          spec.cut_CHI2DOF = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TKURadial"))){
+          spec.cut_TKURadial = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_DiffuserRadial"))){
+          spec.cut_DiffuserRadial = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_Fiducial"))){
+          spec.cut_Fiducial = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TOF01"))){
+          spec.cut_TOF01 = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_TOF01ext"))){
+          spec.cut_TOF01ext = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_AbsorberMomentum"))){
+          spec.cut_AbsorberMomentum = std::atoi((char*)xmlGetProp(cur_node,vl));
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("cut_ExtrudeTKUTOF0"))){
+          spec.cut_ExtrudeTKUTOF0 = std::atoi((char*)xmlGetProp(cur_node,vl));
 	} else {
 	  std::cout<<"Cut designation not recognized. Will ignore "
 		   << xmlGetProp(cur_node, nm) 
@@ -183,6 +217,19 @@ int main(int argc, char* argv[]) {
   std::cout<<"Fiducial selection contained by radius "
 	   <<spec.fid_rad<<" with scattering "<<spec.fid_grad<<std::endl;
   std::cout<<"\n";
+  std::cout<<"Cuts Selected\n";
+  std::cout<<"Require exactly 1 TOF1 Spacepoint: "<<spec.cut_TOF1_1sp<<std::endl;
+  std::cout<<"Require exactly 1 TOF0 Spacepoint: "<<spec.cut_TOF0_1sp<<std::endl;
+  std::cout<<"Require exactly 1 track in Upstream tracker: "<<spec.cut_TKU1track<<std::endl;
+  std::cout<<"Chi-squared per degree of freedom: "<<spec.cut_CHI2DOF<<std::endl;
+  std::cout<<"Maximum radius of muon in upstream tracker: "<<spec.cut_TKURadial<<std::endl;
+  std::cout<<"Maximum radius of muon in diffuser: "<<spec.cut_DiffuserRadial<<std::endl;
+  std::cout<<"Fiducial: "<<spec.cut_Fiducial<<std::endl;
+  std::cout<<"TOF01 time consistent with Muon: "<<spec.cut_TOF01<<std::endl;
+  std::cout<<"Extruded TOF01 time consistent with Muon: "<<spec.cut_TOF01ext<<std::endl;
+  std::cout<<"Momentum at Absorber: "<<spec.cut_AbsorberMomentum<<std::endl;
+  std::cout<<"Successfully extrude from Upstream tracker to TOF0: "<<spec.cut_ExtrudeTKUTOF0<<std::endl;
+  std::cout<<"\n";
 
   MCSAnalysis anal("reduced_tree", mode_tree, spec.outfile, spec.histlimits);
 
@@ -207,6 +254,18 @@ int main(int argc, char* argv[]) {
   anal.SetModelName2(spec.model2);
   anal.SetParentGeometryFile(spec.geometryname.c_str());
   anal.SetFileName(spec.outfilename.c_str());
+
+  anal.SetCutTOF1SP1(spec.cut_TOF1_1sp);
+  anal.SetCutTOF0SP1(spec.cut_TOF0_1sp);
+  anal.SetCutTKU1track(spec.cut_TKU1track);
+  anal.SetCutCHI2DOF(spec.cut_CHI2DOF);
+  anal.SetCutTKURadial(spec.cut_TKURadial);
+  anal.SetCutDiffuserRadial(spec.cut_DiffuserRadial);
+  anal.SetCutFiducial(spec.cut_Fiducial);
+  anal.SetCutTOF01(spec.cut_TOF01);
+  anal.SetCutTOF01ext(spec.cut_TOF01ext);
+  anal.SetCutAbsorberMomentum(spec.cut_AbsorberMomentum);
+  anal.SetCutExtrudeTKUTOF0(spec.cut_ExtrudeTKUTOF0);
 
   anal.GetMCTree()->Add(spec.trainname.c_str());
 

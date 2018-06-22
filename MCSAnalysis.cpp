@@ -102,6 +102,20 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
   momentum_lower_limit = 140;
   momentum_upper_limit = 300;
 
+  //Set default data cuts
+  cut_TOF1_1sp = true;
+  cut_TOF0_1sp = true;
+  cut_TKU_1track = true;
+  cut_CHi2_dof = true;
+  cut_TKU_radial = true;
+  cut_diffuser_radial = true;
+  cut_fiducial = true;
+  cut_TOF01 = true;
+  cut_TOF01ext = true;
+  cut_absorber_momentum = true;
+  cut_ext_TKU_TOF0 = true;
+
+
   meanp = 300.0;
   sigmap = 0.035;
   binlimit = 22;
@@ -132,8 +146,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
   pass_Diff = new TH1D("datapass_Diff",";Passed Cut; Events",100, 0, 150);
   pass_Fid = new TH1D("datapass_Fid",";Passed Cut; Events",100, 0, 200);
   pass_ExtTKU0 = new TH1D("datapass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
-  pass_TOF01 = new TH1D("datapass_TOF01",";Passed Cut; Events",100, 0, 40);
-  pass_TOF01Ex = new TH1D("datapass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
+  pass_TOF01 = new TH1D("datapass_TOF01",";Passed Cut; Events",100, 23, 35);
+  pass_TOF01Ex = new TH1D("datapass_TOF01Ex",";Passed Cut; Events",100, 23, 35);
   pass_mom = new TH1D("datapass_mom",";Passed Cut; Events",100, 100, 300);
   pass_chi2= new TH1D("datapass_chi2",";Chi2/dof; Events",50, 0, 10);
 
@@ -144,8 +158,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string outna
   mcpass_Diff = new TH1D("refpass_Diff",";Passed Cut; Events",100, 0, 150);
   mcpass_Fid = new TH1D("refpass_Fid",";Passed Cut; Events",100, 0, 200);
   mcpass_ExtTKU0 = new TH1D("refpass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
-  mcpass_TOF01 = new TH1D("refpass_TOF01",";Passed Cut; Events",100, 0, 40);
-  mcpass_TOF01Ex = new TH1D("refpass_TOF01Ex",";Passed Cut; Events",100, 0, 40);
+  mcpass_TOF01 = new TH1D("refpass_TOF01",";Passed Cut; Events",100, 23, 35);
+  mcpass_TOF01Ex = new TH1D("refpass_TOF01Ex",";Passed Cut; Events",100, 23, 35);
   mcpass_mom = new TH1D("refpass_mom",";Passed Cut; Events",100, 100, 300);
   mcpass_chi2= new TH1D("refpass_chi2",";Chi2/dof; Events",50, 0, 10);
 
@@ -312,41 +326,34 @@ void MCSAnalysis::Execute(int mode=0){
              JsonWrapper::JsonToString(SetupConfig(verbose_level, geometryfile)));
   std::cerr<<"Completed Globals Initialisation"<<std::endl;
 
+  std::cerr<<"Require 1 TOF1 spacepoint "<<cut_TOF1_1sp<<std::endl;
+  std::cerr<<"Require exactly 1 TOF0 Spacepoint: "<<cut_TOF0_1sp<<std::endl;
+  std::cerr<<"Require exactly 1 track in Upstream tracker: "<<cut_TKU_1track<<std::endl;
+  std::cerr<<"Chi-squared per degree of freedom: "<<cut_CHi2_dof<<std::endl;
+  std::cerr<<"Maximum radius of muon in upstream tracker: "<<cut_TKU_radial<<std::endl;
+  std::cerr<<"Maximum radius of muon in diffuser: "<<cut_diffuser_radial<<std::endl;
+  std::cerr<<"Fiducial: "<<cut_fiducial<<std::endl;
+  std::cerr<<"TOF01 time consistent with Muon: "<<cut_TOF01<<std::endl;
+  std::cerr<<"Extruded TOF01 time consistent with Muon: "<<cut_TOF01ext<<std::endl;
+  std::cerr<<"Momentum at Absorber: "<<cut_absorber_momentum<<std::endl;
+  std::cerr<<"Successfully extrude from Upstream tracker to TOF0: "<<cut_ext_TKU_TOF0<<std::endl;
+
   dataSelection2();
   
-  if (mode == 0){
-    std::cerr<<"Mode = 0"<<std::endl;
-    generateMCSResponse();
-    // DoUnfolding();
-    DoDeconvolution(modelname2.c_str(), 1);
-  }
-  else if (mode >= 1){
-    std::cerr<<"Mode = 1 - reference Selection"<<std::endl;
-    referenceSelection2();
-    std::cerr<<"Mode = 1 - DoUnfolding"<<std::endl;
-    DoUnfolding();
-    std::cerr<<"Mode = 1 - DoFFTDeconvolution"<<std::endl;
-    DoFFTDeconvolution();
-    std::cerr<<"Mode = 1 - ConvolveWithInputDistribution"<<std::endl;
-    ConvolveWithInputDistribution(modelname1.c_str());
-    std::cerr<<"Mode = 1 - DoDeconvolution"<<std::endl;
-    DoDeconvolution(modelname1.c_str(), 1);
-    std::cerr<<"Mode = 1 - ConvolveWithInputDistribution"<<std::endl;
-    ConvolveWithInputDistribution(modelname2.c_str());
-    std::cerr<<"Mode = 1 - DoDeconvolution"<<std::endl;
-    DoDeconvolution(modelname2.c_str(), 1);
-    //FitGaussian(outfilename.c_str());
-    //CalculateChi2(outfilename.c_str(), modelname2.c_str());
-    //Write();
-  }
-  /* else if (mode > 1){
-    referenceSelection();
-    ConvolveWithInputDistribution(modelname1.c_str());
-    DoDeconvolution(modelname1.c_str(), mode);
-  } */
-else {
-    std::cout<<"Unknown operation mode"<<std::endl;
-  } 
+  std::cerr<<"Mode = 1 - reference Selection"<<std::endl;
+  referenceSelection2();
+  std::cerr<<"Mode = 1 - DoUnfolding"<<std::endl;
+  DoUnfolding();
+  std::cerr<<"Mode = 1 - DoFFTDeconvolution"<<std::endl;
+  DoFFTDeconvolution();
+  std::cerr<<"Mode = 1 - ConvolveWithInputDistribution"<<std::endl;
+  ConvolveWithInputDistribution(modelname1.c_str());
+  std::cerr<<"Mode = 1 - DoDeconvolution"<<std::endl;
+  DoDeconvolution(modelname1.c_str(), 1);
+  std::cerr<<"Mode = 1 - ConvolveWithInputDistribution"<<std::endl;
+  ConvolveWithInputDistribution(modelname2.c_str());
+  std::cerr<<"Mode = 1 - DoDeconvolution"<<std::endl;
+  DoDeconvolution(modelname2.c_str(), 1);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -374,17 +381,6 @@ void MCSAnalysis::dataSelection2(){
 
   // Cuts to apply to data
 
-  bool cut_TOF1_1sp = true;
-  bool cut_TOF0_1sp = true;
-  bool cut_TKU_1track = true;
-  bool cut_CHi2_dof = true;
-  bool cut_TKU_radial = true;
-  bool cut_diffuser_radial = true;
-  bool cut_fiducial = true;
-  bool cut_TOF01 = true;
-  bool cut_TOF01ext = false;
-  bool cut_absorber_momentum = true;
-  bool cut_ext_TKU_TOF0 = true;
   
 
 
@@ -401,7 +397,7 @@ void MCSAnalysis::dataSelection2(){
     std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-//    if (i>=10000) break;
+//    if (i>=100000) break;
     cuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -494,7 +490,26 @@ void MCSAnalysis::dataSelection2(){
     std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
     pass_TKU->Fill("Fail",1);
     if (cut_TKU_1track) continue;
-  }   
+  } 
+  
+// Output track info
+  for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
+    int npoints = scifievent->scifitracks()[j]->scifitrackpoints().size();
+    int tracker = scifievent->scifitracks()[j]->tracker();
+    if(tracker==0){
+     std::cerr<<"Upstream track scifi points"<<std::endl;
+    } else {
+     std::cerr<<"Downstream track scifi points"<<std::endl;
+    }
+    for ( int k=0; k<npoints; k++){
+      double zpos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().z();
+      double xpos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().x();
+      double ypos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().y();
+      std::cerr<<zpos<<" "<<xpos<<" "<<ypos<<std::endl;
+    }
+  }
+
+    
 /*
   int nUStracks= 0;
   if (scifievent->scifitracks().size()>=1){
@@ -802,17 +817,6 @@ void MCSAnalysis::referenceSelection2(){
   double refTOF0pos = _sys["refTOF0pos"];
   double refTOF1pos = _sys["refTOF1pos"];
 
-  bool cut_TOF1_1sp = true;
-  bool cut_TOF0_1sp = true;
-  bool cut_TKU_1track = true;
-  bool cut_CHi2_dof = true;
-  bool cut_TKU_radial = true;
-  bool cut_diffuser_radial = true;
-  bool cut_fiducial = true;
-  bool cut_TOF01 = true;
-  bool cut_TOF01ext = false;
-  bool cut_absorber_momentum = true;
-  bool cut_ext_TKU_TOF0 = true;
   
 
   // Restrict the number of entries to less than or equal to the mcchain entries
@@ -829,7 +833,7 @@ void MCSAnalysis::referenceSelection2(){
     std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     mcchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-//    if (i>=10000) break;
+//    if (i>=100000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -1190,329 +1194,6 @@ void MCSAnalysis::referenceSelection2(){
 
 }
 
-
-void MCSAnalysis::referenceSelection(){
-  // Set addresses for tree selection
-  mcchain->SetBranchAddress("TOFBranch", &tofevent);
-  mcchain->SetBranchAddress("SciFiBranch", &scifievent);
-  mcchain->SetBranchAddress("CkovBranch", &ckovevent);
-  mcchain->SetBranchAddress("KLBranch", &klevent);
-  mcchain->SetBranchAddress("EMRBranch", &emrevent);
-
-  // Restrict the number of entries to less than or equal to the mcchain entries
-  
-  int Nentries = mcchain->GetEntries();
-  // < mcchain->GetEntries() ? 
-  //  chain->GetEntries() : mcchain->GetEntries();
-  Collection USAllTOF, DSAllTOF, USPreRadSel, DSPreRadSel;
-  double pz = 0.;
-  // Loop over all tree entries.
-  for (int i=0; i<Nentries; i++){
-    std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
-    mcchain->GetEntry(i);
-    if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-    // Set cuts based on the TOFs, ckov, kl, and EMR information
-    
-    // Locate the tracker reference planes. To be agnostic locate
-    // the downstream most station of the upstream tracker and the
-    //// upstream most station of the downstream tracker.
-    cuts_accept->Fill("All Events",1);
-    if ( !MatchUSDS() ) {
-      if (jUS == -1 || kUS == -1){
-	continue;
-      } 
-    }
-    cuts_accept->Fill("US Track Found",1);
-    FillCollectionSciFi(USAllTOF, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(DSAllTOF, jDS, kDS, pz, 1,_sys["project"]);
-    if ( !PIDSelection(false) ) continue;
-    cuts_accept->Fill("TOF Selection",1);
-    pz = MomentumFromTOF(false);
-    // if (scifievent->scifitracks().size() != 2) continue;
-    // if ( !SelectMomentum() ) continue;
-    FillCollectionSciFi(USPreRadSel, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(DSPreRadSel, jDS, kDS, pz, 1,_sys["project"]);
-    if ( !RadialSelection(pz) ) continue;
-    cuts_accept->Fill("Fiducial Selection",1);
-    
-    FillCollectionSciFi(_USMCset, jUS, kUS, pz, 0,_sys["project"]);
-    FillCollectionSciFi(_DSMCset, jDS, kDS, pz, 1,_sys["project"]);
-    
-  }
-  make_beam_histograms(USAllTOF, "Upstream, Data Reference", "dataUSref_alltof");
-  make_beam_histograms(DSAllTOF, "Downstream, Data Reference", "dataDSref_alltof");
-  make_acceptance_histograms(USAllTOF, DSAllTOF, "Data Reference", "dataProj_alltof");
-  make_beam_histograms(USPreRadSel, "Upstream, Data Reference", "dataUSref_prerad");
-  make_beam_histograms(DSPreRadSel, "Downstream, Data Reference", "dataDSref_prerad");
-  make_acceptance_histograms(USPreRadSel, DSPreRadSel, "Data Reference", "dataProj_prerad");
-  make_beam_histograms(_USMCset, "Upstream, Data Reference", "dataUSref");
-  make_beam_histograms(_DSMCset, "Downstream, Data Reference", "dataDSref");
-  make_acceptance_histograms(_USMCset, _DSMCset, "Data Reference", "dataProj");
-}
-
- 
-void MCSAnalysis::generateMCSResponse(){
-
-  mcchain->SetBranchAddress("TOFBranch", &tofevent);
-  mcchain->SetBranchAddress("SciFiBranch", &scifievent);
-  mcchain->SetBranchAddress("CkovBranch", &ckovevent);
-  mcchain->SetBranchAddress("KLBranch", &klevent);
-  mcchain->SetBranchAddress("EMRBranch", &emrevent);
-  mcchain->SetBranchAddress("MCEvent", &mcevent);
-  // Loop over the training sample.
-  Collection USRecSet, DSRecSet, USVirtSet, DSVirtSet;
-  Collection USAllTOF, DSAllTOF, USPreRadSel, DSPreRadSel;
-  Collection USVAllTOF, DSVAllTOF, USVPreRadSel, DSVPreRadSel;
-  // Collection USeRecSet, DSeRecSet, USmuRecSet, DSmuRecSet;
-  int nMuAbsSel=0, nEAbsSel=0, nMuAbsAll=0, nEAbsAll=0;
-  TH1D* mom_resUS = new TH1D("mom_resUS", ";p_{rec} - p_{MC} (MeV/c)",
-			     2000, -100, 100);
-  TH1D* mom_resDS = new TH1D("mom_resDS", ";p_{rec} - p_{MC} (MeV/c)",
-			     2000, -100, 100);
-  TH2D* mom_responseUS = new TH2D("mom_responseUS", ";p_{rec} (MeV/c); p_{MC} (MeV/c)",
-				  300, 0, 300, 300, 0, 300);
-  TH2D* mom_responseDS = new TH2D("mom_responseDS", ";p_{rec} (MeV/c); p_{MC} (MeV/c)",
-				  300, 100, 300, 300, 0, 300);
-  TH2D* mom_responseABS = new TH2D("mom_responseABS", ";p_{rec} (MeV/c); p_{MC} (MeV/c)",
-				  300, 100, 300, 300, 0, 300);
-  int ngood=0;
-  for (int j=0; j<mcchain->GetEntries(); j++){
-    mcchain->GetEntry(j);
-    if (j%100000==0) std::cout<<"MC Event "<<j<<", selected "<<ngood<<" events.\n"; 
-    // if(fabs(mcevent->GetPrimary()->GetParticleId()) != 13) continue;
-    // Select events that produce virtual plane hits and pass the data selection cuts.
-    Vars USAbsHit, DSAbsHit, USTrackerRefHit, DSTrackerRefHit;
-    double pz = 0.;
-    mccuts_accept->Fill("All Events",1);
-    if ( !PIDSelection(false) ) continue; // event_ok=false;
-    if( !findVirtualPlanes() ) continue;
-    mccuts_accept->Fill("Found Virtual Planes",1);
-    FillVarsVirtual(USAbsHit, USabsPlaneI);
-    FillVarsVirtual(DSAbsHit, DSabsPlaneI);
-    FillVarsVirtual(USTrackerRefHit, USrefplaneI);
-    FillVarsVirtual(DSTrackerRefHit, DSrefplaneI);
-    if (mcevent->GetVirtualHits()->at(USrefplaneI).GetParticleId()==-13 &&
-	mcevent->GetVirtualHits()->at(DSrefplaneI).GetParticleId()==-11)
-      nEAbsAll++;
-    if (mcevent->GetVirtualHits()->at(USrefplaneI).GetParticleId()==-13)
-      nMuAbsAll++;
-    // Apply selection cuts as with the data
-    bool event_ok=true;
-    if ( !MatchUSDS() ) {
-      if (jUS == -1 || kUS == -1){
-	cuts_accept->Fill("US Tracker Found", 1);
-	event_ok=false;
-      } 
-    }
-    if (event_ok) mccuts_accept->Fill("US Track Found",1);
-    if (event_ok) pz = MomentumFromTOF(false);
-    if (event_ok) mccuts_accept->Fill("TOF Selection",1);
-    // if (scifievent->scifitracks().size() != 2) continue;
-    FillCollectionSciFi(USPreRadSel, jUS, kUS, pz, 0);
-    FillCollectionSciFi(DSPreRadSel, jDS, kDS, pz, 1);
-    USVPreRadSel.append_instance(USAbsHit);
-    DSVPreRadSel.append_instance(DSAbsHit);
-    if ( !RadialSelection(pz) ) event_ok=false;
-    if (event_ok) mccuts_accept->Fill("Fiducial Selection",1);
-    if (event_ok) mctrue_mom->Fill(mcevent->GetVirtualHits()->at(USrefplaneI).GetMomentum().z());
-    Vars USSciFiRec, DSSciFiRec;
-    if (event_ok){
-      FillVarsSciFi(USSciFiRec, jUS, kUS, pz, 0);
-      FillVarsSciFi(DSSciFiRec, jDS, kDS, pz, 1);
-      USRecSet.append_instance(USSciFiRec);
-      DSRecSet.append_instance(DSSciFiRec);
-      if (mcevent->GetVirtualHits()->at(USrefplaneI).GetParticleId()==-13 &&
-	  mcevent->GetVirtualHits()->at(USrefplaneI).GetParticleId()==-11)
-	nEAbsSel++;
-      if (mcevent->GetVirtualHits()->at(USrefplaneI).GetParticleId()==-13)
-	nMuAbsSel++;
-      
-      mom_resUS->Fill(USSciFiRec.pz - USTrackerRefHit.pz);
-      mom_resDS->Fill(DSSciFiRec.pz - DSTrackerRefHit.pz);
-      mom_responseUS->Fill(USSciFiRec.pz, USTrackerRefHit.pz);
-      mom_responseDS->Fill(DSSciFiRec.pz, DSTrackerRefHit.pz);
-      mom_responseABS->Fill(DSSciFiRec.pz, USAbsHit.pz);
-    }
-    USVirtSet.append_instance(USAbsHit);
-    DSVirtSet.append_instance(DSAbsHit);
-    FillMCSResponse(event_ok, USSciFiRec, DSSciFiRec, USAbsHit, DSAbsHit);
-    FillMuScattResponse(event_ok, USSciFiRec, DSSciFiRec, USAbsHit, DSAbsHit);
-    ngood++;
-  }
-  std::cout<<"For all events simulated there are "<<nEAbsAll<<" decay electrons and "<<nMuAbsAll<<" muons.\n";
-  std::cout<<"For the selected MC events there are "<<nEAbsSel<<" decay electrons and "<<nMuAbsSel<<" muons.\n";
-  make_beam_histograms(USVirtSet, "Upstream, Data", "VirtMCUS");
-  make_beam_histograms(DSVirtSet, "Downstream, Data", "VirtMCDS");
-  //make_beam_histograms(USAllTOF, "Upstream, Reconstructed Simulation", "recMCUS_alltof");
-  //make_beam_histograms(DSAllTOF, "Downstream, Reconstructed Simulation", "recMCDS_alltof");
-  make_beam_histograms(USPreRadSel, "Upstream, Reconstructed Simulation", "recMCUS_prerad");
-  make_beam_histograms(DSPreRadSel, "Downstream, Reconstructed Simulation", "recMCDS_prerad");
-  make_scattering_acceptance_histograms(USVPreRadSel,
-					DSVPreRadSel, DSPreRadSel,
-					"Virtual Projection","VirtPreRad");
-
-  make_beam_histograms(USRecSet, "Upstream, Reconstructed Simulation", "recMCUS");
-  make_beam_histograms(DSRecSet, "Downstream, Reconstructed Simulation", "recMCDS");
-  make_scattering_acceptance_histograms(USVirtSet,
-					DSVirtSet,DSRecSet,
-					"Virtual Projection","VirtProj");
-  mom_resUS->Write();
-  mom_resDS->Write();
-  mom_responseUS->Write();
-  mom_responseDS->Write();
-  mom_responseABS->Write();
-}
-
-bool MCSAnalysis::MatchUSDS(){
-
-/*
-MatchUSDS takes a tracker event and returns trackedmatched as true if there is a track point in
-both the upstream and downstream trackers. It also returns a j and k variable for both upstream( US) 
-and downstream(DS) trackers, where j is the track index and k is the trackpoint index of the trackpoint 
-closest to the absorber.
-*/
-
-  bool trackmatched = true;
-  jUS=-1;
-  jDS=-1;
-  kUS=-1;
-  kDS=-1;
-  
-  if( scifievent->scifitracks().size() == 1 || 
-      scifievent->scifitracks().size() == 2){
-    for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
-      int npoints = scifievent->scifitracks()[j]->scifitrackpoints().size();
-      double maxUS=0.0, minDS=44000;
-      int tracker = scifievent->scifitracks()[j]->tracker();
-      for ( int k=0; k<npoints; k++){
-	double zpos = 
-	  scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().z();
-	if(tracker==0 && zpos > maxUS){
-	  maxUS = zpos;
-	  kUS = k;
-	  jUS = j;
-	}
-	if(tracker==1 && zpos < minDS){      
-	  minDS = zpos;
-	  kDS = k;
-	  jDS = j;
-	}
-      }
-      if (jUS != -1 && kUS != -1 && jDS != -1 && kDS != 1) {
-	USrefplaneZ = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().z();
-	DSrefplaneZ = minDS;
-	// std::cout<<"Identified US track by ["<<jUS<<", "<<kUS<<"] at z = "<<USrefplaneZ<<" mm and DS track by ["<<jDS<<", "<<kDS<<"] at z = "<<DSrefplaneZ<<" mm."<<std::endl; 
-      }
-    }
-    if (jUS == -1 || kUS == -1) {
-      //std::cout<<"Failed US track by ["<<jUS<<", "<<kUS<<"] and DS track by ["<<jDS<<", "<<kDS<<"]"<<std::endl; 
-      trackmatched = false;
-    }
-  }
-  
-  else trackmatched = false;
-  return trackmatched;  
-}
-bool MCSAnalysis::PIDSelection(bool isdata=true){
-
-  // Consider the TOF hits first 
-  double rawTOF0HitTime = -1., rawTOF1HitTime = -1., rawTOF2HitTime = -1.;
-  /*
-  if ( tofevent->GetTOFEventSlabHit().GetTOF0SlabHitArraySize() == 2 ) 
-    rawTOF0HitTime  = ( tofevent->GetTOFEventSlabHit().GetTOF0SlabHitArray()[0].GetRawTime() +
-			tofevent->GetTOFEventSlabHit().GetTOF0SlabHitArray()[1].GetRawTime() ) / 2.;
-  else
-    return false;
-  if ( tofevent->GetTOFEventSlabHit().GetTOF1SlabHitArraySize() == 2 ) 
-    rawTOF1HitTime  = ( tofevent->GetTOFEventSlabHit().GetTOF1SlabHitArray()[0].GetRawTime() +
-			tofevent->GetTOFEventSlabHit().GetTOF1SlabHitArray()[1].GetRawTime() ) / 2.;
-  else
-    return false;
-  if ( tofevent->GetTOFEventSlabHit().GetTOF2SlabHitArraySize() == 2 ) 
-    rawTOF2HitTime  = ( tofevent->GetTOFEventSlabHit().GetTOF2SlabHitArray()[0].GetRawTime() +
-			tofevent->GetTOFEventSlabHit().GetTOF2SlabHitArray()[1].GetRawTime() ) / 2.;
-  else
-    return false;
-  */
-  if ( tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() >= 1 )
-    rawTOF0HitTime = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
-  else
-    return false;
-  if ( tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() >= 1 )
-    rawTOF1HitTime = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-  else
-    return false;
-  if (  tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize() >= 1 )
-    rawTOF2HitTime = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
-  else // Allow for TOF2 to not be hit
-    rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns. 
-  // return false;
-  if(isdata){
-    tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    if ( rawTOF1HitTime - rawTOF0HitTime < TOF_lower_limit ||
-	 rawTOF1HitTime - rawTOF0HitTime > TOF_upper_limit) return false;
-    // if ( rawTOF2HitTime - rawTOF1HitTime < TOF_lower_limit ||
-    //      rawTOF2HitTime - rawTOF1HitTime > TOF_upper_limit) return false;
-    tof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
-  }
-  else {
-    mctof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    mctof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    if ( rawTOF1HitTime - rawTOF0HitTime < TOF_lower_limit ||
-	 rawTOF1HitTime - rawTOF0HitTime > TOF_upper_limit) return false;
-    // if ( rawTOF2HitTime - rawTOF1HitTime < TOF_lower_limit ||
-    //      rawTOF2HitTime - rawTOF1HitTime > TOF_upper_limit) return false;
-    mctof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    mctof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
-  }
-  return true;
-  
-}
-
-bool MCSAnalysis::MomentumSelection(){
-  
-}
-
-bool MCSAnalysis::RadialSelection(double pz){
-  bool selected = true;
-  if (jUS == -1 || kUS == -1) 
-    selected = false;
-  else {
-    Vars USplane;
-    USplane.X = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().x() + _sys["alXUS"];
-    USplane.Y = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().y() + _sys["alYUS"];
-    USplane.Z = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().z();
-    // if ( sqrt(xpos*xpos + ypos*ypos) > meanp) selected = false;
-    USplane.dXdz = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->gradient().x() +
-      tan(_sys["thXUS"] * atan(1.)/45.0);
-    USplane.dYdz = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->gradient().y() +
-      tan(_sys["thYUS"] * atan(1.)/45.0);
-    USplane.pz   = pz; // scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().z();
-    USplane.px   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().x() +
-      tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
-    USplane.py   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().y() +
-      tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
-    //      scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().z();
-    // if ( sqrt(dXdz*dXdz + dYdz*dYdz) > sigmap) selected = false;
-    // double abspos = _sys["abspos"];
-    double phi = atan2(USplane.dYdz, USplane.dXdz);
-    // double zdiff = 2*fabs(USplane.Z - abspos);
-    // double xabs  = dXdz > 0 ? (dXdz + sigmap*cos(phi)) * zdiff + xpos : (dXdz - sigmap*cos(phi)) * zdiff + xpos;
-    // double yabs  = dYdz > 0 ? (dYdz + sigmap*sin(phi)) * zdiff + ypos : (dYdz - sigmap*sin(phi)) * zdiff + ypos;
-    USplane.dXdz += sigmap*cos(phi);
-    USplane.dYdz += sigmap*sin(phi);
-    USplane.px   += sigmap*cos(phi)*USplane.pz;
-    USplane.py   += sigmap*sin(phi)*USplane.pz;
-    // double xabs  = (dXdz + sigmap*cos(phi)) * zdiff + xpos;
-    // double yabs  = (dYdz + sigmap*sin(phi)) * zdiff + ypos;
-    Vars DSproj = PropagateVarsMu(USplane, _sys["abspos"] + 549.95);
-    if ( sqrt(DSproj.X*DSproj.X + DSproj.Y*DSproj.Y) > meanp) selected = false;
-  }
-  return selected;
-}
-
 std::vector<double> MCSAnalysis::DefineProjectionAngles(Vars US, Vars DS){
 
   std::vector<double> projTheta;
@@ -1539,245 +1220,6 @@ std::vector<double> MCSAnalysis::DefineProjectionAngles(Vars US, Vars DS){
 			       sqrt(1 + DS.dXdz*DS.dXdz + DS.dYdz*DS.dYdz))) );
  
   return projTheta;
-}
-
-std::vector<double> MCSAnalysis::CalculatePathLength(double pz){
-        
-    std::vector<double> path_length;
-    std::vector<double> vpath_length;
-
-    // Path length for muon between TOF1 and absorber
-    Vars USplane;
-    /*
-    std::cout << "jUS " << jUS << std::endl;
-    std::cout << "kUS " << kUS << std::endl;
-    */
-    USplane.X = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().x() + _sys["alXUS"];
-    USplane.Y = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().y() + _sys["alYUS"];
-    USplane.Z = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().z();
-    USplane.dXdz = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->gradient().x() +
-      tan(_sys["thXUS"] * atan(1.)/45.0);
-    USplane.dYdz = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->gradient().y() +
-      tan(_sys["thYUS"] * atan(1.)/45.0);
-    USplane.pz   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().z();
-    USplane.px   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().x() +
-      tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
-    USplane.py   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().y() +
-      tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
-    Vars USabsoproj = PropagateVarsMu(USplane, _sys["abspos"]);
-    Vars USTOF1proj = PropagateVarsMu(USplane, _sys["TOF1_z"]);
-    /*
-    std::cout << USabsoproj.X << std::endl;
-    std::cout << USplane.X << std::endl;
-    std::cout << USTOF1proj.X << std::endl;
-    */
-    vpath_length.push_back(USabsoproj.X - USTOF1proj.X);
-    vpath_length.push_back(USabsoproj.Y - USTOF1proj.Y);
-    vpath_length.push_back(USabsoproj.Z - USTOF1proj.Z);
-    path_length.push_back(sqrt(vpath_length[0]*vpath_length[0] + vpath_length[1]*vpath_length[1] + vpath_length[2]*vpath_length[2]));
-
-    //Path length for muon between absorber and TOF2
-    vpath_length.clear();
-    Vars DSplane;
-    /*
-    std::cout << "jDS " << jDS << std::endl;
-    std::cout << "kDS " << kDS << std::endl;
-    */
-    DSplane.X = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->pos().x() + _sys["alXDS"];
-    DSplane.Y = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->pos().y() + _sys["alYDS"];
-    DSplane.Z = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->pos().z();
-    DSplane.dXdz = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->gradient().x() +
-      tan(_sys["thXDS"] * atan(1.)/45.0);
-    DSplane.dYdz = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->gradient().y() +
-      tan(_sys["thYDS"] * atan(1.)/45.0);
-    DSplane.pz   = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->mom().z();
-    DSplane.px   = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->mom().x() +
-      tan(_sys["thXDS"] * atan(1.)/45.0) * DSplane.pz;
-    DSplane.py   = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->mom().y() +
-      tan(_sys["thXDS"] * atan(1.)/45.0) * DSplane.pz;
-    Vars DSabsoproj = PropagateVarsMu(DSplane, _sys["abspos"]);
-    Vars DSTOF2proj = PropagateVarsMu(DSplane, _sys["TOF2_z"]);
-    vpath_length.push_back(DSTOF2proj.X - DSabsoproj.X);
-    vpath_length.push_back(DSTOF2proj.Y - DSabsoproj.Y);
-    vpath_length.push_back(DSTOF2proj.Z - DSabsoproj.Z);
-    path_length.push_back(sqrt(vpath_length[0]*vpath_length[0] + vpath_length[1]*vpath_length[1] + vpath_length[2]*vpath_length[2]));
-
-    return path_length;
-
-}
-
-double MCSAnalysis::CorMomFromTOF(double pz){
-
-   // Initialise and collect initial TOF and pz
-   // double t_path = 0;
-   double p_corrected = 0;
-   double t_initial = TimeofFlight();
-   if (t_initial != 100) {
-   t_initial = t_initial*0.299792458;
-   std::vector<double> path_length = CalculatePathLength(pz);
-   if (path_length.size() == 2) {
-   double s1 = path_length.at(0)/1000;
-   double s2 = path_length.at(1)/1000;
-   pz = 105.65*(s1+s2)/sqrt(pow(t_initial,2)-pow((s1+s2),2));
-  
-   // delta - from Bethe-Bloch (units are cm)
-   double z = 3.25;
-   double rho = 0.694;
-   double dEdx = BetheBloch(pz);
-   double Eloss = dEdx * z * rho;
-   double E = sqrt(pow(pz,2)+pow(105.65,2));
-   E -= Eloss;
-   double ploss = sqrt(pow(E,2) - pow(105.65,2));
-   E += Eloss;
-   double delta = pz - ploss;
-   /*
-   std::cout << "delta " << delta << std::endl;
-   std::cout << "E " << E << std::endl;
-   */
-
-   // time0
-   //double t1 = s1*sqrt(pow(pz+delta,2)+pow(105.65,2))/(pz+delta);
-   //double t2 = s2*sqrt(pow(pz-delta,2)+pow(105.65,2))/(pz-delta);
-   // double t0 = t1 + t2;
-   /*
-   std::cout << "t2 " << t2 << std::endl;
-   std::cout << "t1 " << t1 << std::endl;
-   std::cout << "t0 " << t0 << std::endl;
-   */
-   
-   // Root finding
-   /*
-   MyFunction1D myf1;
-   myf1.E = E;
-   myf1.delta = delta;
-   myf1.s1 = s1;
-   myf1.s2 = s2;
-   std::cout << "myf1.operator()(pz) " << myf1.operator()(pz) << std::endl;
-   std::cout << "myf1.Derivative(pz) " << myf1.Derivative(pz) << std::endl;
-   ROOT::Math::GradFunctor1D  f1(myf1); 
-   ROOT::Math::RootFinder rfn(ROOT::Math::RootFinder::kGSL_STEFFENSON);
-   rfn.SetFunction(f1, pz);
-   rfn.Solve();
-   cout << rfn.Root() << endl;
-   */
-
-   // delta_t
-   double term3i = 0.5* (s1 + s2)*pow(105.65,2)*pow(delta,2)/(pow(pz,2)*pow(E,2));
-   double term3ii = pz/E + 2*E/pz;
-   double term2 = -(s1 - s2) * delta * pow(105.65,2)/ (pow(pz,2)*E);
-   double dtime = term2 + term3i*term3ii;
-   /*
-   std::cout << "term3i " << term3i << std::endl;
-   std::cout << "term3ii " << term3ii << std::endl;
-   std::cout << "term2 " << term2 << std::endl;
-   std::cout << "dtime " << dtime << std::endl;
-   */
-
-   // Corrected P
-   // double time = t0 + dtime; 
-   p_corrected = pz - ((1/(s1-s2))*E*pow(pz,2)*dtime)/pow(105.65,2); 
-   //std::cout << "pz " << pz << std::endl;
-   pz = p_corrected;
-   // t_path = t0+dtime;
-   /*
-   std::cout << "p_corrected " << p_corrected << std::endl;
-   std::cout << "counter " << counter << std::endl;
-   std::cout << "iteration " << i << std::endl;
-   std::cout << "t_path " << t_path << std::endl;
-   */
-   
-   }
-
-   // Iteration
-   /*
-   counter += 1;
-   int i = 0;
-   for (i;i<1000;i++) 
-   while (t0_first*1.1-t_path>0.1)
-   t_cor->Fill(i,t_path);
-   if (counter==3) { 
-	   std::cout << "doing graph" << std::endl;
-	   TCanvas *c1 = new TCanvas();
-   t_cor->Draw();
-   c1->SaveAs("t_cor.pdf");
-   c1->Clear();
-   }
-   */
-   
-   cor_mom->Fill(p_corrected);
-   }
-}
-
-double MCSAnalysis::TimeofFlight(){
-  double rawTOF1HitTime = -1., rawTOF2HitTime = -1.;
-  if( int(tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray().size()) > 0)
-    rawTOF1HitTime  = 
-      tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-  if( int(tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray().size()) > 0)
-    rawTOF2HitTime = 
-      tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
-  double dt  = 100.0; // something rediculously large as a default number
-  if ( rawTOF1HitTime != -1 && rawTOF2HitTime != -1 ){
-    dt  = rawTOF2HitTime - rawTOF1HitTime; 
-  }
-  return dt;
-}
-
-double MCSAnalysis::BetheBloch(double pz){
-
-   double beta = pow(pz,2)/(pow(105.65,2)+pow(pz,2));
-   double gamma = 1/sqrt(1-pow(beta,2));
-   double W = 2*0.511*pow(beta,2)*pow(gamma,2)/(1+2*gamma*0.511/105.65+pow(0.511/105.65,2));
-   double I = 36.5e-6;
-   double density = log(18.51e-6/I)+log(beta*gamma)-1/2;
-   double dEdxpre = 0.307075*2/(pow(beta,2)*7.94894);   
-   double dEdxterm1 = 0.5*log(2*0.511*pow(beta,2)*pow(gamma,2)*W/pow(I,2)) - pow(beta,2) - density;
-   double dEdx = dEdxpre * dEdxterm1;
-   /*
-   std::cout << "beta " << beta << std::endl;
-   std::cout << "gamma " << gamma << std::endl;
-   std::cout << "W " << W << std::endl;
-   std::cout << "density " << density << std::endl;
-   std::cout << "dEdxpre " << dEdxpre << std::endl;
-   std::cout << "dEdxterm1 " << dEdxterm1 << std::endl;
-   std::cout << "dEdx " << dEdx << std::endl;
-*/
-
-   return dEdx;
-}
-
-double MCSAnalysis::MomentumFromTOF(bool isdata=true){
-    // Cuts remove events where the following statements do not make sense so we proceed without cuts.
-  double rawTOF0HitTime = -1., rawTOF1HitTime = -1., rawTOF2HitTime = -1.;
-  if( int(tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray().size()) > 0)
-    rawTOF0HitTime  = 
-      tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
-  if( int(tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray().size()) > 0)
-    rawTOF1HitTime  = 
-      tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-  if( int(tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray().size()) > 0)
-    rawTOF2HitTime = 
-      tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
-  // tofevent->GetTOFEventSlabHit().GetTOF2SlabHitArray()[1].GetRawTime() ) / 2.;
-  // need to hard code a few things here (unfortunately) pertaining to the geometry and the time of flight.
-  double dt0 = (_sys["TOF1_z"] - _sys["TOF0_z"]) / 0.299792458 / 1000.; // ns. 
-  double dt  = 10.0 * dt0; // something rediculously large as a default number
-  double pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0);
-  if ( rawTOF1HitTime != -1 && rawTOF0HitTime != -1 ){
-    dt  = rawTOF1HitTime - rawTOF0HitTime; 
-    pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0) - 36.1;
-  }
-  if ( rawTOF1HitTime != -1 && rawTOF2HitTime != -1 ){
-    // Better estimate of the longitudinal momentum
-    dt0 = (_sys["TOF2_z"] - _sys["TOF1_z"]) / 0.299792458 / 1000.; // ns. 
-    dt  = rawTOF2HitTime - rawTOF1HitTime; 
-    pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0);
-  }
-  if(isdata)
-    calc_mom->Fill(pz);
-  else
-    mccalc_mom->Fill(pz);
-  return pz;
 }
 
 void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
@@ -1842,6 +1284,9 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
       double dthetaY = hy->GetRandom() * _sys["resY"];
       // First project the upstream track to the absorber 
       double zabspos = _sys["abspos"] + 0.0;
+      if (abs(_USMCset.E(i).Z-zabspos)>.1){
+       std::cerr<<"ConvolveWithInputDistribution - _USMCset.E(i) not at absorber: "<<_USMCset.E(i).Z<<std::endl;
+      }
       Vars projvarAbs = PropagateVarsMu(_USMCset.E(i), zabspos);
       double xabs = projvarAbs.X;  /// _USMCset.E(i).X + _USMCset.E(i).dXdz * dzabsUS;
       double yabs = projvarAbs.Y;  /// _USMCset.E(i).Y + _USMCset.E(i).dYdz * dzabsUS;
@@ -1879,6 +1324,7 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
       // double ytracker = yabs + dYdz_abs * (dzabsDS + 549.95);
       
       if( sqrt(projvar.X*projvar.X + projvar.Y*projvar.Y) > meanp ){
+        std::cerr<<"ConvolveWithInputDistribution - event failed projvar check"<<std::endl;
 	tmpvar.X = 0.0;
 	tmpvar.Y = 0.0;
 	tmpvar.Z = 0.0;
@@ -2076,6 +1522,7 @@ void MCSAnalysis::DoDeconvolution(std::string model, int n_sel=1){
   // for (int j=0; j<n_sel; j++){
   // define the number of events under the current selection
   int curr_sel = int(_DSset.N());  // n_base * j;
+  int curr_sel_empty = int(_DSMCset.N());
   int curr_k = 0;
 
   
@@ -2125,8 +1572,22 @@ void MCSAnalysis::DoDeconvolution(std::string model, int n_sel=1){
 				     NBINS, scat_bin_array);
   TH1D* scattering_proj_y = new TH1D("scattering_proj_y_DC","Change in Projected Angle (Y);#Delta#theta_{Y}; Events per radian", 
 				     NBINS, scat_bin_array);
+
+  TH1D* scattering_proj_x_empty = new TH1D("scattering_proj_x_empty","Change in Projected Angle (X);#Delta#theta_{X}; Events per radian", 
+				     NBINS, scat_bin_array);
+  TH1D* scattering_proj_y_empty = new TH1D("scattering_proj_y_empty","Change in Projected Angle (Y);#Delta#theta_{Y}; Events per radian", 
+				     NBINS, scat_bin_array);
+
+
   
-  
+  for(int i=curr_k; i<curr_sel_empty; i++){
+      std::vector<double> projTheta = DefineProjectionAngles(_USMCset.E(i), _DSMCset.E(i));
+    double thetaY = projTheta[1];  /// atan(_DSset.E(i).dXdz) - atan(_USset.E(i).dXdz);
+    double thetaX = projTheta[0];  /// atan(_DSset.E(i).dYdz) - atan(_USset.E(i).dYdz);
+    scattering_proj_x_empty->Fill(thetaX);
+    scattering_proj_y_empty->Fill(thetaY);
+  }
+
   for(int i=curr_k; i<curr_sel; i++){
     std::vector<double> projTheta = DefineProjectionAngles(_USset.E(i), _DSset.E(i));
     double thetaY = projTheta[1];  /// atan(_DSset.E(i).dXdz) - atan(_USset.E(i).dXdz);
@@ -2192,6 +1653,11 @@ void MCSAnalysis::DoDeconvolution(std::string model, int n_sel=1){
     scattering_proj_x->Fill(i, x_content / scat_bin_array[i-1]);
     double y_content = scattering_proj_y->GetBinContent(i);
     scattering_proj_y->Fill(i, y_content / scat_bin_array[i-1]);
+    double x_content_empty = scattering_proj_x_empty->GetBinContent(i);
+    scattering_proj_x_empty->Fill(i, x_content_empty / scat_bin_array[i-1]);
+    double y_content_empty = scattering_proj_y_empty->GetBinContent(i);
+    scattering_proj_y_empty->Fill(i, y_content_empty / scat_bin_array[i-1]);
+
   }
   
   TH1D* thetaX_reco = (TH1D*)unfold_thetaX.Hreco();
@@ -2320,6 +1786,8 @@ void MCSAnalysis::DoDeconvolution(std::string model, int n_sel=1){
   theta2Scatt_measured->Write();
   scattering_proj_x->Write();
   scattering_proj_y->Write();
+  scattering_proj_x_empty->Write();
+  scattering_proj_y_empty->Write();
   projposUSDSdiff->Write();
   
   TCanvas* c1 = new TCanvas();
@@ -3004,61 +2472,6 @@ void MCSAnalysis::FillVarsVirtual(Vars &tmpvar, int j){
   */
 }
 
-void MCSAnalysis::FillCollectionSciFi2(Collection& Set, Vars tmpVars, bool project){
-  if (project){
-    tmpVars = PropagateVarsMu(tmpVars, _sys["abspos"]);
-  }
-  Set.append_instance(tmpVars);
-}
-
-void MCSAnalysis::FillCollectionSciFi(Collection& Set, int j, int k, double pz, int isDS, bool project){      
-
-//  std::cerr<<" - Entered Fill Collection";
-  if(j < int(scifievent->scifitracks().size()) && j != -1){
-    if(k < int(scifievent->scifitracks()[j]->scifitrackpoints().size()) && k != -1){
-      Vars tmpvar;
-      FillVarsSciFi(tmpvar, j, k, pz, isDS);
-      if (project){
-//        std::cerr<<" - Starting propagation";
-	Vars newvar = PropagateVarsMu(tmpvar, _sys["abspos"]);
-//        std::cerr<<" - Propagation complete";
-	tmpvar = newvar;
-      }
-      Set.append_instance(tmpvar);
-    }
-  }
-//  std::cerr<<" - Completed part 1 of setting up tmpvar";
-  if( j == -1 || k == -1){
-    Vars tmpvar;
-    tmpvar.X = 0.0;
-    tmpvar.Y = 0.0;
-    tmpvar.Z = 0.0;
-    tmpvar.dXdz = 1./2.;
-    tmpvar.dYdz = 1./2.;
-    tmpvar.px   = pz/2.;
-    tmpvar.py   = pz/2.;
-    tmpvar.pz   = pz;
-    tmpvar.pid  = -13;
-    tmpvar.isgood = false;
-
-//  std::cerr<<" - Completed part 2 of setting up tmpvar";
-
-    if( int(tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray().size()) > 0 &&
-	int(tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray().size()) > 0)
-      tmpvar.TOF12 = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime() 
-	- tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-    else
-      tmpvar.TOF12 = 100.0 * 8.22475 / 0.299792458;
-    if( int(tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray().size()) > 0 &&
-	int(tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray().size()) > 0)
-      tmpvar.TOF01 = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime() 
-	- tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
-    else
-      tmpvar.TOF01 = 100.0 * 7.64186 / 0.299792458;
-    
-    Set.append_instance(tmpvar);
-  }
-}
 
 void MCSAnalysis::FillVarsSciFi(Vars& tmpvar, int j, int k, double pz, int isDS){
   double alX=0.0, alY=0.0, thX=0.0, thY=0.0;
@@ -3378,8 +2791,10 @@ void MCSAnalysis::make_acceptance_histograms(Collection USset, Collection DSset,
       latchZ = DSset.E(i).Z;
     } 
     if (latchZ != 0.0 && fabs(DSset.E(i).Z - latchZ) < 5){
+      std::cerr<<"make_acceptance_histograms - Propagating to DSset.E(i).Z"<<std::endl;
       DSproj = PropagateVarsMu(USset.E(i), DSset.E(i).Z);
     } else if(latchZ != 0.0){
+      std::cerr<<"make_acceptance_histograms - Propagating to latchZ"<<std::endl;
       DSproj = PropagateVarsMu(USset.E(i), latchZ);
     } else {
       continue;
@@ -3875,6 +3290,102 @@ Vars MCSAnalysis::PropagateVarsMu(Vars event, double z0){
   return prop;
 }
 
+Vars MCSAnalysis::PropagateVarsMuVerbose(Vars event, double z0){
+  std::cerr<<"Verbose Propagate"<<std::endl;
+  display_Vars(event);
+  Vars prop;
+  double mass = 105.658; // muon mass [MeV/c^2]
+  double time = event.TOFX; // time in lab frame [ns]
+  double x = event.X; // horizontal position [mm]
+  double y = event.Y; // vertical position [mm]
+  double z = event.Z; // longitudinal position [mm]
+  double px = event.px; // horizontal momentum component [MeV/c]
+  double py = event.py; // vertical momentum component [MeV/c]
+  double pz = event.pz;
+  
+  double energy = std::sqrt(pz*pz + px*px + py*py + mass*mass); // Total energy [MeV]
+  
+  double event_vector[8] = { time, x, y, z, energy, px, py, pz };
+  double PropagationDirection;
+  if (z<z0){
+    PropagationDirection=1.0;
+  } else {
+    PropagationDirection=-1.0;
+  }
+  BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
+  if (pz!=0){
+    while ((event_vector[3]-z0)>.1){
+      double z1=event_vector[3]+(PropagationDirection*500);
+      if ((PropagationDirection==1.0&&z1>z0)||(PropagationDirection==-1.0&&z1<z0)){
+        z1=z0;
+      }
+      try {
+//      std::cerr<<" - Calling GlobalTools propagate";
+        MAUS::GlobalTools::propagate(event_vector, z1, field, 10., 
+				 MAUS::DataStructure::Global::kMuPlus, 1, 1);
+//      std::cerr<<" - Completed GlobalTools propagate";
+      } catch (...){
+         std::cerr<<"**********Propagate failed**********"<<std::endl;
+         event.TOF12 = -1;
+      }
+      if ((event_vector[3]-z1)>.1){
+        break;
+      } else {
+        std::cerr<<event_vector[3]<<" "<<event_vector[1]<<" "<<event_vector[2]<<std::endl;        
+      }
+    }
+  }
+  if ((event_vector[3]-z0)>.1){
+    std::cerr<<"Not Propagated to centre of Absorber"<<std::endl;
+    prop = reset_Vars();
+  }else{
+    prop.X = event_vector[1];
+    prop.Y = event_vector[2];
+    prop.Z = event_vector[3];
+    prop.px = event_vector[5];
+    prop.py = event_vector[6];
+    prop.pz = event_vector[7];
+    prop.dXdz = event_vector[5]/event_vector[7];
+    prop.dYdz = event_vector[6]/event_vector[7];
+    prop.TOF12 = event.TOF12;
+    prop.TOF01 = event.TOF01;
+    prop.TOFX = event_vector[0];
+  }
+/*
+  //straight track
+  Vars proj;
+  proj.X = px/pz * (z0 - z) + x;
+  proj.Y = py/pz * (z0 - z) + y;
+  proj.Z = z0;
+  proj.px = px;
+  proj.py = py;
+  proj.pz = pz;
+  proj.dXdz = px/pz;
+  proj.dYdz = py/pz;
+  proj.TOF12 = event.TOF12;
+  proj.TOF01 = event.TOF01;
+
+  Vars diffpp;
+  diffpp.X = prop.X-proj.X;
+  diffpp.Y = prop.Y-proj.Y;
+  diffpp.Z = prop.Z-proj.Z;
+  diffpp.px = prop.px-proj.px;
+  diffpp.py = prop.py-proj.py;
+  diffpp.pz = prop.pz-proj.pz;
+  
+//  if (diffpp.X > 1e-10){
+//      std::cerr<<" X: "<<event.X<<" Y: "<<event.Y<<" Z: "<<event.Z<<" px: "<<event.px<<" py: "<<event.py<<" pz: "<<event.pz<<" z0: "<<z0<<std::endl;
+//      std::cerr<<" X: "<<prop.X<<" Y: "<<prop.Y<<" Z: "<<prop.Z<<" px: "<<prop.px<<" py: "<<prop.py<<" pz: "<<prop.pz<<std::endl;
+//      std::cerr<<" X: "<<proj.X<<" Y: "<<proj.Y<<" Z: "<<proj.Z<<" px: "<<proj.px<<" py: "<<proj.py<<" pz: "<<proj.pz<<std::endl;
+//      std::cerr<<" X: "<<diffpp.X<<" Y: "<<diffpp.Y<<" Z: "<<diffpp.Z<<" px: "<<diffpp.px<<" py: "<<diffpp.py<<" pz: "<<diffpp.pz<<std::endl;
+
+//    exit(0);}
+*/
+  std::cerr<<"End of Verbose Propagation"<<std::endl;
+  return prop;
+}
+
+
 Vars MCSAnalysis::FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_pos, int pid){
   Vars tempVars=reset_Vars();
   tempVars.X = a_track_pos.X();
@@ -3933,7 +3444,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
      
     
     std::cerr << "Globals..."<<std::endl;
-
+    MAUS::DataStructure::Global::DetectorPoint virtual_plane = MAUS::DataStructure::Global::kVirtual;
     std::vector<MAUS::DataStructure::Global::PrimaryChain*>* pchains = globalevent->get_primary_chains();
 //    std::vector<MAUS::DataStructure::Global::PrimaryChain*>::iterator pchains_iterator;
 
@@ -3954,11 +3465,19 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //            MAUS::DataStructure::Global::PrimaryChain* USchain=chain->GetUSDaughter();
             std::vector<MAUS::DataStructure::Global::Track*> some_tracks = chain->GetMatchedTracks();
             std::vector<MAUS::DataStructure::Global::Track*>::iterator some_track_iterator;
+            std::cerr<<"Upstream Track - Through"<<std::endl;
+            int track_number = 0;
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
+                track_number++;
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
-                if(a_track != NULL){
+//                std::vector<MAUS::DataStructure::Global::DetectorPoint> some_detector_points = a_track->GetDetectorPoints();
+//                std::cerr<<"Detector Points"<<std::endl;
+//                for(int q=0;q<some_detector_points.size();q++){
+//                  std::cerr<<"Detector Point: "<<some_detector_points.at(q)<<std::endl;;
+                  if(a_track != NULL){
+                    std::cerr<<"Track Number: "<<track_number<<"Track Pid: "<<a_track->get_pid()<<std::endl;
                     if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
-                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints();
+                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
@@ -3995,32 +3514,42 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
-                            if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
-                                 && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
+                            std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
+//                            if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
+//                                 && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
 //                              std::cerr<<"Found all trackpoints"<<std::endl;
-                              break;
-                            }
+//                              break;
+//                            }
                         }
                     }
-                }
+                  }
+//                }
             }
             MAUS::DataStructure::Global::PrimaryChain* DSchain=chain->GetDSDaughter();
             some_tracks = DSchain->GetMatchedTracks();
+            std::cerr<<"Downstream track - Through"<<std::endl;
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
                     if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
-                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints();
+                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
 //                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
-                            if(a_track_pos.Z() >= DS11-dz && a_track_pos.Z() <= DS11+dz){
+                            if((a_track_pos.Z() >= DS11-dz && a_track_pos.Z() <= DS11+dz)&&tempMV.DScentre_absorber.isgood==false){
 //                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
-                                tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
+                                tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
+                            }else if((a_track_pos.Z() >= DS11+0.65-dz && a_track_pos.Z() <= DS11+0.65+dz)&&tempMV.DScentre_absorber.isgood==false){
+                                tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                                tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
+                            }else if((a_track_pos.Z() >= DS11+1.3-dz && a_track_pos.Z() <= DS11+1.3+dz)&&tempMV.DScentre_absorber.isgood==false){
+                                tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                                tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
+                            std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                         }
                     }
                 }
@@ -4032,7 +3561,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
                     if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
-                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints();
+                        std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
