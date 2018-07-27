@@ -397,7 +397,7 @@ void MCSAnalysis::dataSelection2(){
     std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-    if (i>=100000) break;
+//    if (i>=1000) break;
     cuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -659,16 +659,14 @@ void MCSAnalysis::dataSelection2(){
       std::cerr<<"No TOF2 hit?"<<std::endl;
       rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
     }
-
-    
     tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
     double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
     pass_TOF01->Fill(rawTOF01HitTime);
     if ( rawTOF01HitTime < TOF_lower_limit ||
-         rawTOF01HitTime > TOF_upper_limit) {
-    std::cerr<<"**Failed TOF01 Cut"<<std::endl;
-    if (cut_TOF01) continue;
+         rawTOF01HitTime > TOF_upper_limit){
+      std::cerr<<"**Failed TOF01 Cut"<<std::endl;
+      if (cut_TOF01) continue;
     }
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
@@ -833,7 +831,7 @@ void MCSAnalysis::referenceSelection2(){
     std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     mcchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-    if (i>=100000) break;
+//    if (i>=1000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -3315,7 +3313,7 @@ Vars MCSAnalysis::PropagateVarsMuVerbose(Vars event, double z0){
   BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
   if (pz!=0){
     while ((event_vector[3]-z0)>.1){
-      double z1=event_vector[3]+(PropagationDirection*500);
+      double z1=event_vector[3]+(PropagationDirection*200);
       if ((PropagationDirection==1.0&&z1>z0)||(PropagationDirection==-1.0&&z1<z0)){
         z1=z0;
       }
@@ -3540,12 +3538,18 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if((a_track_pos.Z() >= DS11-dz && a_track_pos.Z() <= DS11+dz)&&tempMV.DScentre_absorber.isgood==false){
 //                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
+                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
+                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
                             }else if((a_track_pos.Z() >= DS11+0.65-dz && a_track_pos.Z() <= DS11+0.65+dz)&&tempMV.DScentre_absorber.isgood==false){
+                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
+                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
                             }else if((a_track_pos.Z() >= DS11+1.3-dz && a_track_pos.Z() <= DS11+1.3+dz)&&tempMV.DScentre_absorber.isgood==false){
+                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
+                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMuVerbose(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
