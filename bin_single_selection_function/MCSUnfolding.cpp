@@ -19,8 +19,6 @@ struct specvals {
   std::string DSdatafile;
   std::string USreffile;
   std::string DSreffile;
-  std::string EndofDStrackerrefname;
-  std::string EndofDStrackerdataname;
 
   std::string model1;			       
   std::string model2;
@@ -79,10 +77,6 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.USreffile = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DSreffile")) ){
 	  spec.DSreffile = (char*)xmlGetProp(cur_node, nm);
-	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("EndofDStrackerrefname")) ){
-	  spec.EndofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
-	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("EndofDStrackerdataname")) ){
-	  spec.EndofDStrackerdataname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model1")) ) {
 	  spec.model1 = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model2")) ) {
@@ -156,7 +150,6 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 int main(int argc, char* argv[]) { 
   // char* mrd = getenv("MAUS_ROOT_DIR");
   
-  std::cout<<"Executing MCSUnfolding\n";
   std::cout<<"Algorithm to analyse reduced MAUS root\n";
   std::cout<<"trees for multiple scattering measurements\n";
   std::cout<<"and to unfold the distribution\n";
@@ -181,8 +174,6 @@ int main(int argc, char* argv[]) {
   spec.DSdatafile = "";
   spec.USreffile = "";
   spec.DSreffile = "";
-  spec.EndofDStrackerrefname = "";
-  spec.EndofDStrackerdataname = "";
   spec.TOF_ll = 27.0;
   spec.TOF_ul = 42.0;
   spec.mom_ll = 140;
@@ -238,9 +229,6 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading Downstream data "<<spec.DSdatafile<<std::endl;
   std::cout<<"Reading Upstream Ref "<<spec.USreffile<<std::endl;
   std::cout<<"Reading Downstream Ref "<<spec.DSreffile<<std::endl;
-  std::cout<<"Reading End of Downstream tracker Ref "<<spec.EndofDStrackerrefname<<std::endl;
-  std::cout<<"Reading End of Downstream tracker data "<<spec.EndofDStrackerdataname<<std::endl;
-
 
   std::cout<<"Use "<<spec.geometryname<<" for propagation\n";
   std::cout<<"\n";
@@ -265,7 +253,7 @@ int main(int argc, char* argv[]) {
   std::cout<<"Successfully extrude from Upstream tracker to TOF0: "<<spec.cut_ExtrudeTKUTOF0<<std::endl;
   std::cout<<"\n";
   std::cout<<"Attempting to create analysis object"<<std::endl;
-  MCSAnalysis anal("reduced_tree", mode_tree, spec.outfile, spec.histlimits);
+  MCSAnalysis anal(spec.dataname, spec.trainname, spec.outfile, spec.histlimits);
   std::cout<<"Analysis object created"<<std::endl;
   TFile* data = new TFile(spec.dataname.c_str());
   if(data->IsZombie()){
@@ -290,9 +278,6 @@ int main(int argc, char* argv[]) {
   anal.SetDSDataname(spec.DSdatafile);
   anal.SetUSRefname(spec.USreffile);
   anal.SetDSRefname(spec.DSreffile);
-  anal.SetEndofDStrackerrefname(spec.EndofDStrackerrefname);
-  anal.SetEndofDStrackerdataname(spec.EndofDStrackerdataname);
-
   anal.SetParentGeometryFile(spec.geometryname.c_str());
   anal.SetFileName(spec.outfilename.c_str());
 
@@ -308,9 +293,9 @@ int main(int argc, char* argv[]) {
   anal.SetCutAbsorberMomentum(spec.cut_AbsorberMomentum);
   anal.SetCutExtrudeTKUTOF0(spec.cut_ExtrudeTKUTOF0);
 
-  anal.GetrefTree()->Add(spec.trainname.c_str());
+  anal.SetTrainFile(spec.trainname);
 
-  anal.GetTree()->Add(spec.dataname.c_str());
+  anal.SetDataFile(spec.dataname);
   
   for(std::map<std::string, double>::iterator it=spec.sys.begin();
       it != spec.sys.end(); ++it){
@@ -318,7 +303,6 @@ int main(int argc, char* argv[]) {
     std::cout<<"Adding systematic effect "<<it->first
 	     <<" with value "<<it->second<<std::endl;
   }
-  std::cout<<"Executing MCSAnalysis\n";
   anal.Execute(spec.mode);
 
   anal.Write();

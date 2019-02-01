@@ -53,14 +53,16 @@
   
 class MCSAnalysis {
  public:
-  MCSAnalysis(std::string tree, std::string mctree, std::string outname, std::map<std::string, double> histlimits);
+  MCSAnalysis(std::string tree, std::string reftree, std::string outname, std::map<std::string, double> histlimits);
   ~MCSAnalysis();
 
   void Write();
 
   TChain* GetTree(){ return chain; }
-  TChain* GetMCTree(){ return mcchain; }
+  TChain* GetrefTree(){ return refchain; }
   void Execute(int mode);
+  void dataretrieve();
+  void refretrieve();
   void dataSelection();
   void dataSelection2();
   void referenceSelection();
@@ -86,11 +88,15 @@ class MCSAnalysis {
   void SetTOFLowerLimit(double a){ TOF_lower_limit=a; }
   void SetMomentumUpperLimit(double a){ momentum_upper_limit=a; }
   void SetMomentumLowerLimit(double a){ momentum_lower_limit=a; }
-  void SetRadialLimit(double a){ meanp=a; }
+  void SetRadialLimit(double a){ fiducial_cut_radius=a; }
   void SetGradientLimit(double a){ sigmap=a; }
   void SetModelFileName(std::string a){ modelfile=a; }
   void SetModelName1(std::string a) {modelname1=a; }
   void SetModelName2(std::string a) {modelname2=a; }
+  void SetUSDataname(std::string a) {USDataname=a; }
+  void SetDSDataname(std::string a) {DSDataname=a; }
+  void SetUSRefname(std::string a) {USRefname=a; }
+  void SetDSRefname(std::string a) {DSRefname=a; }
   void SetParentGeometryFile(std::string a) {geometryfile=a; }
   void SetFFTBinLimit(int a) { binlimit=a; }
   void SetFileName(std::string a) {outfilename=a; }
@@ -132,7 +138,7 @@ class MCSAnalysis {
   bool cut_ext_TKU_TOF0;
 
   
-  double meanp;
+  double fiducial_cut_radius;
   double sigmap;
   int binlimit;
   
@@ -140,6 +146,13 @@ class MCSAnalysis {
   std::string modelname1;
   std::string modelname2;
   std::string geometryfile;
+  std::string USDataname;
+  std::string USRefname;
+  std::string DSDataname;
+  std::string DSRefname;
+  std::string EndofDStrackerrefname;
+  std::string EndofDStrackerdataname;
+  
 
   double USrefplaneZ;
   double DSrefplaneZ;
@@ -174,7 +187,7 @@ class MCSAnalysis {
   // Chain containing only the data of interest (not necessarily MC).
   TChain* chain;
   // Training tree containing the response to the volume of interest
-  TChain* mcchain; 
+  TChain* refchain; 
   
   int runnumber, LastRunNumber; 
   int SpillNumber;
@@ -211,6 +224,7 @@ class MCSAnalysis {
   TH1D* pass_TKUrad;
   TH1D* pass_Diff;
   TH1D* pass_Fid;
+  TH1D* pass_Fid_wide;
   TH1D* pass_ExtTKU0;
   TH1D* pass_TOF01;
   TH1D* pass_TOF01Ex;
@@ -228,6 +242,33 @@ class MCSAnalysis {
   TH1D* mcpass_TOF01Ex;
   TH1D* mcpass_mom;
   TH1D* mcpass_chi2;
+
+  TH1D* HPt_Tof1;
+  TH1D* HPt_Tof0;
+  TH1D* HPt_TKU;
+  TH1D* HPt_TKUrad;
+  TH1D* HPt_Diff;
+  TH1D* HPt_Fid;
+  TH1D* HPt_ExtTKU0;
+  TH1D* HPt_TOF01;
+  TH1D* HPt_TOF01Ex;
+  TH1D* HPt_mom;
+  TH1D* HPt_Ch12;
+
+
+  TH1D* Residual_x;
+  TH1D* Residual_y;
+  TH1D* Residual_z;
+  TH1D* Residual_px;
+  TH1D* Residual_py;
+  TH1D* Residual_pz;
+  TH1D* Residual_dxdz;
+  TH1D* Residual_dydz;
+  TH1D* Residual_px_corrected;
+  TH1D* Residual_py_corrected;
+  TH1D* Residual_pz_corrected;
+  TH1D* Residual_dxdz_corrected;
+  TH1D* Residual_dydz_corrected;
 
 
   TH1D* scattering_pos_x;
@@ -285,7 +326,9 @@ class MCSAnalysis {
 					     std::string suffix);
   Json::Value SetupConfig(int verbose_level, std::string geometry);
   Vars PropagateVarsMu(Vars event, double z0);
+  Vars PropagateVarsMuVerbose(Vars event, double z0);
   Vars FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_pos, int pid);
+  Vars FillVars3(MAUS::ThreeVector b_track_mom, MAUS::ThreeVector b_track_pos, int pid);
   multiVars read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos);
   double Check_Radius_US(double low_z, double high_z);
   Vars reset_Vars();

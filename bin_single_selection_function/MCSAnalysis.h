@@ -58,15 +58,12 @@ class MCSAnalysis {
 
   void Write();
 
-  TChain* GetTree(){ return chain; }
-  TChain* GetrefTree(){ return refchain; }
+//  TChain* GetTree(){ return chain; }
+//  TChain* GetrefTree(){ return refchain; }
   void Execute(int mode);
   void dataretrieve();
   void refretrieve();
-  void dataSelection();
-  void dataSelection2();
-  void referenceSelection();
-  void referenceSelection2();
+  void dataSelection(std::string chain_t, double dataDS11, double dataDS53, double dataUS53,double dataUS11, double datadiffuserlow, double datadiffuserhigh, double dataTOF0pos, double dataTOF1pos, std::string dataref);
   void generateMCSResponse();
   void ConvolveWithInputDistribution(std::string distname);
   void DoUnfolding();
@@ -88,18 +85,17 @@ class MCSAnalysis {
   void SetTOFLowerLimit(double a){ TOF_lower_limit=a; }
   void SetMomentumUpperLimit(double a){ momentum_upper_limit=a; }
   void SetMomentumLowerLimit(double a){ momentum_lower_limit=a; }
-  void SetRadialLimit(double a){ fiducial_cut_radius=a; }
+  void SetRadialLimit(double a){ meanp=a; }
   void SetGradientLimit(double a){ sigmap=a; }
   void SetModelFileName(std::string a){ modelfile=a; }
   void SetModelName1(std::string a) {modelname1=a; }
   void SetModelName2(std::string a) {modelname2=a; }
+  void SetDataFile(std::string a) {datafile=a; }
+  void SetTrainFile(std::string a) {trainfile=a; }
   void SetUSDataname(std::string a) {USDataname=a; }
   void SetDSDataname(std::string a) {DSDataname=a; }
   void SetUSRefname(std::string a) {USRefname=a; }
   void SetDSRefname(std::string a) {DSRefname=a; }
-  void SetEndofDStrackerrefname(std::string a) {EndofDStrackerrefname=a; }
-  void SetEndofDStrackerdataname(std::string a) {EndofDStrackerdataname=a; }
-
   void SetParentGeometryFile(std::string a) {geometryfile=a; }
   void SetFFTBinLimit(int a) { binlimit=a; }
   void SetFileName(std::string a) {outfilename=a; }
@@ -141,7 +137,7 @@ class MCSAnalysis {
   bool cut_ext_TKU_TOF0;
 
   
-  double fiducial_cut_radius;
+  double meanp;
   double sigmap;
   int binlimit;
   
@@ -153,8 +149,8 @@ class MCSAnalysis {
   std::string USRefname;
   std::string DSDataname;
   std::string DSRefname;
-  std::string EndofDStrackerrefname;
-  std::string EndofDStrackerdataname;
+  std::string datafile;
+  std::string trainfile;
   
 
   double USrefplaneZ;
@@ -188,9 +184,9 @@ class MCSAnalysis {
   std::map<std::string, double> _histlimits;
   std::map<std::string, double> _sys;
   // Chain containing only the data of interest (not necessarily MC).
-  TChain* chain;
+  std::string chain_tree;
   // Training tree containing the response to the volume of interest
-  TChain* refchain; 
+  std::string chain_reftree; 
   
   int runnumber, LastRunNumber; 
   int SpillNumber;
@@ -245,19 +241,6 @@ class MCSAnalysis {
   TH1D* mcpass_TOF01Ex;
   TH1D* mcpass_mom;
   TH1D* mcpass_chi2;
-
-  TH1D* HPt_Tof1;
-  TH1D* HPt_Tof0;
-  TH1D* HPt_TKU;
-  TH1D* HPt_TKUrad;
-  TH1D* HPt_Diff;
-  TH1D* HPt_Fid;
-  TH1D* HPt_ExtTKU0;
-  TH1D* HPt_TOF01;
-  TH1D* HPt_TOF01Ex;
-  TH1D* HPt_mom;
-  TH1D* HPt_Ch12;
-
 
   TH1D* Residual_x;
   TH1D* Residual_y;

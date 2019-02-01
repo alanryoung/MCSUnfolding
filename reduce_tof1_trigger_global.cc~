@@ -254,6 +254,7 @@ int main(int argc, char* argv[]) {
     TH1D hrate("hrate", 
 	       ";Position along Z axis (m);Particles at Virtual Plane", \
 	       240,0.5,24.5);
+    TH1D histPtotal ("Ptotal","Total Momentum;Number",30,100,250);
     TH2D hr("hr", 
 	    ";Position along Z axis (m); Radial Position (m)",	
 	    240,0.5,24.5,100,0.0, 0.5);
@@ -336,11 +337,12 @@ int main(int argc, char* argv[]) {
         // corresponds to a daq_event; e.g. "start_of_burst" (spill start
         //  signal) or "physics_event" (spill data)
         if (spill != NULL && spill->GetDaqEventType() == "physics_event") {
-          std::cout<<"physics event detected"<<std::endl;
+//          std::cout<<"physics event detected"<<std::endl;
 	  // Each recon event corresponds to a particle trigger; data in the
 	  // recon event should all have the same trigger
+//          std::cout<<"type "<<type<<std::endl;
 	  if(type.find("data")!=std::string::npos){
-            std::cout<<"type data"<<std::endl;
+//            std::cout<<"type data"<<std::endl;
 	    RunNumber = spill->GetRunNumber();
 	    SpillNumber = spill->GetSpillNumber();
 	  }
@@ -350,7 +352,7 @@ int main(int argc, char* argv[]) {
 	      (*spill->GetReconEvents())[ii]->GetTOFEvent();
 	    MAUS::TOFEventDigit digits;
 	    if(type.find("mc")!=std::string::npos){
-               std::cout<<"type mc"<<std::endl;
+//               std::cout<<"type mc"<<std::endl;
 	       mcevent    = (*spill->GetMCEvents())[ii];
 	       // if(fabs(mcevent->GetPrimary()->GetParticleId()) != 13) continue;
 	    }
@@ -366,10 +368,10 @@ int main(int argc, char* argv[]) {
 	      MAUS::TOFDigit tof0_digit = digits.GetTOF0DigitArray()[j];
 	      // get the slab where the digit was registered
 	      if (tof0_digit.GetPlane() == 0) {
-                std::cout<<"plane0digit tof0"<<std::endl;
+//                std::cout<<"plane0digit tof0"<<std::endl;
 		plane0digit = true;
 	      } else {
-                std::cout<<"plane1digit tof0"<<std::endl;
+//                std::cout<<"plane1digit tof0"<<std::endl;
 		plane1digit = true;
 	      }
 	    }
@@ -380,10 +382,10 @@ int main(int argc, char* argv[]) {
 	      MAUS::TOFDigit tof1_digit = digits.GetTOF1DigitArray()[j];
 	      // get the slab where the digit was registered
 	      if (tof1_digit.GetPlane() == 0) {
-                std::cout<<"plane0digit tof1"<<std::endl;
+//                std::cout<<"plane0digit tof1"<<std::endl;
 		plane0digit = true;
 	      } else {
-                std::cout<<"plane1digit tof1"<<std::endl;
+//                std::cout<<"plane1digit tof1"<<std::endl;
 		plane1digit = true;
 	      }
 	    }
@@ -397,7 +399,36 @@ int main(int argc, char* argv[]) {
 	      emrevent   = (*spill->GetReconEvents())[ii]->GetEMREvent();
               globalevent= (*spill->GetReconEvents())[ii]->GetGlobalEvent();
 	      
-	      if(type1.find("data")!=std::string::npos) tree->Fill();
+	      if(type1.find("data")!=std::string::npos){
+                 tree->Fill();
+                 if (scifievent != NULL){
+//                    std::cout<<"Sci Fi event exists"<<std::endl;
+                    std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
+                    std::vector<MAUS::SciFiTrack*>::iterator track_iter;
+                    for (track_iter = tracks.begin(); track_iter != tracks.end(); ++track_iter){
+//                       std::cout<<"Sci Fi Track"<<std::endl;
+                       std::vector<MAUS::SciFiTrackPoint*> track_points = (*track_iter)->scifitrackpoints();
+                       std::vector<MAUS::SciFiTrackPoint*>::iterator track_point_iter;
+                       for (track_point_iter = track_points.begin(); track_point_iter != track_points.end(); ++track_point_iter){
+//                          std::cout<<"SciFi Point"<<std::endl;
+                          int selected_station_tracker0 = 5;
+                          int selected_plane_tracker0 = 2;
+                          MAUS::SciFiTrackPoint* point = (*track_point_iter);
+                          int tracker = point->tracker();
+                          int station = point->station();                  
+                          int plane = point->plane();
+                          if (tracker == 0 && station == selected_station_tracker0 && plane == selected_plane_tracker0){ 
+                             MAUS::ThreeVector position_tracker0 = point->pos();
+                             MAUS::ThreeVector momentum_tracker0 = point->mom();
+                             double Ptot = sqrt(momentum_tracker0.x()*momentum_tracker0.x()+momentum_tracker0.y()*momentum_tracker0.y()+momentum_tracker0.z()*momentum_tracker0.z());
+                             std::cout<<"Ptot is :"<<Ptot<<std::endl;
+                             histPtotal.Fill(Ptot);
+                          }
+
+                       }
+                    }
+                 }
+              }
 	      if(type1.find("mc")!=std::string::npos) mctree->Fill();
 	    }
 
@@ -407,11 +438,11 @@ int main(int argc, char* argv[]) {
 	      MAUS::TOFDigit tof2_digit = digits.GetTOF2DigitArray()[j];
 	      // get the slab where the digit was registered
 	      if (tof2_digit.GetPlane() == 0) {
-                std::cout<<"plane0digit tof2"<<std::endl;
+//                std::cout<<"plane0digit tof2"<<std::endl;
 		tof2_digits_0_hist.Fill(tof2_digit.GetSlab());
 		plane0digit = true;
 	      } else {
-                std::cout<<"plane1digit tof2"<<std::endl;
+//                std::cout<<"plane1digit tof2"<<std::endl;
 		tof2_digits_1_hist.Fill(tof2_digit.GetSlab());
 		plane1digit = true;
 	      }
@@ -420,7 +451,7 @@ int main(int argc, char* argv[]) {
 	  }
 	  
 	  if(type.find("mc")!=std::string::npos){
-            std::cout<<"mc section"<<std::endl;
+//            std::cout<<"mc section"<<std::endl;
 	    for (size_t ij=0; ij<spill->GetMCEvents()->size(); ij++){
 	     mcevent = (*spill->GetMCEvents())[ij];
 	     mctree->Fill();
@@ -497,6 +528,13 @@ int main(int argc, char* argv[]) {
     outfile->cd();
     if(type.find("data")!=std::string::npos){
       std::cout<<"Write data to tree"<<std::endl;
+      histPtotal.Write();
+      TCanvas c2("beam_momentum","beam_momentum");
+      c2.Draw();
+      c2.SetLogz();
+      hp.Draw("colz");
+      c2.Print("beam_momentum.pdf");
+
       tree->Write();
       tree->Print();
     }

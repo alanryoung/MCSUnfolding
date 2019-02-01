@@ -235,4 +235,105 @@ void Collection::calc_emittance(int n, double mass){
   _emittance = pow(det, 1./double(n));
   _emittance /= mass;
   // return _emittance;
-}    
+}
+
+void Collection::save_collection(std::string filename){
+   std::ofstream savefile;
+   savefile.open(filename);
+   for(int i=0; i<_Set.size(); i++){
+     Vars xit =_Set.at(i);
+     savefile << xit.X << " ";
+     savefile << xit.Y << " ";;
+     savefile << xit.Z << " ";;
+     savefile << xit.dXdz << " ";;
+     savefile << xit.dYdz << " ";;
+     savefile << xit.px << " ";;
+     savefile << xit.py << " ";;
+     savefile << xit.pz << " ";;
+     savefile << xit.TOF12 << " ";;
+     savefile << xit.TOF01 << " ";;
+     savefile << xit.isgood << " ";;
+     savefile << xit.pid << " ";;
+     savefile << xit.TOFX << "\n";;
+   }
+   savefile.close();
+} 
+
+ void Collection::ReturnWords(std::string inputstring,std::vector<std::string> &v){
+  std::string word="";
+  v.clear();
+
+//  std::cerr<<"Input String: "<<inputstring<<std::endl;
+  for (auto x : inputstring){
+    if (x == ' '){
+      v.push_back(word);
+//      std::cerr<<"Word being added: "<<word<<std::endl;
+      word="";
+    } else {
+      word=word+x;
+//      std::cerr<<"Still constructing word: "<<word<<std::endl;
+    }
+  }
+  v.push_back(word);
+}
+
+void Collection::load_collection(std::string filename){
+   std::ifstream savefile;
+   std::vector<std::string> results;
+   std::cerr<<"Running Load Collection"<<std::endl;
+   Vars tempvars;
+   savefile.open(filename);
+   std::string line;
+   if(savefile.is_open()){
+     std::cerr<<"File is open for reading"<<std::endl;
+     while(getline(savefile,line)){
+//       std::cerr<<"Line retrieved for parsing"<<std::endl;
+       if (line.find(' ') != std::string::npos){
+//         std::cerr<<"Line contains spaces"<<std::endl;
+//         std::cerr<<"Line: "<<line<<std::endl;
+         ReturnWords(line, results);
+
+//         std::istringstream(line);
+/*         std::cerr<<"Attempting to create  vector containing data"<<std::endl;
+         std::vector<std::string> results((std::istream_iterator<std::string>(line)),
+                                          std::istream_iterator<std::string>());
+*/
+//         std::cerr<<"Vector created"<<std::endl;
+/*         std::cerr <<"Size of returned vector: "<<results.size()<<std::endl;
+         std::cerr<<"X: "<<results[0];
+         std::cerr<<" Y: "<<results[1];
+         std::cerr<<" Z: "<<results[2];
+         std::cerr<<" dXdz: "<<results[3];
+         std::cerr<<" dYdz: "<<results[4];
+         std::cerr<<" px: "<<results[5];
+         std::cerr<<" py: "<<results[6];
+         std::cerr<<" pz: "<<results[7];
+         std::cerr<<" TOF12: "<<results[8];
+         std::cerr<<" TOF01: "<<results[9];
+         std::cerr<<" isgood: "<<results[10];
+         std::cerr<<" pid: "<<results[11];
+         std::cerr<<" TOFX: "<<results[12]<<std::endl;
+*/
+         tempvars.X = stod(results[0]);
+//         std::cerr<<"Successfully added X"<<std::endl;
+         tempvars.Y = stod(results[1]);
+         tempvars.Z = stod(results[2]);
+         tempvars.dXdz = stod(results[3]);
+         tempvars.dYdz = stod(results[4]);
+         tempvars.px = stod(results[5]);
+         tempvars.py = stod(results[6]);
+         tempvars.pz = stod(results[7]);
+         tempvars.TOF12 = stod(results[8]);
+         tempvars.TOF01 = stod(results[9]);
+         tempvars.isgood = stoi(results[10]);
+         tempvars.pid = stoi(results[11]);
+         tempvars.TOFX = stod(results[12]);
+//         std::cerr<<"Line parsed and ready for input into Collection"<<std::endl;
+         _Set.push_back(tempvars);
+//         std::cerr<<"Data added to Collection"<<std::endl;
+       }
+     }
+   }
+   savefile.close();
+
+}

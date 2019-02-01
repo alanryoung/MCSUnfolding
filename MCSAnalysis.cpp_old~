@@ -6,8 +6,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string reftree, std::string outn
 //: p_vec(TVectorD(19)), res(TVectorD(30)), pStart_vec(TVectorD(19)),
 //    pStart_vec_y(TVectorD(19)), theta_true_x(TVectorD(19)), theta_true_y(TVectorD(19))
 {
-  chain   = new TChain(tree.c_str());
-  refchain = new TChain(reftree.c_str());
+  chain = new TChain(tree.c_str())
+  refchain = new TCahin(reftree.c_str())
   outfile = new TFile(outname.c_str(), "recreate");
 
   _sys["alXUS"] = 0.0; //-0.0356;
@@ -57,9 +57,6 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string reftree, std::string outn
   DSDataname = "DSData.txt";
   USRefname = "USRef.txt";
   DSRefname = "DSRef.txt";
-  EndofDStrackerrefname= "EndofDStrackerRef.txt";
-  EndofDStrackerdataname= "EndofDStrackerData.txt";
-
  
   _histlimits["NbinsXY"] = histlimits.count("NbinsXY") != 0 ? histlimits["NbinsXY"]: 200;
   _histlimits["minXY"] = histlimits.count("minXY") != 0 ? histlimits["minXY"]: -0.2;
@@ -123,7 +120,7 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string reftree, std::string outn
   cut_ext_TKU_TOF0 = true;
 
 
-  fiducial_cut_radius = 300.0;
+  meanp = 300.0;
   sigmap = 0.035;
   binlimit = 22;
   // int counter = 0;
@@ -173,20 +170,6 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string reftree, std::string outn
   mcpass_TOF01Ex = new TH1D("refpass_TOF01Ex",";Passed Cut; Events",100, 23, 35);
   mcpass_mom = new TH1D("refpass_mom",";Passed Cut; Events",100, 100, 300);
   mcpass_chi2= new TH1D("refpass_chi2",";Chi2/dof; Events",50, 0, 10);
-
-//Total Momentum Histogram prior to each cut
-  HPt_Tof1 = new TH1D("01_HPt_tof1","; Total Momentum; Number", 100, 100, 300);
-  HPt_Tof0 = new TH1D("02_HPt_Tof0","; Total Momentum; Number", 100, 100, 300);
-  HPt_TKU = new TH1D("03_HPt_TKU","; Total Momentum; Number", 100, 100, 300);
-  HPt_TKUrad = new TH1D("04_HPt_TKUrad","; Total Momentum; Number", 100, 100, 300);
-  HPt_Diff = new TH1D("05_HPt_Diff","; Total Momentum; Number", 100, 100, 300);
-  HPt_Fid = new TH1D("06_HPt_Fid","; Total Momentum; Number", 100, 100, 300);
-  HPt_ExtTKU0 = new TH1D("07_HPt_ExtTKU0","; Total Momentum; Number", 100, 100, 300);
-  HPt_TOF01 = new TH1D("08_HPt_TOF01","; Total Momentum; Number", 100, 100, 300);
-  HPt_TOF01Ex = new TH1D("09_HPt_TOF01Ex","; Total Momentum; Number", 100, 100, 300);
-  HPt_mom = new TH1D("10_HPt_mom","; Total Momentum; Number", 100, 100, 300);
-  HPt_Ch12 = new TH1D("11_HPt_Ch12","; Total Momentum; Number", 100, 100, 300);
-
 
 //Residual histograms
 
@@ -369,18 +352,6 @@ void MCSAnalysis::Write(){
   mcpass_TOF01Ex->Write();
   mcpass_mom->Write();
   mcpass_chi2->Write();
-  HPt_Tof1->Write();
-  HPt_Tof0->Write();
-  HPt_TKU->Write();
-  HPt_TKUrad->Write();
-  HPt_Diff->Write();
-  HPt_Fid->Write();
-  HPt_ExtTKU0->Write();
-  HPt_TOF01->Write();
-  HPt_TOF01Ex->Write();
-  HPt_mom->Write();
-  HPt_Ch12->Write();
-
   Residual_x->Write();
   Residual_y->Write();
   Residual_z->Write();
@@ -449,30 +420,16 @@ void MCSAnalysis::Execute(int mode=0){
 /////////////////////////////////////////////////////////////////////
 
 void MCSAnalysis::refretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, USPostMom, DSPostMom, DSsetUncorrected;
+  Collection USretrieved, DSretrieved, USPostMom, DSPostMom, DSsetUncorrected;
   USretrieved.load_collection(USRefname);
   DSretrieved.load_collection(DSRefname);
-  EndofDS.load_collection(EndofDStrackerrefname);
   std::cerr<<"Entries in ref USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in ref DSretrieved: "<< DSretrieved.N()<<std::endl;
-  std::cerr<<"Entries in EndofDSref: "<< EndofDS.N()<<std::endl;
   outfile->cd();
-
-  for(int i=0;i<USretrieved.N();i++){
-//------------------------------------------------------------------------------------------------------
-// Fiducial Cut
-//------------------------------------------------------------------------------------------------------
-
-     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
-     pass_Fid->Fill(fiducial_radius);
-     pass_Fid_wide->Fill(fiducial_radius);
-     if ( fiducial_radius > fiducial_cut_radius){
-        if (cut_fiducial) continue;
-     } 
-
 //---------------------------------------------------------------------------------------
 // Momentum at absorber cut. 
 //---------------------------------------------------------------------------------------
+  for(int i=0;i<USretrieved.N();i++){
     double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
                                  (USretrieved.E(i).py*USretrieved.E(i).py)+ 
                                  (USretrieved.E(i).pz*USretrieved.E(i).pz));
@@ -540,40 +497,35 @@ void MCSAnalysis::refretrieve(){
 /////////////////////////////////////////////////////////////////////
 
 void MCSAnalysis::dataretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, USPostFid, DSPostFid, USPostMom, DSPostMom, DSsetUncorrected;
+  Collection USretrieved, DSretrieved, USPostMom, DSPostMom, DSsetUncorrected;
   USretrieved.load_collection(USDataname);
   DSretrieved.load_collection(DSDataname);
-  EndofDS.load_collection(EndofDStrackerdataname);
   std::cerr<<"Entries in data USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in data DSretrieved: "<< DSretrieved.N()<<std::endl;
-  std::cerr<<"Entries in EndofDS data: "<< EndofDS.N()<<std::endl;
   outfile->cd();
-
-  for(int i=0;i<USretrieved.N();i++){
-
-//------------------------------------------------------------------------------------------------------
-// Fiducial Cut
-//------------------------------------------------------------------------------------------------------
-
-     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
-     pass_Fid->Fill(fiducial_radius);
-     pass_Fid_wide->Fill(fiducial_radius);
-     if ( fiducial_radius > fiducial_cut_radius){
-        if (cut_fiducial) continue;
-     } 
 
 //---------------------------------------------------------------------------------------
 // Momentum at absorber cut. 
 //---------------------------------------------------------------------------------------
+  for(int i=0;i<USretrieved.N();i++){
     double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
                                  (USretrieved.E(i).py*USretrieved.E(i).py)+ 
                                  (USretrieved.E(i).pz*USretrieved.E(i).pz));
     pass_mom->Fill(momentum_absorber);
+//  std::cerr<<"Momentum at centre of absorber: "<<momentum_absorber<<std::endl;
     if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
+//    std::cerr<<"**Failed momentum Cut"<<std::endl;
       if (cut_absorber_momentum) continue;
     }
+
+//    std::cerr<<"Adding to AllTOF"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
     USPostMom.append_instance(USretrieved.E(i));
+//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
     DSPostMom.append_instance(DSretrieved.E(i));
+//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
+//    cuts_accept->Fill("Momentum",1);    
   
 //---------------------------------------------------------------------------------------
 // Misalignment Correction at centre of Absorber 
@@ -647,7 +599,7 @@ void MCSAnalysis::dataSelection2(){
 
   Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
   Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex,DSsetUncorrected, EndOfDS;
+  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex,DSsetUncorrected;
 //  double pz = 0.;
 //  int Nevents = 0;
   int Fiducial_Pass = 0;
@@ -753,6 +705,41 @@ void MCSAnalysis::dataSelection2(){
     if (cut_TKU_1track) continue;
   } 
   
+// Output track info
+  for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
+//    int npoints = scifievent->scifitracks()[j]->scifitrackpoints().size();
+    int tracker = scifievent->scifitracks()[j]->tracker();
+    if(tracker==0){
+//     std::cerr<<"Upstream track scifi points"<<std::endl;
+    } else {
+//     std::cerr<<"Downstream track scifi points"<<std::endl;
+    }
+/*    for ( int k=0; k<npoints; k++){
+      double zpos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().z();
+      double xpos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().x();
+      double ypos = scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().y();
+//      std::cerr<<zpos<<" "<<xpos<<" "<<ypos<<std::endl;
+    }*/
+  }
+
+    
+/*
+  int nUStracks= 0;
+  if (scifievent->scifitracks().size()>=1){
+    for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
+      if(scifievent->scifitracks()[j]->tracker()==0) nUStracks++ ;
+    }
+  }else{
+    std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
+    pass_TKU->Fill("Fail",1);
+    continue;
+  }
+  if (nUStracks!=1){
+    std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
+    pass_TKU->Fill("Fail",1);
+    continue;
+  }
+*/
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostTKU.append_instance(globalVars.UScentre_absorber);
@@ -849,6 +836,43 @@ void MCSAnalysis::dataSelection2(){
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     cuts_accept->Fill("Diffuser",1);
 
+//------------------------------------------------------------------------------------------------------
+// Fiducial Cut
+//------------------------------------------------------------------------------------------------------
+
+    double fiducial_radius = sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y);
+    pass_Fid->Fill(fiducial_radius);
+    pass_Fid_wide->Fill(fiducial_radius);
+//    std::cerr<<"Event "<<i<<" Fiducial Radius: "<<fiducial_radius;
+    if ( fiducial_radius > meanp){
+      Fiducial_Fail++;
+/*      std::cerr<<"  **Failed Fiducial Cut"<<std::endl;
+      display_Vars(globalVars.USTOF0);
+      display_Vars(globalVars.USTOF1);
+      display_Vars(globalVars.UStrackerUS53);
+      display_Vars(globalVars.UStrackerUS11);
+      display_Vars(globalVars.UScentre_absorber);
+      display_Vars(globalVars.DScentre_absorber);
+      display_Vars(globalVars.USend_of_DStracker);
+      PropagateVarsMuVerbose(globalVars.UStrackerUS11, globalVars.USend_of_DStracker.Z);*/
+      if (cut_fiducial) continue;
+    } else {
+        Fiducial_Pass++;
+//        std::cerr<<std::endl;
+//      display_Vars(globalVars.USend_of_DStracker);
+//      std::cerr<<sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y)<<std::endl;
+    }
+//    std::cerr<<"Adding to AllTOF"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
+    USPostFid.append_instance(globalVars.UScentre_absorber);
+//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
+    DSPostFid.append_instance(globalVars.DScentre_absorber);
+//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
+    cuts_accept->Fill("Fiducial",1);
+
+
+
 //---------------------------------------------------------------------------------------
 // TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
 //---------------------------------------------------------------------------------------
@@ -931,13 +955,11 @@ void MCSAnalysis::dataSelection2(){
 //    std::cerr<<"**Event accepted"<<std::endl;
     _USset.append_instance(globalVars.UScentre_absorber);
     _DSset.append_instance(globalVars.DScentre_absorber);
-    EndOfDS.append_instance(globalVars.USend_of_DStracker);
 //    _DSset.append_instance(globalVars.DScentre_absorber);
     cuts_accept->Fill("All Cuts",1);
   }
-  _USset.save_collection(USDataname);
-  _DSset.save_collection(DSDataname);
-  EndOfDS.save_collection(EndofDStrackerdataname);
+  _USset.save_collection("USData.txt");
+  _DSset.save_collection("DSData.txt");
 //  std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //  std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
 //  std::cerr<<"Size of USPreRadSel: "<<USPreRadSel.N()<<std::endl;
@@ -1009,7 +1031,7 @@ void MCSAnalysis::referenceSelection2(){
 //  std::cerr<<"Nentries set"<<std::endl;
   Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
   Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex, EndOfDS;
+  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex;
 //  double pz = 0.;
 
   // Loop over all tree entries.
@@ -1017,8 +1039,8 @@ void MCSAnalysis::referenceSelection2(){
 //    std::cerr<<"**********************************************"<< std::endl;
  //   std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     refchain->GetEntry(i);
-    if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-//    if (i>=50000) break;
+//    if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
+    if (i>=50000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -1181,9 +1203,6 @@ void MCSAnalysis::referenceSelection2(){
 //    std::cerr<<"**Failed US track Cut - Why not cut earlier ********************"<<std::endl;
     continue;
     }
-    double Ptot =sqrt(globalVars.UScentre_absorber.px*globalVars.UScentre_absorber.px+globalVars.UScentre_absorber.py*globalVars.UScentre_absorber.py+globalVars.UScentre_absorber.pz*globalVars.UScentre_absorber.pz);
-    HPt_Ch12->Fill(Ptot);
-
     mccuts_accept->Fill("US Track",1);
 
 //------------------------------------------------------------------------------------------------------
@@ -1196,8 +1215,6 @@ void MCSAnalysis::referenceSelection2(){
 //      std::cerr<<"**Failed US Tracker Radial Cut"<<std::endl;
       if(cut_TKU_radial) continue;
     }
-    HPt_TKUrad->Fill(Ptot);
-
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostTKUrad.append_instance(globalVars.UScentre_absorber);
@@ -1218,8 +1235,6 @@ void MCSAnalysis::referenceSelection2(){
 //      std::cerr<<"**Failed Diffuser Cut"<<std::endl;
       if(cut_diffuser_radial) continue;
     }
-    HPt_Diff->Fill(Ptot);
-
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostDiff.append_instance(globalVars.UScentre_absorber);
@@ -1228,6 +1243,30 @@ void MCSAnalysis::referenceSelection2(){
     DSPostDiff.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     mccuts_accept->Fill("Diffuser",1);
+
+//------------------------------------------------------------------------------------------------------
+// Fiducial Cut
+//------------------------------------------------------------------------------------------------------
+
+    double fiducial_radius=sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y);
+    mcpass_Fid->Fill(fiducial_radius);
+    if ( fiducial_radius > meanp){
+//      std::cerr<<"**Failed Fiducial Cut"<<std::endl;
+      
+      if(cut_fiducial) continue;
+    } else {
+//      display_Vars(globalVars.USend_of_DStracker);
+//      std::cerr<<sqrt(globalVars.USend_of_DStracker.X*globalVars.USend_of_DStracker.X + globalVars.USend_of_DStracker.Y*globalVars.USend_of_DStracker.Y)<<std::endl;
+    }
+//    std::cerr<<"Adding to AllTOF"<<std::endl;
+//    display_Vars(globalVars.UScentre_absorber);
+    USPostFid.append_instance(globalVars.UScentre_absorber);
+//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
+//    display_Vars(globalVars.DScentre_absorber);
+    DSPostFid.append_instance(globalVars.DScentre_absorber);
+//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
+    mccuts_accept->Fill("Fiducial",1);
+
 
 
 //---------------------------------------------------------------------------------------
@@ -1242,6 +1281,8 @@ void MCSAnalysis::referenceSelection2(){
 //      std::cerr<<"No TOF2 hit?"<<std::endl;
       rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
     }
+
+
     tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
     double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
@@ -1251,8 +1292,6 @@ void MCSAnalysis::referenceSelection2(){
 //      std::cerr<<"**Failed TOF01 Cut"<<std::endl;
       if(cut_TOF01) continue;
     }
-    HPt_TKUrad->Fill(Ptot);
-
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -1277,7 +1316,6 @@ void MCSAnalysis::referenceSelection2(){
 //    std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
     if(cut_TOF01ext) continue;
   }
-  HPt_ExtTKU0->Fill(Ptot);
 
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
@@ -1298,7 +1336,6 @@ void MCSAnalysis::referenceSelection2(){
       mcpass_ExtTKU0->Fill("Fail",1);
       if(cut_ext_TKU_TOF0) continue;
     }
-    HPt_TOF01->Fill(Ptot);
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
     USPostExtTKU0.append_instance(globalVars.UScentre_absorber);
@@ -1326,15 +1363,13 @@ void MCSAnalysis::referenceSelection2(){
 //    std::cerr<<"**Event accepted"<<std::endl;
     _USMCset.append_instance(globalVars.UScentre_absorber);
     _DSMCset.append_instance(globalVars.DScentre_absorber);
-    EndOfDS.append_instance(globalVars.USend_of_DStracker);
 //   std::cerr<<"Cut added to MC data"<<std::endl;
     mccuts_accept->Fill("All Cuts",1);
 
     
   }
-  _USMCset.save_collection(USRefname);
-  _DSMCset.save_collection(DSRefname);
-  EndOfDS.save_collection(EndofDStrackerrefname);
+  _USMCset.save_collection("USRef.txt");
+  _DSMCset.save_collection("DSRef.txt");
 
   make_beam_histograms(USAllTOF, "Upstream, Data Reference", "ref_01US_alltof");
   make_beam_histograms(DSAllTOF, "Downstream, Data Reference", "ref_01DS_alltof");
@@ -1445,7 +1480,7 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
   // Collection DSConvSet;
   // for (int l=0; l<10; l++){
   for (int i=0; i<_USMCset.N(); i++){
-//    std::cerr<<"_USMCset entry: "<< i << std::endl;
+    std::cerr<<"_USMCset entry: "<< i << std::endl;
     for (int j=0; j<20; j++){
       double dthetaX = hx->GetRandom() * _sys["resX"];
       double dthetaY = hy->GetRandom() * _sys["resY"];
@@ -1496,7 +1531,7 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
       // double xtracker = xabs + dXdz_abs * (_sys["abspos"] + 549.95);
       // double ytracker = yabs + dYdz_abs * (dzabsDS + 549.95);
       
-      if( sqrt(projvar.X*projvar.X + projvar.Y*projvar.Y) > fiducial_cut_radius ){
+      if( sqrt(projvar.X*projvar.X + projvar.Y*projvar.Y) > meanp ){
         failcount++;
 //        std::cerr<<"ConvolveWithInputDistribution - event failed projvar check. Passed: "<< passcount<<" Failed: "<<failcount<<std::endl;
 	tmpvar.X = 0.0;
@@ -3720,7 +3755,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
      for(auto pchains_iterator = pchains->begin(); pchains_iterator != pchains->end(); ++ pchains_iterator){
         MAUS::DataStructure::Global::PrimaryChain* chain = (*pchains_iterator);
 //        std::cerr << "iterating? Chain: "<< chain->get_chain_type() <<" looking for "<< chain_type <<std::endl;
-//        std::cerr<<"Chain type: "<<chain->get_chain_type()<<std::endl;
+        std::cerr<<"Chain type: "<<chain->get_chain_type()<<std::endl;
 
 // If available read for chain type 5 first
 
@@ -3752,15 +3787,15 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                            }
 
 //                            std::cerr<<"Time: "<< a_track_pos.T()<<std::endl;
-//                            std::cerr << " Looking for z=" << tempMV.UScentre_absorber.Z <<" and have z=" << a_track_pos.Z() << std::endl;
+                            std::cerr << " Looking for z=" << tempMV.UScentre_absorber.Z <<" and have z=" << a_track_pos.Z() << std::endl;
 //                                      " or "<< tempMV.end_of_DStracker.Z <<" or "
 //                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
 //                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
-//                                std::cerr<<"Found global data from US track at centre of absorber"<<std::endl;
-//                                display_Vars(tempMV.UScentre_absorber);
+                                std::cerr<<"Found global data from US track at centre of absorber"<<std::endl;
+                                display_Vars(tempMV.UScentre_absorber);
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
 //                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
