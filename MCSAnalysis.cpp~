@@ -420,8 +420,10 @@ void MCSAnalysis::Execute(int mode=0){
   std::cerr<<"Extruded TOF01 time consistent with Muon: "<<cut_TOF01ext<<std::endl;
   std::cerr<<"Momentum at Absorber: "<<cut_absorber_momentum<<std::endl;
   std::cerr<<"Successfully extrude from Upstream tracker to TOF0: "<<cut_ext_TKU_TOF0<<std::endl;
+  std::cerr<<"End of DS tracker data file: "<<EndofDStrackerdataname<<std::endl;
+  std::cerr<<"End of DS tracker ref file: "<<EndofDStrackerrefname<<std::endl;
   if (mode == 0){
-//    dataSelection2();
+    dataSelection2();
     referenceSelection2();
   }
   else {
@@ -543,6 +545,7 @@ void MCSAnalysis::dataretrieve(){
   Collection USretrieved, DSretrieved, EndofDS, USPostFid, DSPostFid, USPostMom, DSPostMom, DSsetUncorrected;
   USretrieved.load_collection(USDataname);
   DSretrieved.load_collection(DSDataname);
+  std::cerr<<"Retrieving data from EndofDS: "<<EndofDStrackerdataname<<std::endl;
   EndofDS.load_collection(EndofDStrackerdataname);
   std::cerr<<"Entries in data USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in data DSretrieved: "<< DSretrieved.N()<<std::endl;
@@ -658,7 +661,7 @@ void MCSAnalysis::dataSelection2(){
 //    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-//    if (i>=100) break;
+//    if (i>=1000) break;
     cuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -1018,7 +1021,7 @@ void MCSAnalysis::referenceSelection2(){
  //   std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     refchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-//    if (i>=50000) break;
+//    if (i>=1000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
