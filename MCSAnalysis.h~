@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <typeinfo>
+#include <iostream>
+#include <sstream>
 
 // This is what we are here for
 #include "RooUnfold.h"
@@ -21,6 +24,16 @@
 #include "Fit/Fitter.h"
 #include "Math/Functor.h"
 #include "Math/RootFinder.h"
+#include "TLine.h"
+#include "TPaveStats.h"
+#include "TLegend.h"
+#include "TProfile.h"
+#include "TGraphAsymmErrors.h"
+#include "TStyle.h"
+#include "TFileInfo.h"
+#include "TSystem.h"
+#include "TString.h"
+#include "TFrame.h"
 
 // Read directly from the MAUS data structure.
 #include "src/common_cpp/DataStructure/TOFEvent.hh"
@@ -33,6 +46,7 @@
 #include "src/common_cpp/DataStructure/EMREvent.hh"
 #include "src/common_cpp/DataStructure/MCEvent.hh"
 #include "src/common_cpp/DataStructure/VirtualHit.hh"
+#include "src/common_cpp/DataStructure/Hit.hh"
 #include "src/common_cpp/DataStructure/Primary.hh"
 #include "src/common_cpp/DataStructure/Spill.hh"
 #include "src/common_cpp/DataStructure/Data.hh"
@@ -53,22 +67,27 @@
   
 class MCSAnalysis {
  public:
-  MCSAnalysis(std::string tree, std::string reftree, std::string outname, std::map<std::string, double> histlimits);
+  MCSAnalysis(std::string tree, std::string mctree, std::string reftree, std::string outname, std::map<std::string, double> histlimits);
   ~MCSAnalysis();
 
   void Write();
 
   TChain* GetTree(){ return chain; }
-  TChain* GetrefTree(){ return refchain; }
+  TChain* GetRefTree(){ return refchain; }
+  TChain* GetMCTree(){ return mcchain; }
+  TChain* GetMCEmptyTree(){ return mcemptychain; }
+  //TFileInfo* GetFileInfo(){ return fileinfo;}
   void Execute(int mode);
   void dataretrieve();
   void refretrieve();
-  void dataSelection();
+  void dataSelection(int mode);
   void dataSelection2();
   void referenceSelection();
   void referenceSelection2();
   void generateMCSResponse();
+  void TruthData(int mode);
   void ConvolveWithInputDistribution(std::string distname);
+  void ConvolveWithVirtualInputDistribution(std::string distname);
   void DoUnfolding();
   void DoDeconvolution(std::string model, int n_sel);
   void DoFFTDeconvolution();
@@ -76,6 +95,11 @@ class MCSAnalysis {
   void PlotRunInfo();
   void FitGaussian(std::string outfilename);
   void CalculateChi2(std::string outfilename, std::string distname);
+  void print();
+  TH1D* trkreffix(TH1D* h1);
+  TH1D* trkreffiy(TH1D* h1);
+  TH1D* trkreffiscatt(TH1D* h1);
+  TH1D* trkreffi2scatt(TH1D* h1);
   double myfunc(double pz, double s1, double s2, double E, double delta);
   double myfunc_deriv(double pz, double s1, double s2, double E, double delta);
   double myfunc1(double x);
@@ -84,6 +108,7 @@ class MCSAnalysis {
   double Eval(double x) const { return x+x; }
   double Derivative(double x) const { return 2*x; }
 
+  void Setangdef(double a){ angdef=a; }
   void SetTOFUpperLimit(double a){ TOF_upper_limit=a; }
   void SetTOFLowerLimit(double a){ TOF_lower_limit=a; }
   void SetMomentumUpperLimit(double a){ momentum_upper_limit=a; }
@@ -91,12 +116,20 @@ class MCSAnalysis {
   void SetRadialLimit(double a){ fiducial_cut_radius=a; }
   void SetGradientLimit(double a){ sigmap=a; }
   void SetModelFileName(std::string a){ modelfile=a; }
+  void SetModelFileName2(std::string a){ modelfile2=a; }
   void SetModelName1(std::string a) {modelname1=a; }
   void SetModelName2(std::string a) {modelname2=a; }
+  void SetModelName3(std::string a) {modelname3=a; }
+  void SetMaterial(std::string a) {material=a; }
+  void SetTrkrEffiName(std::string a) {trkreffiname=a; }
+  void SetTrkrEffiEmptyName(std::string a) {trkreffiemptyname=a; }
   void SetUSDataname(std::string a) {USDataname=a; }
   void SetDSDataname(std::string a) {DSDataname=a; }
   void SetUSRefname(std::string a) {USRefname=a; }
   void SetDSRefname(std::string a) {DSRefname=a; }
+  void SetEndofDStrackerrefname(std::string a) {EndofDStrackerrefname=a; }
+  void SetEndofDStrackerdataname(std::string a) {EndofDStrackerdataname=a; }
+
   void SetParentGeometryFile(std::string a) {geometryfile=a; }
   void SetFFTBinLimit(int a) { binlimit=a; }
   void SetFileName(std::string a) {outfilename=a; }
@@ -120,10 +153,17 @@ class MCSAnalysis {
   
   int jUS, jDS, kUS, kDS;
   
+  double angdef;
   double TOF_lower_limit;
   double TOF_upper_limit;
   double momentum_lower_limit;
   double momentum_upper_limit;
+  double semom;
+  double rmsmom;
+
+  double errrmsmom;
+  double bwmom;
+  double meanp;
 
   bool cut_TOF1_1sp;
   bool cut_TOF0_1sp;
@@ -143,8 +183,13 @@ class MCSAnalysis {
   int binlimit;
   
   std::string modelfile;
+  std::string modelfile2;
   std::string modelname1;
   std::string modelname2;
+  std::string modelname3;
+  std::string material;
+  std::string trkreffiname;
+  std::string trkreffiemptyname;
   std::string geometryfile;
   std::string USDataname;
   std::string USRefname;
@@ -166,6 +211,8 @@ class MCSAnalysis {
   Collection _USMCset;
   Collection _DSMCset;
   Collection _UStmpset;
+  Collection USTruthSet;
+  Collection DSTruthSet;
 
   RooUnfoldResponse resp_thetaX;
   RooUnfoldResponse resp_thetaY;
@@ -177,6 +224,15 @@ class MCSAnalysis {
   RooUnfoldResponse tresp_thetaScatt;
   RooUnfoldResponse tresp_theta2Scatt;
 
+  RooUnfoldResponse mresp_thetaX;
+  RooUnfoldResponse mresp_thetaY;
+  RooUnfoldResponse mresp_thetaScatt;
+  RooUnfoldResponse mresp_theta2Scatt;
+  
+  RooUnfoldResponse fresp_thetaX;
+  RooUnfoldResponse fresp_thetaY;
+  RooUnfoldResponse fresp_thetaScatt;
+  RooUnfoldResponse fresp_theta2Scatt;
   int USabsPlaneI;
   int DSabsPlaneI;
 
@@ -188,6 +244,10 @@ class MCSAnalysis {
   TChain* chain;
   // Training tree containing the response to the volume of interest
   TChain* refchain; 
+  // Truth tree containing the response to the volume of interest
+  TChain* mcchain; 
+  // Truth tree containing the response to the empty channel
+  TChain* mcemptychain; 
   
   int runnumber, LastRunNumber; 
   int SpillNumber;
@@ -203,12 +263,48 @@ class MCSAnalysis {
 
   TFile* outfile;
   std::string outfilename;
+  TH1D* diffradius;
+  TH1D* projradius;
+  TH2D* trackno;
+  TH2D* tofhitno;
+  TH1D* pathlengthabs;
   TH1D* tof10;
   TH1D* tof10_sel;
   TH1D* tof21;
   TH1D* tof21_sel;
   TH1D* calc_mom;
   TH2D* t_cor;
+  TH1D* residual01;
+  TH1D* residual12;
+  TH1D* residual12p6;
+  TH1D* residual01j;
+  TH1D* residual01short;
+  TH1D* residual12p2;
+  TH1D* residual01p6;
+  TH1D* residualcobb;
+  TH1D* TOF0Energy;
+  TH1D* difEloss;
+  TH2D* energyloss;
+  TH1D* energylossproj;
+  TProfile* energylosspro;
+  TH1D* TOF1Energy;
+  TH1D* TOF2Energy;
+  TH2D* pzdEdx;
+  TH2D* residual_plot;
+  TH2D* TOF01vsTOF12;
+  TH2D* TOF01forvsTOF01absfor;
+  TH2D* TOFcom;
+  TH2D* TOF01vsMCTruth;
+  TH2D* TOF12vsMCTruth;
+  TH2D* TOF12Paul6thforvsMCTruth;
+  TH2D* TOF12longPaul6thforvsMCTruth;
+  TH2D* TOF12Paul2ndforvsMCTruth;
+  TH2D* TOF01Paul6thforvsMCTruth;
+  TH2D* TOF01shortPaul6thforvsMCTruth;
+  TH2D* TOF01fordownvsMCTruth;
+  TH2D* TOF12fordownvsMCTruth;
+  TH2D* TOF12cobbvsMCTruth;
+  TH2D* TOF01forupvsTOF01fordown;
   TH1D* cor_mom;
   TH1D* mctof10;
   TH1D* mctof10_sel;
@@ -276,6 +372,7 @@ class MCSAnalysis {
   TH1D* theta_true_x_graph;
   TH1D* theta_true_x_bin;
   TH1D* theta_true_y_graph;
+  TH1D* theta_true_scat_graph;
 
   TH2D* scattering_proj_x_R;
   TH2D* scattering_proj_y_R;
@@ -301,17 +398,26 @@ class MCSAnalysis {
   
   bool MatchUSDS();
   bool PIDSelection(bool isdata);
-  bool RadialSelection(double pz);
+  bool RadialSelection(double pz, double pos, double radius);
+  bool TruthMatchUSDS();
+  bool TruthTime(bool isdata);
+  bool TruthRadialSelection(double pz, double pos, double radius, int j);
   bool MomentumSelection();
   std::vector<double> DefineProjectionAngles(Vars US, Vars DS);
+  std::vector<double> RotDefineProjectionAngles(Vars US, Vars DS, int l);
   double MomentumFromTOF(bool isdata);
-  double BetheBloch(double pz);
+  double BetheBloch(double pz, double Imat, double Z, double A, double hw);
+  double MostProbBB(double pz, double Imat, double Z, double A, double hw, double R, double z);
   double TimeofFlight();
+  double TimeofFlight12();
   std::vector<double> CalculatePathLength(double pz);
-  double CorMomFromTOF(double pz);
+  std::vector<double> rCalculatePathLength(double pz);
+  double PathLengthInLH2(double pz);
+  double CorMomFromTOF(double pz, double mat, double diff);
   bool findVirtualPlanes();
   void FillMuScattResponse(bool event_ok, Vars& US, Vars& DS, Vars& USMC, Vars& DSMC);
   void FillMCSResponse(bool event_ok, Vars& US, Vars& DS, Vars& USMC, Vars& DSMC);
+  void TruthGraph(Collection& USMC, Collection& DSMC);
   void FillVarsVirtual(Vars& tmpvar, int j);
   void FillCollectionSciFi(Collection& Set, int j, int k, double pz, int isDS, bool project=false);
   void FillCollectionSciFi2(Collection& Set, Vars tmpVars, bool project=false);

@@ -15,6 +15,8 @@
 #include "TTree.h"
 #include "TChain.h"
 #include "TGraph.h"
+#include "TFileInfo.h"
+#include "TSystem.h"
 
 // Read directly from the MAUS data structure.
 #include "src/common_cpp/DataStructure/TOFEvent.hh"
@@ -43,8 +45,10 @@ class MCSAnalysis {
 
   void Write();
 
+  TFileInfo* GetFileInfo(){ return fileinfo;}
   TChain* GetTree(){ return chain; }
   TChain* GetMCTree(){ return mcchain; }
+  TChain* GetMCEmptyTree(){ return mcemptychain; }
   void Execute();
   void dataSelection();
   void generateMCSResponse();
@@ -80,7 +84,8 @@ class MCSAnalysis {
   // Training tree containing the response to the volume of interest
   TChain* mcchain; 
   
-  
+  TFileInfo* fileinfo;
+
   MAUS::TOFEvent* tofevent;
   MAUS::SciFiEvent* scifievent;
   MAUS::KLEvent* klevent;

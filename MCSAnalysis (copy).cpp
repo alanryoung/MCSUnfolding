@@ -418,7 +418,7 @@ void MCSAnalysis::Write(){
   tofhitno->Write();
   diffradius->Write();
   projradius->Write();
-//  TCanvas *c1 = new TCanvas();
+  TCanvas *c1 = new TCanvas();
   //calc_mom->GetXaxis()->SetRangeUser(120,280);
   //calc_mom->Draw();
   cor_mom->SetLineColor(2);
@@ -846,7 +846,7 @@ void MCSAnalysis::Execute(int mode=0){
     DoDeconvolution(modelname2.c_str(),1);
   }
   else if (mode == 100){
-    dataSelection(mode);
+    dataSelection();
     referenceSelection();
   }
   else if (mode == 1){
@@ -1043,34 +1043,33 @@ void MCSAnalysis::dataretrieve(){
 //---------------------------------------------------------------------------------------
 // Momentum at absorber cut. 
 //---------------------------------------------------------------------------------------
-     double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
+    double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
                                  (USretrieved.E(i).py*USretrieved.E(i).py)+ 
                                  (USretrieved.E(i).pz*USretrieved.E(i).pz));
-     pass_mom->Fill(momentum_absorber);
-     if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
-        if (cut_absorber_momentum) continue;
-     }
-     USPostMom.append_instance(USretrieved.E(i));
-     DSPostMom.append_instance(DSretrieved.E(i));
+    pass_mom->Fill(momentum_absorber);
+    if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
+      if (cut_absorber_momentum) continue;
+    }
+    USPostMom.append_instance(USretrieved.E(i));
+    DSPostMom.append_instance(DSretrieved.E(i));
   
 //---------------------------------------------------------------------------------------
 // Misalignment Correction at centre of Absorber 
 //---------------------------------------------------------------------------------------
-     _USset.append_instance(USretrieved.E(i));
-     DSsetUncorrected.append_instance(DSretrieved.E(i));
-     if (USretrieved.E(i).isgood && DSretrieved.E(i).isgood){
-        Residual_x->Fill(USretrieved.E(i).X-DSretrieved.E(i).X);
-        Residual_y->Fill(USretrieved.E(i).Y-DSretrieved.E(i).Y);
-        Residual_z->Fill(USretrieved.E(i).Z-DSretrieved.E(i).Z);
-        Residual_px->Fill(USretrieved.E(i).px-DSretrieved.E(i).px);
-        Residual_py->Fill(USretrieved.E(i).py-DSretrieved.E(i).py);
-        Residual_pz->Fill(USretrieved.E(i).pz-DSretrieved.E(i).pz);
-        Residual_dxdz->Fill(USretrieved.E(i).dXdz-DSretrieved.E(i).dXdz);
-        Residual_dydz->Fill(USretrieved.E(i).dYdz-DSretrieved.E(i).dYdz);
-     }
-     if (runnumber != LastRunNumber){
-        UpdateRunInfo();
-     }
+    _USset.append_instance(USretrieved.E(i));
+    DSsetUncorrected.append_instance(DSretrieved.E(i));
+    if (USretrieved.E(i).isgood && DSretrieved.E(i).isgood){
+      Residual_x->Fill(USretrieved.E(i).X-DSretrieved.E(i).X);
+      Residual_y->Fill(USretrieved.E(i).Y-DSretrieved.E(i).Y);
+      Residual_z->Fill(USretrieved.E(i).Z-DSretrieved.E(i).Z);
+      Residual_px->Fill(USretrieved.E(i).px-DSretrieved.E(i).px);
+      Residual_py->Fill(USretrieved.E(i).py-DSretrieved.E(i).py);
+      Residual_pz->Fill(USretrieved.E(i).pz-DSretrieved.E(i).pz);
+      Residual_dxdz->Fill(USretrieved.E(i).dXdz-DSretrieved.E(i).dXdz);
+      Residual_dydz->Fill(USretrieved.E(i).dYdz-DSretrieved.E(i).dYdz);
+    }
+   if (runnumber != LastRunNumber){
+      UpdateRunInfo();
   }
   std::cerr<<"Data Momentum Cut complete and uncorrected residuals calculated. Number of entries: "<<_USset.N()<<std::endl;
   double mean_residual_px=Residual_px->GetMean();
@@ -1144,25 +1143,25 @@ void MCSAnalysis::dataSelection(int mode){
   for (int i=0; i<Nentries; i++){
 //    std::cerr<<"**********************************************"<< std::endl;
 //    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
-     chain->GetEntry(i);
-     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
+    chain->GetEntry(i);
+    if (i%100000==0) std::cout<<"Event "<<i<<"\n";
 //    if (i>=1000) break;
     // Set cuts based on the TOFs, ckov, kl, and EMR information
     // Locate the tracker reference planes. To be agnostic locate
     // the downstream most station of the upstream tracker and the
     // upstream most station of the downstream tracker.
-     cuts_accept->Fill("All Events",1);
+    cuts_accept->Fill("All Events",1);
     // if (scifievent->scifitracks().size() != 2) continue;
     // if ( !SelectMomentum() ) continue;
 
-     multiVars globalVars;
-     globalVars.USTOF0=reset_Vars();
-     globalVars.USTOF1=reset_Vars();
-     globalVars.UScentre_absorber=reset_Vars();
-     globalVars.UStrackerUS11=reset_Vars();
-     globalVars.UStrackerUS53=reset_Vars();
-     globalVars.USend_of_DStracker=reset_Vars();
-     globalVars.DScentre_absorber=reset_Vars();
+    multiVars globalVars;
+    globalVars.USTOF0=reset_Vars();
+    globalVars.USTOF1=reset_Vars();
+    globalVars.UScentre_absorber=reset_Vars();
+    globalVars.UStrackerUS11=reset_Vars();
+    globalVars.UStrackerUS53=reset_Vars();
+    globalVars.USend_of_DStracker=reset_Vars();
+    globalVars.DScentre_absorber=reset_Vars();
 //    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
 //    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
@@ -1173,57 +1172,57 @@ void MCSAnalysis::dataSelection(int mode){
 // Require 1 TOF1 Space Point
 //----------------------------------------------------------------------
 
-     double rawTOF1HitTime;
-     if ( tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() == 1 ){
-        rawTOF1HitTime = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
+    double rawTOF1HitTime;
+    if ( tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() == 1 ){
+      rawTOF1HitTime = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
 //      std::cerr<<"TOF1 time: "<<rawTOF1HitTime<<std::endl;
-     }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
+    }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
 //      std::cerr<<"**Multiple TOF1 hits - cutting"<<std::endl;
       pass_Tof1->Fill("Fail",1);
-        if (cut_TOF1_1sp) continue;
-     }else{
+      if (cut_TOF1_1sp) continue;
+    }else{
 //      std::cerr<<"**No TOF1 hit"<<std::endl;
-        pass_Tof1->Fill("Fail",1);
-        if (cut_TOF1_1sp) continue;
-     }
+      pass_Tof1->Fill("Fail",1);
+      if (cut_TOF1_1sp) continue;
+    }
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
-     USAllTOF.append_instance(globalVars.UScentre_absorber);
+    USAllTOF.append_instance(globalVars.UScentre_absorber);
 //    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
-     DSAllTOF.append_instance(globalVars.DScentre_absorber);
+    DSAllTOF.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-     cuts_accept->Fill("1 TOF1",1);
-     pass_Tof1->Fill("Pass",1);
+    cuts_accept->Fill("1 TOF1",1);
+    pass_Tof1->Fill("Pass",1);
 
 
 //----------------------------------------------------------------------
 // Require 1 TOF0 Space Point
 //----------------------------------------------------------------------
 
-     double rawTOF0HitTime;
-     if ( tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() == 1 ){
-        rawTOF0HitTime = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
+    double rawTOF0HitTime;
+    if ( tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() == 1 ){
+      rawTOF0HitTime = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
 //      std::cerr<<"TOF0 time: "<<rawTOF0HitTime<<std::endl;
-     }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
+    }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
 //      std::cerr<<"**Multiple TOF0 hits - cutting"<<std::endl;
-        pass_Tof0->Fill("Fail",1);
-        if (cut_TOF0_1sp) continue;
-     }else{
+      pass_Tof0->Fill("Fail",1);
+      if (cut_TOF0_1sp) continue;
+    }else{
 //      std::cerr<<"**No TOF0 hit"<<std::endl;
-        pass_Tof0->Fill("Fail",1);
-        if (cut_TOF0_1sp) continue;
-     }
+      pass_Tof0->Fill("Fail",1);
+      if (cut_TOF0_1sp) continue;
+    }
     
 //    std::cerr<<"Adding to PostTOF0"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
-     USPostTOF0.append_instance(globalVars.UScentre_absorber);
+    USPostTOF0.append_instance(globalVars.UScentre_absorber);
 //    std::cerr<<"Size of USPostTOF0: "<<USPostTOF0.N()<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
-     DSPostTOF0.append_instance(globalVars.DScentre_absorber);
+    DSPostTOF0.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSPostTOF0: "<<DSPostTOF0.N()<<std::endl;
-     cuts_accept->Fill("1 TOF0",1);
-     pass_Tof0->Fill("Pass",1);
+    cuts_accept->Fill("1 TOF0",1);
+      pass_Tof0->Fill("Pass",1);
 
 //---------------------------------------------------------------------------------------
 // Require only 1 US track
@@ -1231,41 +1230,40 @@ void MCSAnalysis::dataSelection(int mode){
 
 
 //  std::cerr<<" Number of tracks: "<<scifievent->scifitracks().size()<<std::endl;
-     int number_upstream_tracks=0;
-     for(size_t j=0; j<scifievent->scifitracks().size(); j++){
-        int tracker = scifievent->scifitracks()[j]->tracker();
-        if(tracker==0) number_upstream_tracks++;  
-     }
+  int number_upstream_tracks=0;
+  for(size_t j=0; j<scifievent->scifitracks().size(); j++){
+      int tracker = scifievent->scifitracks()[j]->tracker();
+      if(tracker==0) number_upstream_tracks++;  
+  }
 //  std::cerr<<"Number of Upstream tracks: "<< number_upstream_tracks << std::endl;
-     if (number_upstream_tracks==0){
+  if (number_upstream_tracks==0){
 //    std::cerr<<"**Fail 1 US track cut, no tracks"<<std::endl;
-        pass_TKU->Fill("Fail",1);
-        if (cut_TKU_1track) continue;    
-     } else if(number_upstream_tracks>1){
+    pass_TKU->Fill("Fail",1);
+    if (cut_TKU_1track) continue;    
+  } else if(number_upstream_tracks>1){
 //    std::cerr<<"**Fail 1 US track cut, more than 1 track"<<std::endl; 
-        pass_TKU->Fill("Fail",1);
-        if (cut_TKU_1track) continue;
-     } 
+    pass_TKU->Fill("Fail",1);
+    if (cut_TKU_1track) continue;
+  } 
   
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
-     USPostTKU.append_instance(globalVars.UScentre_absorber);
+    USPostTKU.append_instance(globalVars.UScentre_absorber);
 //    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
-     DSPostTKU.append_instance(globalVars.DScentre_absorber);
+    DSPostTKU.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-     cuts_accept->Fill("1 US track",1);
-     pass_TKU->Fill("Pass",1);
+    cuts_accept->Fill("1 US track",1);
+    pass_TKU->Fill("Pass",1);
 
 //---------------------------------------------------------------------------------------
 // mode -2 cut based on Monte Carlo event
 //---------------------------------------------------------------------------------------
     
-     if (mode==-2) { 
-        if (mcevent->GetVirtualHits()->size() >= 49) {
-	   if (mcevent->GetVirtualHits()->at(48).GetParticleId()!=-13) continue;
-        }
-     }
+    if (mode==-2) { 
+    if (mcevent->GetVirtualHits()->size() >= 49) {
+	    if (mcevent->GetVirtualHits()->at(48).GetParticleId()!=-13) continue;
+    }
 
 
 //---------------------------------------------------------------------------------------
@@ -6303,19 +6301,6 @@ double MCSAnalysis::Check_Radius_US(double low_z, double high_z)
 //    if (!found_tracks) std::cerr<<"Found no tracks for comparison"<<std::endl;
     return max_rad;
 }
-
-TH1D *defineHist2(const char* fname, const char* ftitle, Int_t fnbinsx, Double_t fxlow, Double_t fxup)
-{
-  TH1D *fhis1D = new TH1D(fname, ftitle, fnbinsx, fxlow, fxup);
-  fhis1D->SetMinimum(0.001);
-  fhis1D->GetXaxis()->SetTitle(ftitle);
-  Double_t binning = ( (fhis1D->GetXaxis()->GetXmax()) - (fhis1D->GetXaxis()->GetXmin()) ) / (fhis1D->GetNbinsX());
-  fhis1D->GetYaxis()->SetTitle( Form("Events / (%.2f [Mev/c^{2}])", binning) );
-  fhis1D->GetYaxis()->SetTitleOffset(1.6);
-  fhis1D->GetYaxis()->SetLabelSize(0.035);
-  return fhis1D;
-}
-
 
 
 

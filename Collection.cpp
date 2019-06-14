@@ -129,10 +129,7 @@ void Collection::calc_mean() {
   std::vector<Vars>::iterator xit = _Set.begin();
   double N = double(_Set.size());
   do {
-    if (!(*xit).isgood) {
-      xit++;
-      continue;
-    }
+    if (!(*xit).isgood) continue;
     _mean = _mean + (*xit);
     xit++;
   } while(xit != _Set.end());
@@ -157,10 +154,7 @@ void Collection::calc_cov() {
   std::vector<Vars>::iterator xit = _Set.begin();
   double N = double(_Set.size());
   do {
-    if (!(*xit).isgood) { 
-      xit++;
-      continue;
-    }
+    if (!(*xit).isgood) continue;
     diag = diag + ((*xit) - _mean)*((*xit) - _mean);
     _cov[0][1] += ((*xit).X - _mean.X)*((*xit).dXdz - _mean.dXdz);
     _cov[0][2] += ((*xit).X - _mean.X)*((*xit).Y - _mean.Y);

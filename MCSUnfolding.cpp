@@ -12,8 +12,10 @@ struct specvals {
   std::string outfile;
   std::string outfilename;
   std::string dataname;
+  std::string emptydataname;
   std::string trainname;
   std::string modelname;
+  std::string modelname2;
   std::string geometryname;
   std::string USdatafile;
   std::string DSdatafile;
@@ -24,8 +26,13 @@ struct specvals {
 
   std::string model1;			       
   std::string model2;
+  std::string model3;
+  std::string material;
+  std::string trkreffiname;
+  std::string trkreffiemptyname;
   std::map<std::string, double> sys;
   std::map<std::string, double> histlimits;
+  double angdef;
   double TOF_ll;
   double TOF_ul;
   double mom_ll;
@@ -71,6 +78,8 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.trainname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("modelfile")) ){
 	  spec.modelname = (char*)xmlGetProp(cur_node, nm);
+        } else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("modelfile2")) ){
+	  spec.modelname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("USdatafile")) ){
 	  spec.USdatafile = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DSdatafile")) ){
@@ -87,8 +96,16 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.model1 = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model2")) ) {
 	  spec.model2 = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model3")) ) {
+	  spec.model3 = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("material")) ) {
+	  spec.material = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("geofile")) ) {
 	  spec.geometryname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("trkreffiname")) ) {
+	  spec.trkreffiname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("trkreffiemptyname")) ) {
+	  spec.trkreffiemptyname = (char*)xmlGetProp(cur_node, nm);
 	}else {
 	  std::cout<<"File designation not recognized. Will ignore "
 		   << xmlGetProp(cur_node, id) 
@@ -140,7 +157,9 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	}
       }
       if (xmlStrEqual(cur_node->name, xmlCharStrdup("sys")) ){
-	spec.sys[(char*)xmlGetProp(cur_node, nm)] = 
+	if ( xmlStrEqual(xmlGetProp(cur_node, nm), xmlCharStrdup("angdef")) ){
+	  spec.angdef = std::atof((char*)xmlGetProp(cur_node, vl));
+	} else spec.sys[(char*)xmlGetProp(cur_node, nm)] = 
 	  std::atof((char*)xmlGetProp(cur_node, vl));
       }
       if (xmlStrEqual(cur_node->name, xmlCharStrdup("histlimits")) ){
@@ -176,6 +195,7 @@ int main(int argc, char* argv[]) {
   spec.dataname  = "";
   spec.trainname = "";
   spec.modelname = "";
+  spec.modelname2 = "";
   spec.geometryname = "";
   spec.USdatafile = "";
   spec.DSdatafile = "";
@@ -219,14 +239,16 @@ int main(int argc, char* argv[]) {
     spec.mom_ul	   = std::atof(argv[7]);
     spec.fid_rad   = std::atof(argv[8]);
     spec.modelname = argv[9];
+    spec.modelname2 = argv[9];
     spec.mode      = std::atoi(argv[10]);
-    spec.outfilename = argv[11];
+    spec.angdef    = std::atof(argv[11]);
+    spec.outfilename = argv[12];
   }
     
   if (spec.mode >= 0){
-    mode_tree = "reduced_tree";
+    mode_tree = "recon_reduced_tree";
   } else {
-    mode_tree = "reduced_MCtree";
+    mode_tree = "recon_reduced_MCtree";
   }
   
   std::cout<<"Writing outfile to "<<spec.outfile<<std::endl; 
@@ -234,6 +256,7 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading data from "<<spec.dataname<<std::endl; 
   std::cout<<"Reading reference data from "<<spec.trainname<<std::endl; 
   std::cout<<"Reading models from "<<spec.modelname<<std::endl;
+  std::cout<<"Reading models from "<<spec.modelname2<<std::endl; 
   std::cout<<"Reading Upstream data "<<spec.USdatafile<<std::endl;
   std::cout<<"Reading Downstream data "<<spec.DSdatafile<<std::endl;
   std::cout<<"Reading Upstream Ref "<<spec.USreffile<<std::endl;
@@ -244,6 +267,7 @@ int main(int argc, char* argv[]) {
 
   std::cout<<"Use "<<spec.geometryname<<" for propagation\n";
   std::cout<<"\n";
+  std::cout<<"angdef " <<spec.angdef<<std::endl;
   std::cout<<"TOF selection between "
 	   <<spec.TOF_ll<<" and "<<spec.TOF_ul<<std::endl;
   std::cout<<"Momentum selection between " 
@@ -265,8 +289,9 @@ int main(int argc, char* argv[]) {
   std::cout<<"Successfully extrude from Upstream tracker to TOF0: "<<spec.cut_ExtrudeTKUTOF0<<std::endl;
   std::cout<<"\n";
   std::cout<<"Attempting to create analysis object"<<std::endl;
-  MCSAnalysis anal("reduced_tree", mode_tree, spec.outfile, spec.histlimits);
+  MCSAnalysis anal("recon_reduced_tree", "Truth_reduced_tree", mode_tree, spec.outfile, spec.histlimits);
   std::cout<<"Analysis object created"<<std::endl;
+  /*
   TFile* data = new TFile(spec.dataname.c_str());
   if(data->IsZombie()){
     std::cout<<"Data file is a zombie. Aborting."<<std::endl;
@@ -277,24 +302,33 @@ int main(int argc, char* argv[]) {
     std::cout<<"Training file is a zombie. Aborting."<<std::endl;
     return -1;
   }
+  */
+  anal.Setangdef(spec.angdef);
   anal.SetTOFLowerLimit(spec.TOF_ll);
   anal.SetTOFUpperLimit(spec.TOF_ul);
   anal.SetMomentumLowerLimit(spec.mom_ll);
   anal.SetMomentumUpperLimit(spec.mom_ul);
   anal.SetRadialLimit(spec.fid_rad);
   anal.SetGradientLimit(spec.fid_grad);
+  std::cout<<"Check for segmentation fault 1"<<std::endl;
   anal.SetModelFileName(spec.modelname.c_str());
   anal.SetModelName1(spec.model1);
   anal.SetModelName2(spec.model2);
+  anal.SetModelName3(spec.model3);
+  anal.SetMaterial(spec.material);
+  std::cout<<"Check for segmentation fault 2"<<std::endl;
+  std::ostringstream strs;
   anal.SetUSDataname(spec.USdatafile);
   anal.SetDSDataname(spec.DSdatafile);
   anal.SetUSRefname(spec.USreffile);
   anal.SetDSRefname(spec.DSreffile);
   anal.SetEndofDStrackerrefname(spec.EndofDStrackerrefname);
   anal.SetEndofDStrackerdataname(spec.EndofDStrackerdataname);
-
+  anal.SetTrkrEffiName(spec.trkreffiname.c_str());
+  anal.SetTrkrEffiEmptyName(spec.trkreffiemptyname.c_str());
   anal.SetParentGeometryFile(spec.geometryname.c_str());
   anal.SetFileName(spec.outfilename.c_str());
+  std::cout<<"Check for segmentation fault 3"<<std::endl;
 
   anal.SetCutTOF1SP1(spec.cut_TOF1_1sp);
   anal.SetCutTOF0SP1(spec.cut_TOF0_1sp);
@@ -307,10 +341,66 @@ int main(int argc, char* argv[]) {
   anal.SetCutTOF01ext(spec.cut_TOF01ext);
   anal.SetCutAbsorberMomentum(spec.cut_AbsorberMomentum);
   anal.SetCutExtrudeTKUTOF0(spec.cut_ExtrudeTKUTOF0);
+  std::cout<<"Check for segmentation fault 4"<<std::endl;
+  
+  void* dir = gSystem->OpenDirectory(spec.trainname.c_str());
+  const char *ent;
+  TString fn = spec.trainname.c_str();
+  while (ent = gSystem->GetDirEntry(dir)) {
+      fn = fn.Append(ent);
+          if (fn.Contains("ZeroAbs")) {
+          if (fn.Contains(".root")) {
+	          anal.GetRefTree()->Add(fn);
+	  }
+      }
+      fn = spec.trainname.c_str();
+  }
+  gSystem->FreeDirectory(dir);
 
-  anal.GetrefTree()->Add(spec.trainname.c_str());
+  dir = gSystem->OpenDirectory(spec.dataname.c_str());
+  fn = spec.dataname.c_str();
+  while (ent = gSystem->GetDirEntry(dir)) {
+      fn = fn.Append(ent);
+          if (fn.Contains("LiH2") || fn.Contains("LiH1")) {
+          if (fn.Contains(".root")) {
+	          anal.GetTree()->Add(fn);
+	  }
+      }
+      fn = spec.dataname.c_str();
+  }
+  gSystem->FreeDirectory(dir);
 
-  anal.GetTree()->Add(spec.dataname.c_str());
+  dir = gSystem->OpenDirectory(spec.dataname.c_str());
+  fn = spec.dataname.c_str();
+  while (ent = gSystem->GetDirEntry(dir)) {
+      fn = fn.Append(ent);
+          if (fn.Contains("LiH2") || fn.Contains("LiH1")) {
+          if (fn.Contains(".root")) {
+
+	          anal.GetMCTree()->Add(fn);
+	  }
+      }
+      fn = spec.dataname.c_str();
+  }
+  gSystem->FreeDirectory(dir);
+  
+  dir = gSystem->OpenDirectory(spec.trainname.c_str());
+  fn = spec.trainname.c_str();
+  while (ent = gSystem->GetDirEntry(dir)) {
+      fn = fn.Append(ent);
+          if (fn.Contains("ZeroAbs")) {
+          if (fn.Contains(".root")) {
+	          anal.GetMCEmptyTree()->Add(fn);
+	  }
+      }
+      fn = spec.trainname.c_str();
+  }
+  gSystem->FreeDirectory(dir);
+
+
+//  anal.GetrefTree()->Add(spec.trainname.c_str());
+
+//  anal.GetTree()->Add(spec.dataname.c_str());
   
   for(std::map<std::string, double>::iterator it=spec.sys.begin();
       it != spec.sys.end(); ++it){
