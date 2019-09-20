@@ -23,6 +23,8 @@ struct specvals {
   std::string DSreffile;
   std::string EndofDStrackerrefname;
   std::string EndofDStrackerdataname;
+  std::string StartofDStrackerrefname;
+  std::string StartofDStrackerdataname;
 
   std::string model1;			       
   std::string model2;
@@ -92,6 +94,10 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.EndofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("EndofDStrackerdataname")) ){
 	  spec.EndofDStrackerdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("StartofDStrackerrefname")) ){
+	  spec.StartofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("StartofDStrackerdataname")) ){
+	  spec.StartofDStrackerdataname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model1")) ) {
 	  spec.model1 = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model2")) ) {
@@ -203,6 +209,8 @@ int main(int argc, char* argv[]) {
   spec.DSreffile = "";
   spec.EndofDStrackerrefname = "";
   spec.EndofDStrackerdataname = "";
+  spec.StartofDStrackerrefname = "";
+  spec.StartofDStrackerdataname = "";
   spec.TOF_ll = 27.0;
   spec.TOF_ul = 42.0;
   spec.mom_ll = 140;
@@ -252,7 +260,7 @@ int main(int argc, char* argv[]) {
   }
   
   std::cout<<"Writing outfile to "<<spec.outfile<<std::endl; 
-  std::cout<<"Reading outfilename at "<<spec.outfilename<<std::endl; 
+//  std::cout<<"Reading outfilename at "<<spec.outfilename<<std::endl; 
   std::cout<<"Reading data from "<<spec.dataname<<std::endl; 
   std::cout<<"Reading reference data from "<<spec.trainname<<std::endl; 
   std::cout<<"Reading models from "<<spec.modelname<<std::endl;
@@ -263,6 +271,8 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading Downstream Ref "<<spec.DSreffile<<std::endl;
   std::cout<<"Reading End of Downstream tracker Ref "<<spec.EndofDStrackerrefname<<std::endl;
   std::cout<<"Reading End of Downstream tracker data "<<spec.EndofDStrackerdataname<<std::endl;
+  std::cout<<"Reading Start of Downstream tracker Ref "<<spec.StartofDStrackerrefname<<std::endl;
+  std::cout<<"Reading Start of Downstream tracker data "<<spec.StartofDStrackerdataname<<std::endl;
 
 
   std::cout<<"Use "<<spec.geometryname<<" for propagation\n";
@@ -289,9 +299,10 @@ int main(int argc, char* argv[]) {
   std::cout<<"Successfully extrude from Upstream tracker to TOF0: "<<spec.cut_ExtrudeTKUTOF0<<std::endl;
   std::cout<<"\n";
   std::cout<<"Attempting to create analysis object"<<std::endl;
-  MCSAnalysis anal("recon_reduced_tree", "Truth_reduced_tree", mode_tree, spec.outfile, spec.histlimits);
+//  MCSAnalysis anal("recon_reduced_tree", "Truth_reduced_tree", mode_tree, spec.outfile, spec.histlimits);
+  MCSAnalysis anal("reduced_tree", "Truth_reduced_tree", "reduced_tree", spec.outfile, spec.histlimits);
   std::cout<<"Analysis object created"<<std::endl;
-  /*
+  
   TFile* data = new TFile(spec.dataname.c_str());
   if(data->IsZombie()){
     std::cout<<"Data file is a zombie. Aborting."<<std::endl;
@@ -302,7 +313,7 @@ int main(int argc, char* argv[]) {
     std::cout<<"Training file is a zombie. Aborting."<<std::endl;
     return -1;
   }
-  */
+  
   anal.Setangdef(spec.angdef);
   anal.SetTOFLowerLimit(spec.TOF_ll);
   anal.SetTOFUpperLimit(spec.TOF_ul);
@@ -324,6 +335,8 @@ int main(int argc, char* argv[]) {
   anal.SetDSRefname(spec.DSreffile);
   anal.SetEndofDStrackerrefname(spec.EndofDStrackerrefname);
   anal.SetEndofDStrackerdataname(spec.EndofDStrackerdataname);
+  anal.SetStartofDStrackerrefname(spec.StartofDStrackerrefname);
+  anal.SetStartofDStrackerdataname(spec.StartofDStrackerdataname);
   anal.SetTrkrEffiName(spec.trkreffiname.c_str());
   anal.SetTrkrEffiEmptyName(spec.trkreffiemptyname.c_str());
   anal.SetParentGeometryFile(spec.geometryname.c_str());
@@ -342,12 +355,16 @@ int main(int argc, char* argv[]) {
   anal.SetCutAbsorberMomentum(spec.cut_AbsorberMomentum);
   anal.SetCutExtrudeTKUTOF0(spec.cut_ExtrudeTKUTOF0);
   std::cout<<"Check for segmentation fault 4"<<std::endl;
-  
+/*  
   void* dir = gSystem->OpenDirectory(spec.trainname.c_str());
+  std::cout<<"Main Training File Directory: "<< dir <<std::endl;
   const char *ent;
   TString fn = spec.trainname.c_str();
+  std::cout<<"Check for segmentation fault 5"<<std::endl;
+  std::cout<<"Main Training File: "<< fn <<std::endl;
   while (ent = gSystem->GetDirEntry(dir)) {
       fn = fn.Append(ent);
+      std::cout<<"Loop Main Training File: "<< fn <<std::endl;
           if (fn.Contains("ZeroAbs")) {
           if (fn.Contains(".root")) {
 	          anal.GetRefTree()->Add(fn);
@@ -358,23 +375,31 @@ int main(int argc, char* argv[]) {
   gSystem->FreeDirectory(dir);
 
   dir = gSystem->OpenDirectory(spec.dataname.c_str());
+  std::cout<<"Main Data File Directory: "<< dir <<std::endl;
   fn = spec.dataname.c_str();
+  std::cout<<"Check for segmentation fault 6"<<std::endl;
+  std::cout<<"Main Data File: "<< fn <<std::endl;
   while (ent = gSystem->GetDirEntry(dir)) {
       fn = fn.Append(ent);
-          if (fn.Contains("LiH2") || fn.Contains("LiH1")) {
+      std::cout<<"Loop Main Data File: "<< fn <<std::endl;
+          if (fn.Contains("LiH")) {
           if (fn.Contains(".root")) {
 	          anal.GetTree()->Add(fn);
 	  }
       }
       fn = spec.dataname.c_str();
   }
+  std::cout<<"Check for segmentation fault 7"<<std::endl;
+
   gSystem->FreeDirectory(dir);
 
   dir = gSystem->OpenDirectory(spec.dataname.c_str());
   fn = spec.dataname.c_str();
+  std::cout<<"MC Data File: "<< fn <<std::endl;
   while (ent = gSystem->GetDirEntry(dir)) {
       fn = fn.Append(ent);
-          if (fn.Contains("LiH2") || fn.Contains("LiH1")) {
+      std::cout<<"Loop MC Data File: "<< fn <<std::endl;
+          if (fn.Contains("LiH")) {
           if (fn.Contains(".root")) {
 
 	          anal.GetMCTree()->Add(fn);
@@ -382,12 +407,16 @@ int main(int argc, char* argv[]) {
       }
       fn = spec.dataname.c_str();
   }
+  std::cout<<"Check for segmentation fault 8"<<std::endl;
+
   gSystem->FreeDirectory(dir);
   
   dir = gSystem->OpenDirectory(spec.trainname.c_str());
   fn = spec.trainname.c_str();
+  std::cout<<"MC Training File: "<< fn <<std::endl;
   while (ent = gSystem->GetDirEntry(dir)) {
       fn = fn.Append(ent);
+      std::cout<<"Loop MC Training File: "<< fn <<std::endl;
           if (fn.Contains("ZeroAbs")) {
           if (fn.Contains(".root")) {
 	          anal.GetMCEmptyTree()->Add(fn);
@@ -395,12 +424,14 @@ int main(int argc, char* argv[]) {
       }
       fn = spec.trainname.c_str();
   }
+  std::cout<<"Check for segmentation fault 10"<<std::endl;
+
   gSystem->FreeDirectory(dir);
 
+*/
+  anal.GetRefTree()->Add(spec.trainname.c_str());
 
-//  anal.GetrefTree()->Add(spec.trainname.c_str());
-
-//  anal.GetTree()->Add(spec.dataname.c_str());
+  anal.GetTree()->Add(spec.dataname.c_str());
   
   for(std::map<std::string, double>::iterator it=spec.sys.begin();
       it != spec.sys.end(); ++it){

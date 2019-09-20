@@ -65,6 +65,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   DSRefname = "DSRef.txt";
   EndofDStrackerrefname= "EndofDStrackerRef.txt";
   EndofDStrackerdataname= "EndofDStrackerData.txt";
+  StartofDStrackerrefname= "StartofDStrackerRef.txt";
+  StartofDStrackerdataname= "StartofDStrackerData.txt";
 
  
   _histlimits["NbinsXY"] = histlimits.count("NbinsXY") != 0 ? histlimits["NbinsXY"]: 200;
@@ -195,6 +197,10 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   cor_mom = new TH1D("cor_mom","Cor Momentum Calculated from TOF; Momentum (MeV/c)", 100, 0, 400);
   mccalc_mom = new TH1D("mccalc_mom","Momentum Calculated from TOF; Momentum (MeV/c)", 400, 0, 400);
   mctrue_mom = new TH1D("mctrue_mom","Momentum from Virtual Planes; Momentum (MeV/c)", 400, 0, 400);
+  Bfield_DStrackerX = new TH1D("BfieldDSTrackerX","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
+  Bfield_DStrackerY = new TH1D("BfieldDSTrackerY","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
+  Bfield_DStrackerZ = new TH1D("BfieldDSTrackerZ","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
+  
 
 // Cuts and accepted muon histograms for absorber present data
   cuts_accept   = new TH1D("cuts_accept", 
@@ -206,6 +212,7 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   pass_Diff = new TH1D("datapass_Diff",";Passed Cut; Events",100, 0, 150);
   pass_Fid = new TH1D("datapass_Fid",";Passed Cut; Events",100, 0, 200);
   pass_Fid_wide = new TH1D("datapass_Fid_wide",";Passed Cut; Events",100, 0, 2000);
+  pass_Fid_old = new TH1D("datapass_Fid_old",";Passed Cut; Events",100, 0, 200);
   pass_ExtTKU0 = new TH1D("datapass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
   pass_TOF01 = new TH1D("datapass_TOF01",";Passed Cut; Events",100, 23, 35);
   pass_TOF01Ex = new TH1D("datapass_TOF01Ex",";Passed Cut; Events",100, 23, 35);
@@ -412,6 +419,9 @@ void MCSAnalysis::Write(){
   mctof21_sel->Write();
   mccalc_mom->Write();
   mctrue_mom->Write();
+  Bfield_DStrackerX->Write();
+  Bfield_DStrackerY->Write();
+  Bfield_DStrackerZ->Write();
   cuts_accept->Write();
   mccuts_accept->Write();
   trackno->Write();
@@ -761,6 +771,7 @@ void MCSAnalysis::Write(){
   pass_Diff->Write();
   pass_Fid->Write();
   pass_Fid_wide->Write();
+  pass_Fid_old->Write();
   pass_ExtTKU0->Write();
   pass_TOF01->Write();
   pass_TOF01Ex->Write();
@@ -839,6 +850,8 @@ void MCSAnalysis::Execute(int mode=0){
   std::cerr<<"Successfully extrude from Upstream tracker to TOF0: "<<cut_ext_TKU_TOF0<<std::endl;
   std::cerr<<"End of DS tracker data file: "<<EndofDStrackerdataname<<std::endl;
   std::cerr<<"End of DS tracker ref file: "<<EndofDStrackerrefname<<std::endl;
+  std::cerr<<"Start of DS tracker data file: "<<StartofDStrackerdataname<<std::endl;
+  std::cerr<<"Start of DS tracker ref file: "<<StartofDStrackerrefname<<std::endl;
   if (mode == 0){
     dataretrieve();
     generateMCSResponse();
@@ -846,10 +859,20 @@ void MCSAnalysis::Execute(int mode=0){
     DoDeconvolution(modelname2.c_str(),1);
   }
   else if (mode == 100){
+    std::cerr<<"Running Pre-Data Analysis Phase"<<std::endl;
     dataSelection(mode);
     referenceSelection();
   }
+  else if (mode == 101){
+    std::cerr<<"Running Pre-Data Analysis Phase - Absorber Only"<<std::endl;
+    dataSelection(mode);
+  }
+  else if (mode == 102){
+    std::cerr<<"Running Pre-Data Analysis Phase - Empty Only"<<std::endl;
+    referenceSelection();
+  }
   else if (mode == 1){
+    std::cerr<<"Running Main Analysis Phase"<<std::endl;
     dataretrieve();
     refretrieve();   
     DoUnfolding();
@@ -861,6 +884,9 @@ void MCSAnalysis::Execute(int mode=0){
     //FitGaussian(outfilename.c_str());
     //CalculateChi2(outfilename.c_str(), modelname2.c_str());
     //Write();
+  }
+  else if (mode == 6){
+    refretrieve();   
   }
   else if (mode == -1){
     dataretrieve();
@@ -924,26 +950,46 @@ void MCSAnalysis::Execute(int mode=0){
 /////////////////////////////////////////////////////////////////////
 
 void MCSAnalysis::refretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, USPostMom, DSPostMom, DSsetUncorrected;
+  Collection USretrieved, DSretrieved, EndofDS, StartofDS, USPostMom, DSPostMom, DSsetUncorrected;
   USretrieved.load_collection(USRefname);
   DSretrieved.load_collection(DSRefname);
   EndofDS.load_collection(EndofDStrackerrefname);
+  StartofDS.load_collection(StartofDStrackerrefname);
   std::cerr<<"Entries in ref USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in ref DSretrieved: "<< DSretrieved.N()<<std::endl;
   std::cerr<<"Entries in EndofDSref: "<< EndofDS.N()<<std::endl;
+  std::cerr<<"Entries in StartofDSref: "<< StartofDS.N()<<std::endl;
   outfile->cd();
+  BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
+  double pi = 3.14159265358979323846;
+  double c_light=299.792458;
+  double x = 0; double y = 0; double t = 0;
+//Plot axial magnetic field
+  for(int i=0;i<1000;i++){
+     double z=(_sys["dataDS11"]+((i+0.5)*(_sys["dataDS53"]-_sys["dataDS11"])/1000));
+     std::vector<double> magfield=field->GetFieldValue2(x,y,z,t);
+     Bfield_DStrackerX->Fill(z,magfield[0]);
+     Bfield_DStrackerY->Fill(z,magfield[1]);
+     Bfield_DStrackerZ->Fill(z,magfield[2]);
+  }
+
 
   for(int i=0;i<USretrieved.N();i++){
-//------------------------------------------------------------------------------------------------------
-// Fiducial Cut
-//------------------------------------------------------------------------------------------------------
-
-     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
-     pass_Fid->Fill(fiducial_radius);
-     pass_Fid_wide->Fill(fiducial_radius);
-     if ( fiducial_radius > fiducial_cut_radius){
-        if (cut_fiducial) continue;
-     } 
+//  for(int i=0;i<100000;i++){
+     double endx=EndofDS.E(i).X;
+     double endy=EndofDS.E(i).Y;
+     double endz=EndofDS.E(i).Z;
+     double endpx=EndofDS.E(i).px;
+     double endpy=EndofDS.E(i).py;
+     double endpz=EndofDS.E(i).pz;
+     double startx=StartofDS.E(i).X;
+     double starty=StartofDS.E(i).Y;
+     double startz=StartofDS.E(i).Z;
+     double startpx=StartofDS.E(i).px;
+     double startpy=StartofDS.E(i).py;
+     double startpz=StartofDS.E(i).pz;
+     std::vector<double> magfield=field->GetFieldValue2(x,y,startz,t);
+     double bz=magfield[2];
 
 //---------------------------------------------------------------------------------------
 // Momentum at absorber cut. 
@@ -966,7 +1012,106 @@ void MCSAnalysis::refretrieve(){
     DSPostMom.append_instance(DSretrieved.E(i));
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
 //    cuts_accept->Fill("Momentum",1);    
-  
+
+//------------------------------------------------------------------------------------------------------
+// Fiducial Cut
+//------------------------------------------------------------------------------------------------------
+//     std::cerr<<"Axial magnetic field  : "<<bz<<std::endl;
+
+//------------------------------------------------------------------------------------------------------
+//    Set the maximum r2 on each track point between tp and the next tp that
+//    the track excurts from the axis. Estimate the region between adjacent track
+//    points by extrapolating assuming uniform field and calculate the excursion
+//    analytically. Sets the max_r2 parameter on the track.
+//    Get azimuthal angles
+//    - tp_0: track point with lower z
+//    - tp_1: track point with higher z
+//    - bz: magnetic field
+//    Returns azimuthal angles, sorted for direction of rotation. If more than one
+//    rotation, add the delta phi on (so that we get extra turns).
+
+     double q = 1;
+     double phi_start, phi_end;
+     if (q*bz > 0){
+        phi_start = atan2(startpx, startpy);
+        phi_end = atan2(endpx, endpy);
+     }
+     else if (q*bz < 0){
+        phi_start = atan2(endpx, endpy);
+        phi_end = atan2(startpx, startpy);
+     }
+     double k0 = q*bz*c_light/endpz;
+//     std::cerr<<"q: "<<q<<" bz: "<<bz<<" c_light: "<<c_light<<" endpz: "<<endpz<<" k0: "<<k0<<std::endl;
+     while (phi_start < 0) { //phi_start is always in domain 0 < 2 pi
+        phi_start += 2*pi;
+     }
+     while (phi_end < phi_start) { // phi_end is always > phi_start
+        phi_end += 2*pi;
+     }
+    // for larger steps, we can make more than one rotation
+    double delta_phi = k0*(startz - endz);
+    double n_rot = abs(delta_phi)/pi/2.;
+//    std::cerr<<"delta_phi: "<<delta_phi<<" n_rot: "<<n_rot<<std::endl;
+    phi_end += floor(n_rot)*2.*pi;
+/*
+    Get the azimuthal angle at which the trajectory has maximum excursion from
+    the axis
+    - tp_0: track point with lower z
+    - tp_1: track point with higher z
+    - bz: magnetic field
+    - phi_start: phi at which we start
+    Returns azimuthal angles, sorted for direction of rotation. We add on 2pi so
+    that it is always greater than phi_start.
+*/
+    double tp_start_x, tp_start_y, tp_start_z, tp_start_pt;
+    if (q*bz > 0){
+        tp_start_x = startx;
+        tp_start_y = starty;
+        tp_start_z = startz;
+        tp_start_pt = sqrt(startpx*startpx+startpy*startpy);
+    }
+    else if (q*bz < 0){
+        tp_start_x = endx;
+        tp_start_y = endy;
+        tp_start_z = endz;
+        tp_start_pt = sqrt(endpx*endpx+endpy*endpy);
+    }
+    // coordinates of helix centre
+    double pt = tp_start_pt;
+    double x0 = tp_start_x + pt*cos(phi_start)/q/bz/c_light;
+    double y0 = tp_start_y - pt*sin(phi_start)/q/bz/c_light;
+    double r0 = abs(pt/q/bz/c_light); // wavenumber is qBm/pz dz
+//    std::cerr<<"pt: "<<pt<<" x0: "<<x0<<" y0: "<<y0<<" r0: "<<r0<<std::endl;
+    //print 'x0:', x0, 'y0:', y0, 'r0:', r0, 'k0:', k0
+    //azimuthal angle of maximum extent (when r is in line with x0, y0)
+    double direction = abs(q*bz)/q/bz;
+    double phi_max = atan2(direction*y0, -direction*x0);
+    while (phi_max < phi_start){// phi_max is always > phi_start
+        phi_max += 2*pi;
+    }
+    double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
+    double r2_start = startx*startx+starty*starty;
+    double r2_end = endx*endx+endy*endy;
+//    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
+    double fiducial_radius;
+    if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
+            fiducial_radius = max_r2;
+    } else {
+            fiducial_radius = max(r2_start, r2_end);
+    }
+        //print "   tp0 p:", tp_0["hit"]["px"], tp_0["hit"]["py"], "tp1 p:", tp_1["hit"]["px"], tp_1["hit"]["py"]
+        //print "   ", str(round(phi_start, 1)).rjust(8), str(round(phi_end, 1)).rjust(8), str(round(phi_max, 1)).rjust(8), str(round(r2_start, 1)).rjust(8), str(round(max_r2, 1)).rjust(8), str(round(r2_end, 1)).rjust(8)  
+//------------------------------------------------------------------------------------------------------
+    
+    
+//     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
+     mcpass_Fid->Fill(fiducial_radius);
+//     mcpass_Fid_wide->Fill(fiducial_radius);
+     if ( fiducial_radius > fiducial_cut_radius){
+        if (cut_fiducial) continue;
+     } 
+
+
 //---------------------------------------------------------------------------------------
 // Misalignment Correction at centre of Absorber 
 //---------------------------------------------------------------------------------------
@@ -1015,27 +1160,136 @@ void MCSAnalysis::refretrieve(){
 /////////////////////////////////////////////////////////////////////
 
 void MCSAnalysis::dataretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, USPostFid, DSPostFid, USPostMom, DSPostMom, DSsetUncorrected;
+  Collection USretrieved, DSretrieved, EndofDS, StartofDS, USPostFid, DSPostFid, USPostMom, DSPostMom, DSsetUncorrected;
   std::cerr<<"Retrieving data from USretrieved: "<<USDataname<<std::endl;
   USretrieved.load_collection(USDataname);
   std::cerr<<"Retrieving data from DSretrieved: "<<DSDataname<<std::endl;
   DSretrieved.load_collection(DSDataname);
   std::cerr<<"Retrieving data from EndofDS: "<<EndofDStrackerdataname<<std::endl;
   EndofDS.load_collection(EndofDStrackerdataname);
+  std::cerr<<"Retrieving data from StartofDS: "<<StartofDStrackerdataname<<std::endl;
+  StartofDS.load_collection(StartofDStrackerdataname);
   std::cerr<<"Entries in data USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in data DSretrieved: "<< DSretrieved.N()<<std::endl;
   std::cerr<<"Entries in EndofDS data: "<< EndofDS.N()<<std::endl;
+  std::cerr<<"Entries in startofDS data: "<< StartofDS.N()<<std::endl;
   outfile->cd();
+  BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
+  double pi = 3.14159265358979323846;
+  double c_light=299.792458;
+  double x = 0; double y = 0; double t = 0;
 
   for(int i=0;i<USretrieved.N();i++){
+     double endx=EndofDS.E(i).X;
+     double endy=EndofDS.E(i).Y;
+     double endz=EndofDS.E(i).Z;
+     double endpx=EndofDS.E(i).px;
+     double endpy=EndofDS.E(i).py;
+     double endpz=EndofDS.E(i).pz;
+     double startx=StartofDS.E(i).X;
+     double starty=StartofDS.E(i).Y;
+     double startz=StartofDS.E(i).Z;
+     double startpx=StartofDS.E(i).px;
+     double startpy=StartofDS.E(i).py;
+     double startpz=StartofDS.E(i).pz;
+     std::vector<double> magfield=field->GetFieldValue2(x,y,startz,t);
+     double bz=magfield[2];
+
 
 //------------------------------------------------------------------------------------------------------
 // Fiducial Cut
 //------------------------------------------------------------------------------------------------------
+//     std::cerr<<"Axial magnetic field  : "<<bz<<std::endl;
 
-     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
+//------------------------------------------------------------------------------------------------------
+//    Set the maximum r2 on each track point between tp and the next tp that
+//    the track excurts from the axis. Estimate the region between adjacent track
+//    points by extrapolating assuming uniform field and calculate the excursion
+//    analytically. Sets the max_r2 parameter on the track.
+//    Get azimuthal angles
+//    - tp_0: track point with lower z
+//    - tp_1: track point with higher z
+//    - bz: magnetic field
+//    Returns azimuthal angles, sorted for direction of rotation. If more than one
+//    rotation, add the delta phi on (so that we get extra turns).
+
+     double q = 1;
+     double phi_start, phi_end;
+     if (q*bz > 0){
+        phi_start = atan2(startpx, startpy);
+        phi_end = atan2(endpx, endpy);
+     }
+     else if (q*bz < 0){
+        phi_start = atan2(endpx, endpy);
+        phi_end = atan2(startpx, startpy);
+     }
+     double k0 = q*bz*c_light/endpz;
+//     std::cerr<<"q: "<<q<<" bz: "<<bz<<" c_light: "<<c_light<<" endpz: "<<endpz<<" k0: "<<k0<<std::endl;
+     while (phi_start < 0) { //phi_start is always in domain 0 < 2 pi
+        phi_start += 2*pi;
+     }
+     while (phi_end < phi_start) { // phi_end is always > phi_start
+        phi_end += 2*pi;
+     }
+    // for larger steps, we can make more than one rotation
+    double delta_phi = k0*(startz - endz);
+    double n_rot = abs(delta_phi)/pi/2.;
+//    std::cerr<<"delta_phi: "<<delta_phi<<" n_rot: "<<n_rot<<std::endl;
+    phi_end += floor(n_rot)*2.*pi;
+/*
+    Get the azimuthal angle at which the trajectory has maximum excursion from
+    the axis
+    - tp_0: track point with lower z
+    - tp_1: track point with higher z
+    - bz: magnetic field
+    - phi_start: phi at which we start
+    Returns azimuthal angles, sorted for direction of rotation. We add on 2pi so
+    that it is always greater than phi_start.
+*/
+    double tp_start_x, tp_start_y, tp_start_z, tp_start_pt;
+    if (q*bz > 0){
+        tp_start_x = startx;
+        tp_start_y = starty;
+        tp_start_z = startz;
+        tp_start_pt = sqrt(startpx*startpx+startpy*startpy);
+    }
+    else if (q*bz < 0){
+        tp_start_x = endx;
+        tp_start_y = endy;
+        tp_start_z = endz;
+        tp_start_pt = sqrt(endpx*endpx+endpy*endpy);
+    }
+    // coordinates of helix centre
+    double pt = tp_start_pt;
+    double x0 = tp_start_x + pt*cos(phi_start)/q/bz/c_light;
+    double y0 = tp_start_y - pt*sin(phi_start)/q/bz/c_light;
+    double r0 = abs(pt/q/bz/c_light); // wavenumber is qBm/pz dz
+//    std::cerr<<"pt: "<<pt<<" x0: "<<x0<<" y0: "<<y0<<" r0: "<<r0<<std::endl;
+    //print 'x0:', x0, 'y0:', y0, 'r0:', r0, 'k0:', k0
+    //azimuthal angle of maximum extent (when r is in line with x0, y0)
+    double direction = abs(q*bz)/q/bz;
+    double phi_max = atan2(direction*y0, -direction*x0);
+    while (phi_max < phi_start){// phi_max is always > phi_start
+        phi_max += 2*pi;
+    }
+    double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
+    double r2_start = startx*startx+starty*starty;
+    double r2_end = endx*endx+endy*endy;
+//    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
+    double fiducial_radius;
+    if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
+            fiducial_radius = max_r2;
+    } else {
+            fiducial_radius = max(r2_start, r2_end);
+    }
+        //print "   tp0 p:", tp_0["hit"]["px"], tp_0["hit"]["py"], "tp1 p:", tp_1["hit"]["px"], tp_1["hit"]["py"]
+        //print "   ", str(round(phi_start, 1)).rjust(8), str(round(phi_end, 1)).rjust(8), str(round(phi_max, 1)).rjust(8), str(round(r2_start, 1)).rjust(8), str(round(max_r2, 1)).rjust(8), str(round(r2_end, 1)).rjust(8)  
+//------------------------------------------------------------------------------------------------------    
+    
+     double fiducial_radius2 = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
      pass_Fid->Fill(fiducial_radius);
      pass_Fid_wide->Fill(fiducial_radius);
+     pass_Fid_old->Fill(fiducial_radius2);
      if ( fiducial_radius > fiducial_cut_radius){
         if (cut_fiducial) continue;
      } 
@@ -1133,12 +1387,12 @@ void MCSAnalysis::dataSelection(int mode){
   // Loop over all tree entries.
   Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
   Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex,DSsetUncorrected, EndOfDS;
+  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex,DSsetUncorrected, EndOfDS, StartOfDS;
   double pz = 0.;
   // Loop over all tree entries.
   int Fiducial_Pass = 0;
   int Fiducial_Fail = 0;
-	  std::cout << Nentries << std::endl;
+  std::cerr <<"Number of entries in data file: "<< Nentries << std::endl;
   int Nevents = 0;
   // Nentries *= int(_sys["FracEvents"]) > 0 ? _sys["FracEvents"] : 1.0;
   for (int i=0; i<Nentries; i++){
@@ -1163,6 +1417,7 @@ void MCSAnalysis::dataSelection(int mode){
      globalVars.UStrackerUS53=reset_Vars();
      globalVars.USend_of_DStracker=reset_Vars();
      globalVars.DScentre_absorber=reset_Vars();
+     globalVars.USstart_of_DStracker=reset_Vars();
 //    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
 //    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
@@ -1437,6 +1692,7 @@ void MCSAnalysis::dataSelection(int mode){
     _USset.append_instance(globalVars.UScentre_absorber);
     _DSset.append_instance(globalVars.DScentre_absorber);
     EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    StartOfDS.append_instance(globalVars.USstart_of_DStracker);
 //    _DSset.append_instance(globalVars.DScentre_absorber);
     cuts_accept->Fill("All Cuts",1);
  
@@ -1444,6 +1700,8 @@ void MCSAnalysis::dataSelection(int mode){
   _USset.save_collection(USDataname);
   _DSset.save_collection(DSDataname);
   EndOfDS.save_collection(EndofDStrackerdataname);
+  StartOfDS.save_collection(StartofDStrackerdataname);
+  
 //  std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //  std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
 //  std::cerr<<"Size of USPreRadSel: "<<USPreRadSel.N()<<std::endl;
@@ -1515,9 +1773,9 @@ void MCSAnalysis::referenceSelection(){
 //  std::cerr<<"Nentries set"<<std::endl;
   Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
   Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex, EndOfDS;
+  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex, EndOfDS, StartOfDS;
 //  double pz = 0.;
-
+  std::cerr <<"Number of entries in data file: "<< Nentries << std::endl;
   // Loop over all tree entries.
   for (int i=0; i<Nentries; i++){
 //    std::cerr<<"**********************************************"<< std::endl;
@@ -1833,6 +2091,7 @@ void MCSAnalysis::referenceSelection(){
     _USMCset.append_instance(globalVars.UScentre_absorber);
     _DSMCset.append_instance(globalVars.DScentre_absorber);
     EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    StartOfDS.append_instance(globalVars.USstart_of_DStracker);
 //   std::cerr<<"Cut added to MC data"<<std::endl;
     mccuts_accept->Fill("All Cuts",1);
 
@@ -1841,6 +2100,7 @@ void MCSAnalysis::referenceSelection(){
   _USMCset.save_collection(USRefname);
   _DSMCset.save_collection(DSRefname);
   EndOfDS.save_collection(EndofDStrackerrefname);
+  StartOfDS.save_collection(StartofDStrackerrefname);
 
   make_beam_histograms(USAllTOF, "Upstream, Data Reference", "ref_01US_alltof");
   make_beam_histograms(DSAllTOF, "Downstream, Data Reference", "ref_01DS_alltof");
@@ -2059,6 +2319,64 @@ void MCSAnalysis::TruthData(int mode){
   make_beam_histograms(DSTruthSet, "Downstream, Truth", "TruthDS");
   //make_beam_histograms(USTruthzero, "Upstream, Truth zero", "TruthUSzero");
   //make_beam_histograms(DSTruthzero, "Downstream, Truth zero", "TruthDSzero");
+}
+
+bool MCSAnalysis::MatchUSDS(){
+
+  bool trackmatched = true;
+  jUS=-1;
+  jDS=-1;
+  kUS=-1;
+  kDS=-1;
+ 
+  int notrackUS = 0;
+  int notrackDS = 0;
+  for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
+      double maxUS=0.0, minDS=44000;
+      int tracker = scifievent->scifitracks()[j]->tracker();
+      if(tracker==0){
+	  notrackUS += 1;
+      }
+      if(tracker==1){
+	  notrackDS += 1;
+      }
+  }
+  trackno->Fill(notrackUS,notrackDS);
+  
+  if( scifievent->scifitracks().size() == 1 || 
+      scifievent->scifitracks().size() == 2){
+    for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
+      int npoints = scifievent->scifitracks()[j]->scifitrackpoints().size();
+      double maxUS=0.0, minDS=44000;
+      int tracker = scifievent->scifitracks()[j]->tracker();
+      for ( int k=0; k<npoints; k++){
+	double zpos = 
+	  scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos().z();
+	if(tracker==0 && zpos > maxUS){
+	  maxUS = zpos;
+	  kUS = k;
+	  jUS = j;
+	}
+	if(tracker==1 && zpos < minDS){      
+	  minDS = zpos;
+	  kDS = k;
+	  jDS = j;
+	}
+      }
+      if (jUS != -1 && kUS != -1 && jDS != -1 && kDS != 1) {
+	USrefplaneZ = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->pos().z();
+	DSrefplaneZ = minDS;
+	// std::cout<<"Identified US track by ["<<jUS<<", "<<kUS<<"] at z = "<<USrefplaneZ<<" mm and DS track by ["<<jDS<<", "<<kDS<<"] at z = "<<DSrefplaneZ<<" mm."<<std::endl; 
+      }
+    }
+    if (jUS == -1 || kUS == -1) {
+      //std::cout<<"Failed US track by ["<<jUS<<", "<<kUS<<"] and DS track by ["<<jDS<<", "<<kDS<<"]"<<std::endl; 
+      trackmatched = false;
+    }
+  }
+  
+  else trackmatched = false;
+  return trackmatched;  
 }
 
 bool MCSAnalysis::TruthMatchUSDS(){
@@ -5998,12 +6316,14 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
   multiVars tempMV;
   tempMV.UScentre_absorber=reset_Vars();
   tempMV.USend_of_DStracker=reset_Vars();
+  tempMV.USstart_of_DStracker=reset_Vars();
   tempMV.USTOF0=reset_Vars();
   tempMV.USTOF1=reset_Vars();
   tempMV.DScentre_absorber=reset_Vars();
   tempMV.UStrackerUS11=reset_Vars();
   tempMV.UScentre_absorber.Z=_sys["abspos"];
   tempMV.USend_of_DStracker.Z= DS53;
+  tempMV.USstart_of_DStracker.Z= DS11;
   tempMV.USTOF0.Z= TOF0pos;
   tempMV.USTOF1.Z= TOF1pos;
   tempMV.DScentre_absorber.Z=_sys["abspos"];
@@ -6078,6 +6398,10 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
+//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+                                tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
 //                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
@@ -6169,6 +6493,10 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
+//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
+//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
+                                tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
 //                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
@@ -6186,7 +6514,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
-                            if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
+                            if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true   && tempMV.USstart_of_DStracker.isgood==true
                                  && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
 //                              std::cerr<<"Found all trackpoints"<<std::endl;
                               break;
@@ -6242,6 +6570,9 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
      }
      if(tempMV.USend_of_DStracker.isgood==false){
         tempMV.USend_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11, DS53);
+     } 
+     if(tempMV.USstart_of_DStracker.isgood==false){
+        tempMV.USstart_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11, DS11);
      }              
      if(tempMV.USTOF0.isgood==false){
         tempMV.USTOF0=PropagateVarsMu(tempMV.UStrackerUS11, TOF0pos);

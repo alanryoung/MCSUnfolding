@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <iostream>
 #include <sstream>
+#include <math.h>
 
 // This is what we are here for
 #include "RooUnfold.h"
@@ -129,6 +130,8 @@ class MCSAnalysis {
   void SetDSRefname(std::string a) {DSRefname=a; }
   void SetEndofDStrackerrefname(std::string a) {EndofDStrackerrefname=a; }
   void SetEndofDStrackerdataname(std::string a) {EndofDStrackerdataname=a; }
+  void SetStartofDStrackerrefname(std::string a) {StartofDStrackerrefname=a; }
+  void SetStartofDStrackerdataname(std::string a) {StartofDStrackerdataname=a; }
 
   void SetParentGeometryFile(std::string a) {geometryfile=a; }
   void SetFFTBinLimit(int a) { binlimit=a; }
@@ -195,6 +198,8 @@ class MCSAnalysis {
   std::string USRefname;
   std::string DSDataname;
   std::string DSRefname;
+  std::string StartofDStrackerrefname;
+  std::string StartofDStrackerdataname;
   std::string EndofDStrackerrefname;
   std::string EndofDStrackerdataname;
   
@@ -312,6 +317,9 @@ class MCSAnalysis {
   TH1D* mctof21_sel;
   TH1D* mccalc_mom;
   TH1D* mctrue_mom;
+  TH1D* Bfield_DStrackerX;
+  TH1D* Bfield_DStrackerY;
+  TH1D* Bfield_DStrackerZ;
   TH1D* cuts_accept;
   TH1D* mccuts_accept;
   TH1D* pass_Tof1;
@@ -321,6 +329,7 @@ class MCSAnalysis {
   TH1D* pass_Diff;
   TH1D* pass_Fid;
   TH1D* pass_Fid_wide;
+  TH1D* pass_Fid_old;
   TH1D* pass_ExtTKU0;
   TH1D* pass_TOF01;
   TH1D* pass_TOF01Ex;

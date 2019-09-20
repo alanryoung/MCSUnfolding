@@ -59,7 +59,7 @@ class Collection {
   void calc_mean();
   void init_cov();
   void calc_cov();
-  std::vector<std::string> ReturnWords(std::string inputstring,std::vector<std::string> &v);
+  void ReturnWords(std::string inputstring,std::vector<std::string> &v);
   void save_collection(std::string filename);
   void load_collection(std::string filename);
   double Determinant(std::vector<std::vector<double> > a,int n);

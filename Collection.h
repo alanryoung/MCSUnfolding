@@ -92,5 +92,6 @@ struct multiVars {
     Vars UStrackerUS11;
     Vars UStrackerUS53;
     Vars USend_of_DStracker;
+    Vars USstart_of_DStracker;
     Vars DScentre_absorber;
 };
