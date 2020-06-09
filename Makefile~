@@ -18,7 +18,7 @@ LFLAGS=-L${MAUS_ROOT_DIR}/build/ \
 	 -L/data/mice/Common/RooUnfold-1.1.1/ \
 	 -lRooUnfold \
 	 -Wl,--no-as-needed
-EXECUTABLE=MCSUnfolding reduce_tof2_trigger reduce_tof1_trigger mod_reduce_tof1_trigger global global_gc
+EXECUTABLE=MCSUnfolding reduce_tof2_trigger reduce_tof1_trigger mod_reduce_tof1_trigger
 
 all : $(SRCS) $(EXECUTABLE)
 

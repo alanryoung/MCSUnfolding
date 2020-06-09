@@ -79,8 +79,7 @@ class MCSAnalysis {
   TChain* GetMCEmptyTree(){ return mcemptychain; }
   //TFileInfo* GetFileInfo(){ return fileinfo;}
   void Execute(int mode);
-  void dataretrieve();
-  void refretrieve();
+  void retrieve(int retrieve_mode);
   void dataSelection(int mode);
   void dataSelection2();
   void referenceSelection();
@@ -132,6 +131,28 @@ class MCSAnalysis {
   void SetEndofDStrackerdataname(std::string a) {EndofDStrackerdataname=a; }
   void SetStartofDStrackerrefname(std::string a) {StartofDStrackerrefname=a; }
   void SetStartofDStrackerdataname(std::string a) {StartofDStrackerdataname=a; }
+  void SetCollect_USTOF0refname(std::string a) {Collect_USTOF0refname=a; }
+  void SetCollect_USTOF0dataname(std::string a) {Collect_USTOF0dataname=a; }
+  void SetCollect_USTOF1refname(std::string a) {Collect_USTOF1refname=a; }
+  void SetCollect_USTOF1dataname(std::string a) {Collect_USTOF1dataname=a; }
+  void SetChi2dataname(std::string a) {Chi2dataname=a;}
+  void SetChi2refname(std::string a) {Chi2refname=a;}
+  void SetCollect_DiffuserEnddataname(std::string a) {Collect_DiffuserEnddataname=a;}
+  void SetCollect_DiffuserEndrefname(std::string a) {Collect_DiffuserEndrefname=a;}
+  void SetCollect_DiffuserStartdataname(std::string a) {Collect_DiffuserStartdataname=a;}
+  void SetCollect_DiffuserStartrefname(std::string a) {Collect_DiffuserStartrefname=a;}
+  void SetCollect_EndofUSTdataname(std::string a) {Collect_EndofUSTdataname=a;}
+  void SetCollect_EndofUSTrefname(std::string a) {Collect_EndofUSTrefname=a;}
+  void SetCollect_StartofUSTdataname(std::string a) {Collect_StartofUSTdataname=a;}
+  void SetCollect_StartofUSTrefname(std::string a) {Collect_StartofUSTrefname=a;}
+  void Setdofdataname(std::string a) {dofdataname=a;}
+  void Setdofrefname(std::string a) {dofrefname=a;}
+  void SetTOF0dataname(std::string a) {TOF0dataname=a;}
+  void SetTOF0refname(std::string a) {TOF0refname=a;}
+  void SetTOF1dataname(std::string a) {TOF1dataname=a;}
+  void SetTOF1refname(std::string a) {TOF1refname=a;}
+  void SetTOF2dataname(std::string a) {TOF2dataname=a;}
+  void SetTOF2refname(std::string a) {TOF2refname=a;}
 
   void SetParentGeometryFile(std::string a) {geometryfile=a; }
   void SetFFTBinLimit(int a) { binlimit=a; }
@@ -202,12 +223,34 @@ class MCSAnalysis {
   std::string StartofDStrackerdataname;
   std::string EndofDStrackerrefname;
   std::string EndofDStrackerdataname;
-  
+  std::string Collect_USTOF0dataname;
+  std::string Collect_USTOF0refname;
+  std::string Collect_USTOF1dataname;
+  std::string Collect_USTOF1refname;
+  std::string Collect_StartofUSTdataname;
+  std::string Collect_StartofUSTrefname;
+  std::string Collect_EndofUSTdataname;
+  std::string Collect_EndofUSTrefname;
+  std::string Collect_DiffuserStartdataname;
+  std::string Collect_DiffuserStartrefname;
+  std::string Collect_DiffuserEnddataname;
+  std::string Collect_DiffuserEndrefname;
+
+  std::string TOF0dataname;
+  std::string TOF1dataname;
+  std::string TOF2dataname;
+  std::string TOF0refname;
+  std::string TOF1refname;
+  std::string TOF2refname;
+  std::string Chi2dataname;
+  std::string Chi2refname;
+  std::string dofdataname;
+  std::string dofrefname;
 
   double USrefplaneZ;
   double DSrefplaneZ;
-  int USrefplaneI;
-  int DSrefplaneI;
+  unsigned int USrefplaneI;
+  unsigned int DSrefplaneI;
 
   Collection _USset;
   Collection _DSset;
@@ -238,8 +281,8 @@ class MCSAnalysis {
   RooUnfoldResponse fresp_thetaY;
   RooUnfoldResponse fresp_thetaScatt;
   RooUnfoldResponse fresp_theta2Scatt;
-  int USabsPlaneI;
-  int DSabsPlaneI;
+  unsigned int USabsPlaneI;
+  unsigned int DSabsPlaneI;
 
 
   
@@ -336,12 +379,35 @@ class MCSAnalysis {
   TH1D* pass_mom;
   TH1D* pass_chi2;
 
+  TH1D* Hist_TOF0Require1SP;
+  TH1D* Hist_TOF1Require1SP;
+  TH1D* Histref_TOF0Require1SP;
+  TH1D* Histref_TOF1Require1SP;
+  TH1D* Histref_TOF01;
+  TH1D* Hist_TOF01;
+  TH1D* Hist_Chi2;
+  TH1D* Histref_Chi2;
+  TH1D* Hist_TKU_max_radius;
+  TH1D* Histref_TKU_max_radius;
+  TH1D* Hist_Diff_max_radius;
+  TH1D* Histref_Diff_max_radius;
+  TH1D* Histref_TOF01Ext;
+  TH1D* Hist_TOF01Ext;
+  TH1D* Hist_USTOF0;
+  TH1D* Histref_USTOF0;
+  TH1D* Hist_Fiducial;
+  TH1D* Histref_Fiducial;
+  TH1D* Hist_MOM;
+  TH1D* Histref_MOM;
+
   TH1D* mcpass_Tof1;
   TH1D* mcpass_Tof0;
   TH1D* mcpass_TKU;
   TH1D* mcpass_TKUrad;
   TH1D* mcpass_Diff;
   TH1D* mcpass_Fid;
+  TH1D* mcpass_Fid_wide;
+  TH1D* mcpass_Fid_old;
   TH1D* mcpass_ExtTKU0;
   TH1D* mcpass_TOF01;
   TH1D* mcpass_TOF01Ex;
@@ -449,6 +515,9 @@ class MCSAnalysis {
   double Check_Radius_US(double low_z, double high_z);
   Vars reset_Vars();
   void display_Vars(Vars tmpVars);
+  void ReturnWords(std::string inputstring,std::vector<std::string> &v);
+  double MaxRadius(double bz,double startx, double starty, double startz, double startpx, double startpy, double endx, double endy, double endz, double endpx, double endpy, double endpz);
+
 
   /*
   static TVectorD p_vec;

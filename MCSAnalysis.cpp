@@ -67,7 +67,28 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   EndofDStrackerdataname= "EndofDStrackerData.txt";
   StartofDStrackerrefname= "StartofDStrackerRef.txt";
   StartofDStrackerdataname= "StartofDStrackerData.txt";
-
+  Collect_USTOF0dataname= "Collect_USTOF0Data.txt";
+  Collect_USTOF0refname= "Collect_USTOF0Ref.txt";
+  Collect_USTOF1dataname= "Collect_USTOF1Data.txt";
+  Collect_USTOF1refname= "Collect_USTOF1Ref.txt";
+  TOF0dataname="TOF0data.txt";
+  TOF1dataname="TOF1data.txt";
+  TOF2dataname="TOF2data.txt";
+  TOF0refname="TOF0ref.txt";
+  TOF1refname="TOF1ref.txt";
+  TOF2refname="TOF2ref.txt";
+  Chi2dataname="Chi2data.txt";
+  Chi2refname="Chi2ref.txt";
+  dofdataname="dofdata.txt";
+  dofrefname="dofref.txt";
+  Collect_StartofUSTdataname="Collect_StartofUSTdata.txt";
+  Collect_StartofUSTrefname="Collect_StartofUSTref.txt";
+  Collect_EndofUSTdataname="Collect_EndofUSTdata.txt";
+  Collect_EndofUSTrefname="Collect_EndofUSTref.txt"; 
+  Collect_DiffuserStartdataname="Collect_DiffuserStartdata.txt"; 
+  Collect_DiffuserEnddataname="Collect_DiffuserEnddata.txt"; 
+  Collect_DiffuserStartrefname="Collect_DiffuserStartref.txt"; 
+  Collect_DiffuserEndrefname="Collect_DiffuserEndref.txt"; 
  
   _histlimits["NbinsXY"] = histlimits.count("NbinsXY") != 0 ? histlimits["NbinsXY"]: 200;
   _histlimits["minXY"] = histlimits.count("minXY") != 0 ? histlimits["minXY"]: -0.2;
@@ -144,11 +165,11 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   fiducial_cut_radius = 300.0;
   sigmap = 0.035;
   binlimit = 22;
-  int counter = 0;
-  double semom = 0;
-  double rmsmom = 0;
-  double errrmsmom = 0;
-  double bwmom = 0;
+//  int counter = 0;
+//  double semom = 0;
+//  double rmsmom = 0;
+//  double errrmsmom = 0;
+//  double bwmom = 0;
   // histograms of selection variables
   
   diffradius = new TH1D("diffradius","diffradius", 500, 0, 500);
@@ -219,6 +240,27 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   pass_mom = new TH1D("datapass_mom",";Passed Cut; Events",100, 100, 300);
   pass_chi2= new TH1D("datapass_chi2",";Chi2/dof; Events",50, 0, 10);
 
+  Hist_TOF0Require1SP = new TH1D("Hist Data require 1 TOF0 SP",";Number of SP; Events", 10, 0, 10);
+  Hist_TOF1Require1SP = new TH1D("Hist Data require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
+  Histref_TOF0Require1SP = new TH1D("Hist Ref require 1 TOF0 SP",";Number of SP; Events", 10, 0, 10);
+  Histref_TOF1Require1SP = new TH1D("Hist Ref require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
+  Hist_TOF01 = new TH1D("Hist Data_TOF01",";TOF01 time; Events",100, 23, 40);
+  Histref_TOF01 = new TH1D("Hist Ref TOF01",";TOF01 time; Events",100, 23, 40);
+  Hist_Chi2 = new TH1D("Hist Data Chi2",";Chi2; Events",100, 0, 15);
+  Histref_Chi2 = new TH1D("Hist Ref Chi2",";chi2; Events",100,0, 15);
+  Hist_TKU_max_radius = new TH1D("Hist Data TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
+  Histref_TKU_max_radius = new TH1D("Hist Ref TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
+  Hist_Diff_max_radius = new TH1D("Hist Data Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
+  Histref_Diff_max_radius = new TH1D("Hist Ref Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
+  Hist_TOF01Ext = new TH1D("Hist Data_TOF01Ext",";TOF01 time; Events",100, 23, 35);
+  Histref_TOF01Ext = new TH1D("Hist Ref_TOF01Ext",";TOF01 time; Events",100, 23, 35);
+  Hist_USTOF0 = new TH1D("Hist Data USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
+  Histref_USTOF0 = new TH1D("Hist Ref USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
+  Hist_Fiducial = new TH1D("Hist Data Fiducial",";Fiducial radius; Events",100, 0, 250);
+  Histref_Fiducial = new TH1D("Hist Ref Fiducial",";Fiducial radius; Events",100, 0, 250);
+  Hist_MOM =  new TH1D("Hist Data Mom",";Absorber Momentum; Events",100, 0, 250);
+  Histref_MOM =  new TH1D("Hist Ref Mom",";Absorber Momentum; Events",100, 0, 250);
+
 // Cuts and accepted muon histograms for no absorber reference data
   mccuts_accept = new TH1D("mccuts_accept", 
 			   ";Selection Criteria; Surviving Events", 14, 0, 14);
@@ -228,6 +270,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   mcpass_TKUrad = new TH1D("refpass_TKUrad",";Passed Cut; Events",100, 0, 200);
   mcpass_Diff = new TH1D("refpass_Diff",";Passed Cut; Events",100, 0, 150);
   mcpass_Fid = new TH1D("refpass_Fid",";Passed Cut; Events",100, 0, 200);
+  mcpass_Fid_wide = new TH1D("refpass_Fid_wide",";Passed Cut; Events",100, 0, 2000);
+  mcpass_Fid_old = new TH1D("refpass_Fid_old",";Passed Cut; Events",100, 0, 200);
   mcpass_ExtTKU0 = new TH1D("refpass_ExtTKU0",";Passed Cut; Events",3, 0, 3);
   mcpass_TOF01 = new TH1D("refpass_TOF01",";Passed Cut; Events",100, 23, 35);
   mcpass_TOF01Ex = new TH1D("refpass_TOF01Ex",";Passed Cut; Events",100, 23, 35);
@@ -783,6 +827,8 @@ void MCSAnalysis::Write(){
   mcpass_TKUrad->Write();
   mcpass_Diff->Write();
   mcpass_Fid->Write();
+  mcpass_Fid_wide->Write();
+  mcpass_Fid_old->Write();
   mcpass_ExtTKU0->Write();
   mcpass_TOF01->Write();
   mcpass_TOF01Ex->Write();
@@ -852,8 +898,9 @@ void MCSAnalysis::Execute(int mode=0){
   std::cerr<<"End of DS tracker ref file: "<<EndofDStrackerrefname<<std::endl;
   std::cerr<<"Start of DS tracker data file: "<<StartofDStrackerdataname<<std::endl;
   std::cerr<<"Start of DS tracker ref file: "<<StartofDStrackerrefname<<std::endl;
+  std::cerr<<"US track to TOF0 data file: "<<Collect_USTOF0dataname<<std::endl;
   if (mode == 0){
-    dataretrieve();
+    retrieve(0);
     generateMCSResponse();
     // DoUnfolding();
     DoDeconvolution(modelname2.c_str(),1);
@@ -871,10 +918,15 @@ void MCSAnalysis::Execute(int mode=0){
     std::cerr<<"Running Pre-Data Analysis Phase - Empty Only"<<std::endl;
     referenceSelection();
   }
+  else if (mode == 200){
+     retrieve(0);
+     retrieve(1);
+//     Write();
+  }
   else if (mode == 1){
     std::cerr<<"Running Main Analysis Phase"<<std::endl;
-    dataretrieve();
-    refretrieve();   
+    retrieve(0);
+    retrieve(1);   
     DoUnfolding();
     DoFFTDeconvolution();
     ConvolveWithInputDistribution(modelname1.c_str());
@@ -883,14 +935,15 @@ void MCSAnalysis::Execute(int mode=0){
     DoDeconvolution(modelname2.c_str(), 1);
     //FitGaussian(outfilename.c_str());
     //CalculateChi2(outfilename.c_str(), modelname2.c_str());
-    //Write();
+    Write();
   }
   else if (mode == 6){
-    refretrieve();   
+    retrieve(1);
+    Write();   
   }
   else if (mode == -1){
-    dataretrieve();
-    refretrieve();   
+    retrieve(0);
+    retrieve(1);   
     DoUnfolding();
     DoFFTDeconvolution();
     ConvolveWithInputDistribution(modelname1.c_str());
@@ -906,8 +959,8 @@ void MCSAnalysis::Execute(int mode=0){
     print();
   }
   else if (mode == -2){
-    dataretrieve();
-    refretrieve();   
+    retrieve(0);
+    retrieve(1);   
     DoUnfolding();
     DoFFTDeconvolution();
     ConvolveWithInputDistribution(modelname1.c_str());
@@ -923,12 +976,13 @@ void MCSAnalysis::Execute(int mode=0){
     print();
   }
   else if (mode == 2){
-    dataretrieve();
+    retrieve(0);
     TruthData(mode);
+    Write();
   } 
   else if (mode == 5){
-    dataretrieve();
-    refretrieve();   
+    retrieve(0);
+    retrieve(1);   
     DoUnfolding();
     DoFFTDeconvolution();
     TruthData(mode);
@@ -938,6 +992,7 @@ void MCSAnalysis::Execute(int mode=0){
     DoDeconvolution(modelname2.c_str(), 1);
     ConvolveWithVirtualInputDistribution(modelname3.c_str());
     DoDeconvolution(modelname3.c_str(), 1);
+    Write();
   }
   else {
     std::cout<<"Unknown operation mode"<<std::endl;
@@ -946,24 +1001,108 @@ void MCSAnalysis::Execute(int mode=0){
 }
 
 /////////////////////////////////////////////////////////////////////
-// Function Refretrieve
+// Function Retrieve
 /////////////////////////////////////////////////////////////////////
 
-void MCSAnalysis::refretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, StartofDS, USPostMom, DSPostMom, DSsetUncorrected;
-  USretrieved.load_collection(USRefname);
-  DSretrieved.load_collection(DSRefname);
-  EndofDS.load_collection(EndofDStrackerrefname);
-  StartofDS.load_collection(StartofDStrackerrefname);
-  std::cerr<<"Entries in ref USretrieved: "<< USretrieved.N()<<std::endl;
-  std::cerr<<"Entries in ref DSretrieved: "<< DSretrieved.N()<<std::endl;
-  std::cerr<<"Entries in EndofDSref: "<< EndofDS.N()<<std::endl;
-  std::cerr<<"Entries in StartofDSref: "<< StartofDS.N()<<std::endl;
+void MCSAnalysis::retrieve(int retrieve_mode){
+// retrieve_mode = 0 for absorber present and 1 for no absorber present.
+  Collection USretrieved, DSretrieved, EndofDS, StartofDS, USPostFid, DSPostFid, USPostMom;
+  Collection DSPostMom, DSsetUncorrected, USPostExtTKU0, DSPostExtTKU0, USPostTOF01Ex;
+  Collection DSPostTOF01Ex, USPostDiff, DSPostDiff, USPostTKUrad, DSPostTKUrad, USPostChi2;
+  Collection DSPostChi2, USPostTOF01, DSPostTOF01, USPostTOF0, DSPostTOF0, USAllTOF, DSAllTOF;
+  Collection Collect_USTOF0, Collect_USTOF1, Collect_StartofUS, Collect_EndofUS, Collect_StartofUST;
+  Collection Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
+  std::cerr<<"Retrieving Data from either data or ref"<<std::endl;
+  if(retrieve_mode==0){
+     std::cerr<<"Retrieving data from USretrieved: "<<USDataname<<std::endl;
+     USretrieved.load_collection(USDataname);
+     std::cerr<<"Retrieving data from DSretrieved: "<<DSDataname<<std::endl;
+     DSretrieved.load_collection(DSDataname);
+     std::cerr<<"Retrieving data from EndofDS: "<<EndofDStrackerdataname<<std::endl;
+     EndofDS.load_collection(EndofDStrackerdataname);
+     std::cerr<<"Retrieving data from StartofDS: "<<StartofDStrackerdataname<<std::endl;
+     StartofDS.load_collection(StartofDStrackerdataname);
+     std::cerr<<"Retrieving data from Collect_USTOF0: "<<Collect_USTOF0dataname<<std::endl;
+     Collect_USTOF0.load_collection(Collect_USTOF0dataname);    
+     std::cerr<<"Retrieving data from Collect_USTOF1: "<<Collect_USTOF1dataname<<std::endl;
+     Collect_USTOF1.load_collection(Collect_USTOF1dataname);    
+     std::cerr<<"Retrieving data from Collect_StartofUST: "<<Collect_StartofUSTdataname<<std::endl;
+     Collect_StartofUST.load_collection(Collect_StartofUSTdataname);    
+     std::cerr<<"Retrieving data from Collect_EndofUST: "<<Collect_EndofUSTdataname<<std::endl;
+     Collect_EndofUST.load_collection(Collect_EndofUSTdataname);    
+     std::cerr<<"Retrieving data from Collect_DiffuserStart: "<<Collect_DiffuserStartdataname<<std::endl;
+     Collect_DiffuserStart.load_collection(Collect_DiffuserStartdataname);    
+     std::cerr<<"Retrieving data from Collect_DiffuserEnd: "<<Collect_DiffuserEnddataname<<std::endl;
+     Collect_DiffuserEnd.load_collection(Collect_DiffuserEnddataname);    
+  }else{
+     std::cerr<<"Retrieving ref from USretrieved: "<<USRefname<<std::endl;
+     USretrieved.load_collection(USRefname);
+     std::cerr<<"Retrieving ref from DSretrieved: "<<DSRefname<<std::endl;
+     DSretrieved.load_collection(DSRefname);
+     std::cerr<<"Retrieving ref from EndofDS: "<<EndofDStrackerrefname<<std::endl;
+     EndofDS.load_collection(EndofDStrackerrefname);
+     std::cerr<<"Retrieving ref from StartofDS: "<<StartofDStrackerrefname<<std::endl;
+     StartofDS.load_collection(StartofDStrackerrefname);
+     std::cerr<<"Retrieving ref from Collect_USTOF0: "<<Collect_USTOF0refname<<std::endl;
+     Collect_USTOF0.load_collection(Collect_USTOF0refname);
+     std::cerr<<"Retrieving ref from Collect_USTOF1: "<<Collect_USTOF1refname<<std::endl;
+     Collect_USTOF1.load_collection(Collect_USTOF1refname);
+     std::cerr<<"Retrieving data from Collect_StartofUST: "<<Collect_StartofUSTrefname<<std::endl;
+     Collect_StartofUST.load_collection(Collect_StartofUSTrefname);    
+     std::cerr<<"Retrieving data from Collect_EndofUST: "<<Collect_EndofUSTrefname<<std::endl;
+     Collect_EndofUST.load_collection(Collect_EndofUSTrefname);    
+     std::cerr<<"Retrieving data from Collect_DiffuserStart: "<<Collect_DiffuserStartrefname<<std::endl;
+     Collect_DiffuserStart.load_collection(Collect_DiffuserStartrefname);    
+     std::cerr<<"Retrieving data from Collect_DiffuserEnd: "<<Collect_DiffuserEndrefname<<std::endl;
+     Collect_DiffuserEnd.load_collection(Collect_DiffuserEndrefname);    
+  }
+  std::cerr<<"Entries in USretrieved: "<< USretrieved.N()<<std::endl;
+  std::cerr<<"Entries in DSretrieved: "<< DSretrieved.N()<<std::endl;
+  std::cerr<<"Entries in EndofDS: "<< EndofDS.N()<<std::endl;
+  std::cerr<<"Entries in startofDS: "<< StartofDS.N()<<std::endl;
+  std::cerr<<"Entries in Collect_USTOF0: "<< Collect_USTOF0.N()<<std::endl; 
+  std::cerr<<"Entries in Collect_USTOF1: "<< Collect_USTOF1.N()<<std::endl; 
+  std::cerr<<"Entries in Collect_StartofUST: "<< Collect_StartofUST.N()<<std::endl; 
+  std::cerr<<"Entries in Collect_EndofUST: "<< Collect_EndofUST.N()<<std::endl; 
+  std::cerr<<"Entries in Collect_DiffuserStart: "<< Collect_DiffuserStart.N()<<std::endl; 
+  std::cerr<<"Entries in Collect_DiffuserEnd: "<< Collect_DiffuserEnd.N()<<std::endl; 
   outfile->cd();
   BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
   double pi = 3.14159265358979323846;
   double c_light=299.792458;
   double x = 0; double y = 0; double t = 0;
+
+// Open files to load TOF data to.
+   std::ifstream TOF0file;
+   std::string TOF0line;
+   std::vector<std::string> TOF0results;
+   std::ifstream TOF1file;
+   std::string TOF1line;
+   std::vector<std::string> TOF1results;
+   std::ifstream TOF2file;
+   std::string TOF2line;
+   std::vector<std::string> TOF2results;
+   std::ifstream Chi2file;
+   std::string Chi2line;
+   std::vector<std::string> Chi2results;
+   std::ifstream doffile;
+   std::string dofline;
+   std::vector<std::string> dofresults;
+
+   if(retrieve_mode==0){   
+      TOF0file.open(TOF0dataname);
+      TOF1file.open(TOF1dataname);
+      TOF2file.open(TOF2dataname);
+      Chi2file.open(Chi2dataname);
+      doffile.open(dofdataname);
+   }else{
+      TOF0file.open(TOF0refname);
+      TOF1file.open(TOF1refname);
+      TOF2file.open(TOF2refname);
+      Chi2file.open(Chi2refname);
+      doffile.open(dofrefname);
+   }
+
 //Plot axial magnetic field
   for(int i=0;i<1000;i++){
      double z=(_sys["dataDS11"]+((i+0.5)*(_sys["dataDS53"]-_sys["dataDS11"])/1000));
@@ -972,327 +1111,319 @@ void MCSAnalysis::refretrieve(){
      Bfield_DStrackerY->Fill(z,magfield[1]);
      Bfield_DStrackerZ->Fill(z,magfield[2]);
   }
-
-
   for(int i=0;i<USretrieved.N();i++){
-//  for(int i=0;i<100000;i++){
-     double endx=EndofDS.E(i).X;
-     double endy=EndofDS.E(i).Y;
-     double endz=EndofDS.E(i).Z;
-     double endpx=EndofDS.E(i).px;
-     double endpy=EndofDS.E(i).py;
-     double endpz=EndofDS.E(i).pz;
-     double startx=StartofDS.E(i).X;
-     double starty=StartofDS.E(i).Y;
-     double startz=StartofDS.E(i).Z;
-     double startpx=StartofDS.E(i).px;
-     double startpy=StartofDS.E(i).py;
-     double startpz=StartofDS.E(i).pz;
-     std::vector<double> magfield=field->GetFieldValue2(x,y,startz,t);
-     double bz=magfield[2];
+     double AbsCenterpx=USretrieved.E(i).px;
+     double AbsCenterpy=USretrieved.E(i).py;
+     double AbsCenterpz=USretrieved.E(i).pz;
+     double Ptot =sqrt(AbsCenterpx*AbsCenterpx+AbsCenterpy*AbsCenterpy+AbsCenterpz*AbsCenterpz);
+//     if(i>100) break;
+
+     getline(TOF0file,TOF0line);
+     ReturnWords(TOF0line, TOF0results);
+     getline(TOF1file,TOF1line);
+     ReturnWords(TOF1line, TOF1results);
+     getline(TOF2file,TOF2line);
+     ReturnWords(TOF2line, TOF2results);
+     getline(Chi2file,Chi2line);
+     ReturnWords(Chi2line, Chi2results);
+     getline(doffile,dofline);
+     ReturnWords(dofline, dofresults);
+
+
+//----------------------------------------------------------------------
+// Require 1 TOF0 Space Point
+//----------------------------------------------------------------------
+
+     double rawTOF0HitTime=-100.;
+     bool CutPassRequire1TOF0SP=false;
+     int NumberTOF0SP=std::stoi(TOF0results[0]);
+     if ( NumberTOF0SP == 1 ){
+        rawTOF0HitTime = std::stod(TOF0results[1]);
+        CutPassRequire1TOF0SP=true;
+        if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
+        else{mcpass_Tof1->Fill("Pass",1);}
+     }else{
+        if(retrieve_mode==0){pass_Tof0->Fill("Fail",1);}
+        else{mcpass_Tof0->Fill("Fail",1);}
+     }
+     if (CutPassRequire1TOF0SP){
+        if(retrieve_mode==0){
+           cuts_accept->Fill("1 TOF0",1);
+           USPostTOF0.append_instance(USretrieved.E(i));
+           DSPostTOF0.append_instance(DSretrieved.E(i));
+        }else{
+           mccuts_accept->Fill("1 TOF0",1);
+           USPostTOF0.append_instance(USretrieved.E(i));
+           DSPostTOF0.append_instance(DSretrieved.E(i));
+        }  
+     }
+//    std::cerr<<"TOF0 Number of SP:"<<NumberTOF0SP<<" Pass or fail? "<<CutPassRequire1TOF0SP<<" TOF0 time: "<<rawTOF0HitTime<<std::endl;
+
+//----------------------------------------------------------------------
+// Require 1 TOF1 Space Point
+//----------------------------------------------------------------------
+
+
+     double rawTOF1HitTime=-100.;
+     bool CutPassRequire1TOF1SP=false;
+     int NumberTOF1SP=std::stoi(TOF1results[0]);
+     if ( NumberTOF1SP == 1 ){
+        rawTOF1HitTime = std::stod(TOF1results[1]);
+        CutPassRequire1TOF1SP=true;
+        if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
+        else{mcpass_Tof1->Fill("Pass",1);}
+     }else{
+        if(retrieve_mode==0){pass_Tof1->Fill("Fail",1);
+        }else{mcpass_Tof1->Fill("Fail",1);}
+     }
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP){
+        if(retrieve_mode==0){
+           cuts_accept->Fill("1 TOF1",1);
+           USAllTOF.append_instance(USretrieved.E(i));
+           DSAllTOF.append_instance(DSretrieved.E(i));
+        }else{
+           mccuts_accept->Fill("1 TOF1",1);
+           USAllTOF.append_instance(USretrieved.E(i));
+           DSAllTOF.append_instance(DSretrieved.E(i));
+        }
+     }
+//     std::cerr<<"TOF1 Number of SP:"<<NumberTOF1SP<<" Pass or fail? "<<CutPassRequire1TOF1SP<<" TOF1 time: "<<rawTOF1HitTime<<std::endl;
+//---------------------------------------------------------------------------------------
+// TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
+//---------------------------------------------------------------------------------------
+
+     double rawTOF2HitTime;
+     if ( std::stoi(TOF2results[0]) >= 1 ){
+        rawTOF2HitTime = std::stod(TOF2results[1]);
+     }else{
+        rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
+     }
+
+     tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
+     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
+     double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
+     bool CutPassTOF01=false;     
+     if(retrieve_mode==0){
+        pass_TOF01->Fill(rawTOF01HitTime);
+     }else{
+        mcpass_TOF01->Fill(rawTOF01HitTime);
+     }
+     if ( rawTOF01HitTime < TOF_lower_limit || rawTOF01HitTime > TOF_upper_limit){
+        CutPassTOF01=false;
+     }else{
+        CutPassTOF01=true;
+        tof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
+        tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
+     }
+
+
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01){
+        if(retrieve_mode==0){
+           cuts_accept->Fill("TOF01",1);
+           USPostTOF01.append_instance(USretrieved.E(i));
+           DSPostTOF01.append_instance(DSretrieved.E(i));
+        }else{
+           mccuts_accept->Fill("TOF01",1);
+           USPostTOF01.append_instance(USretrieved.E(i));
+           DSPostTOF01.append_instance(DSretrieved.E(i));
+        }
+     }
+//     std::cerr<<"TOF01 :"<<rawTOF01HitTime<<" Pass or fail? "<<CutPassTOF01<<std::endl;
+//---------------------------------------------------------------------------------------
+// CHi2/dof cut
+//---------------------------------------------------------------------------------------
+
+     double TKU_chiSquare_per_ndof = std::stod(Chi2results[0]) / (1.0*std::stod(dofresults[0]));
+     pass_chi2->Fill(TKU_chiSquare_per_ndof);  
+     bool CutPassChi2=false;     
+     if (TKU_chiSquare_per_ndof<=10){
+        CutPassChi2=true;
+     }
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2){    
+        USPostChi2.append_instance(USretrieved.E(i));
+        DSPostChi2.append_instance(DSretrieved.E(i));
+        if(retrieve_mode==0){
+           cuts_accept->Fill("Chi2",1);
+        }else{
+           mccuts_accept->Fill("Chi2",1); 
+        } 
+     }
+    
+
+//------------------------------------------------------------------------------------------------------
+// US Tracker Radial Cut
+//------------------------------------------------------------------------------------------------------
+     double USTendx=Collect_EndofUST.E(i).X;
+     double USTendy=Collect_EndofUST.E(i).Y;
+     double USTendz=Collect_EndofUST.E(i).Z;
+     double USTendpx=Collect_EndofUST.E(i).px;
+     double USTendpy=Collect_EndofUST.E(i).py;
+     double USTendpz=Collect_EndofUST.E(i).pz;
+     double USTstartx=Collect_StartofUST.E(i).X;
+     double USTstarty=Collect_StartofUST.E(i).Y;
+     double USTstartz=Collect_StartofUST.E(i).Z;
+     double USTstartpx=Collect_StartofUST.E(i).px;
+     double USTstartpy=Collect_StartofUST.E(i).py;
+     std::vector<double> USTmagfield=field->GetFieldValue2(x,y,USTstartz,t);
+     double USTbz=USTmagfield[2];
+     double TKU_max_rad=MaxRadius(USTbz, USTstartx, USTstarty, USTstartz, USTstartpx, USTstartpy, USTendx, USTendy, USTendz, USTendpx, USTendpy, USTendpz);
+     bool CutPassTKU_max_rad=false;         
+     if (retrieve_mode==0){
+        pass_TKUrad->Fill(TKU_max_rad);
+     }else{
+        mcpass_TKUrad->Fill(TKU_max_rad);
+     }
+     if (TKU_max_rad<=150.0){
+        CutPassTKU_max_rad=true;
+     }
+
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad){    
+        USPostTKUrad.append_instance(USretrieved.E(i));
+        DSPostTKUrad.append_instance(DSretrieved.E(i));
+        if(retrieve_mode==0){
+           cuts_accept->Fill("US tracker Radius",1);
+        }else{
+           mccuts_accept->Fill("US tracker Radius",1); 
+        } 
+     }
+
+//------------------------------------------------------------------------------------------------------
+// Diffuser Cut
+//------------------------------------------------------------------------------------------------------
+     double diffuserendx=Collect_DiffuserEnd.E(i).X;
+     double diffuserendy=Collect_DiffuserEnd.E(i).Y;
+//     double diffuserendz=Collect_DiffuserEnd.E(i).Z;
+//     double diffuserendpx=Collect_DiffuserEnd.E(i).px;
+//     double diffuserendpy=Collect_DiffuserEnd.E(i).py;
+//     double diffuserendpz=Collect_DiffuserEnd.E(i).pz;
+     double diffuserstartx=Collect_DiffuserStart.E(i).X;
+     double diffuserstarty=Collect_DiffuserStart.E(i).Y;
+//     double diffuserstartz=Collect_DiffuserStart.E(i).Z;
+//     double diffuserstartpx=Collect_DiffuserStart.E(i).px;
+//     double diffuserstartpy=Collect_DiffuserStart.E(i).py;
+//     std::vector<double> diffusermagfield=field->GetFieldValue2(x,y,diffuserstartz,t);
+//     double diffuserbz=diffusermagfield[2];
+//     double diff_max_rad=MaxRadius(diffuserbz, diffuserstartx, diffuserstarty, diffuserstartz, diffuserstartpx, diffuserstartpy, diffuserendx, diffuserendy, diffuserendz, diffuserendpx, diffuserendpy, diffuserendpz); 
+     double diff_start_rad=sqrt(diffuserstartx*diffuserstartx+diffuserstarty*diffuserstarty);
+     double diff_end_rad=sqrt(diffuserendx*diffuserendx+diffuserendy*diffuserendy);
+     double diff_max_rad=max(diff_start_rad,diff_end_rad); 
+//     std::cerr<<"Diff Start Rad: "<<sqrt(diffuserstartx*diffuserstartx+diffuserstarty*diffuserstartx)<<" Diff End Rad: "<<sqrt(diffuserendx*diffuserendx+diffuserendy*diffuserendx)<<" Diff Max Rad: "<<diff_max_rad<<" B-Field : "<<diffuserbz<<std::endl;
+     bool CutPassDiff_max_rad=false;         
+     if (retrieve_mode==0){
+        pass_Diff->Fill(diff_max_rad);
+     }else{
+        mcpass_Diff->Fill(diff_max_rad);
+     }
+     if (diff_max_rad <=90.0){
+        CutPassDiff_max_rad=true;         
+     }
+
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad){    
+        USPostDiff.append_instance(USretrieved.E(i));
+        DSPostDiff.append_instance(DSretrieved.E(i));
+        if(retrieve_mode==0){
+           cuts_accept->Fill("Diffuser",1);
+        }else{
+           mccuts_accept->Fill("Diffuser",1);
+        } 
+     }
 
 //---------------------------------------------------------------------------------------
-// Momentum at absorber cut. 
+// TOF01 Extrapolated cut. 
 //---------------------------------------------------------------------------------------
-    double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
-                                 (USretrieved.E(i).py*USretrieved.E(i).py)+ 
-                                 (USretrieved.E(i).pz*USretrieved.E(i).pz));
-    mcpass_mom->Fill(momentum_absorber);
-//  std::cerr<<"Momentum at centre of absorber: "<<momentum_absorber<<std::endl;
-    if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
-//    std::cerr<<"**Failed momentum Cut"<<std::endl;
-      if (cut_absorber_momentum) continue;
-    }
 
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostMom.append_instance(USretrieved.E(i));
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostMom.append_instance(DSretrieved.E(i));
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-//    cuts_accept->Fill("Momentum",1);    
+  double TOF01Ext = Collect_USTOF1.E(i).TOFX-Collect_USTOF0.E(i).TOFX;
+  bool CutPassTOF01Ext=true;
+  if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
+     CutPassTOF01Ext=false;
+//    std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
+//    if(cut_TOF01ext) continue;
+  }
+  if(retrieve_mode==0){
+     HPt_ExtTKU0->Fill(Ptot);
+  }
+  if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext) {    
+     USPostTOF01Ex.append_instance(USretrieved.E(i));
+     DSPostTOF01Ex.append_instance(DSretrieved.E(i));
+     if(retrieve_mode==0){  
+        pass_TOF01Ex->Fill(TOF01Ext);
+        cuts_accept->Fill("Extrapolated TOF01",1);
+     }else{
+        mcpass_TOF01Ex->Fill(TOF01Ext); 
+        mccuts_accept->Fill("Extrapolated TOF01",1);
+     }
+  }
+
+//---------------------------------------------------------------------------------------
+// Successful extrapolation from  US tracker to TOF0
+//---------------------------------------------------------------------------------------
+     
+     bool CutPassUSTOF0=true;
+     if (Collect_USTOF0.E(i).isgood==false){
+        CutPassUSTOF0=false;
+        if (retrieve_mode==0){
+           pass_ExtTKU0->Fill("Fail",1);           
+//           if (cut_ext_TKU_TOF0) continue;
+	}else{
+	   mcpass_ExtTKU0->Fill("Fail",1);
+//	   if (cut_ext_TKU_TOF0) continue;
+	}
+     }
+
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 ) {    
+        USPostExtTKU0.append_instance(USretrieved.E(i));
+        DSPostExtTKU0.append_instance(DSretrieved.E(i));
+        if (retrieve_mode==0){
+          cuts_accept->Fill("TKU_TOF0",1);
+          pass_ExtTKU0->Fill("Pass",1);
+        }else{
+           mccuts_accept->Fill("TKU_TOF0",1);
+	   mcpass_ExtTKU0->Fill("Pass",1);
+        }
+     }
 
 //------------------------------------------------------------------------------------------------------
 // Fiducial Cut
 //------------------------------------------------------------------------------------------------------
-//     std::cerr<<"Axial magnetic field  : "<<bz<<std::endl;
-
-//------------------------------------------------------------------------------------------------------
-//    Set the maximum r2 on each track point between tp and the next tp that
-//    the track excurts from the axis. Estimate the region between adjacent track
-//    points by extrapolating assuming uniform field and calculate the excursion
-//    analytically. Sets the max_r2 parameter on the track.
-//    Get azimuthal angles
-//    - tp_0: track point with lower z
-//    - tp_1: track point with higher z
-//    - bz: magnetic field
-//    Returns azimuthal angles, sorted for direction of rotation. If more than one
-//    rotation, add the delta phi on (so that we get extra turns).
-
-     double q = 1;
-     double phi_start, phi_end;
-     if (q*bz > 0){
-        phi_start = atan2(startpx, startpy);
-        phi_end = atan2(endpx, endpy);
-     }
-     else if (q*bz < 0){
-        phi_start = atan2(endpx, endpy);
-        phi_end = atan2(startpx, startpy);
-     }
-     double k0 = q*bz*c_light/endpz;
-//     std::cerr<<"q: "<<q<<" bz: "<<bz<<" c_light: "<<c_light<<" endpz: "<<endpz<<" k0: "<<k0<<std::endl;
-     while (phi_start < 0) { //phi_start is always in domain 0 < 2 pi
-        phi_start += 2*pi;
-     }
-     while (phi_end < phi_start) { // phi_end is always > phi_start
-        phi_end += 2*pi;
-     }
-    // for larger steps, we can make more than one rotation
-    double delta_phi = k0*(startz - endz);
-    double n_rot = abs(delta_phi)/pi/2.;
-//    std::cerr<<"delta_phi: "<<delta_phi<<" n_rot: "<<n_rot<<std::endl;
-    phi_end += floor(n_rot)*2.*pi;
-/*
-    Get the azimuthal angle at which the trajectory has maximum excursion from
-    the axis
-    - tp_0: track point with lower z
-    - tp_1: track point with higher z
-    - bz: magnetic field
-    - phi_start: phi at which we start
-    Returns azimuthal angles, sorted for direction of rotation. We add on 2pi so
-    that it is always greater than phi_start.
-*/
-    double tp_start_x, tp_start_y, tp_start_z, tp_start_pt;
-    if (q*bz > 0){
-        tp_start_x = startx;
-        tp_start_y = starty;
-        tp_start_z = startz;
-        tp_start_pt = sqrt(startpx*startpx+startpy*startpy);
-    }
-    else if (q*bz < 0){
-        tp_start_x = endx;
-        tp_start_y = endy;
-        tp_start_z = endz;
-        tp_start_pt = sqrt(endpx*endpx+endpy*endpy);
-    }
-    // coordinates of helix centre
-    double pt = tp_start_pt;
-    double x0 = tp_start_x + pt*cos(phi_start)/q/bz/c_light;
-    double y0 = tp_start_y - pt*sin(phi_start)/q/bz/c_light;
-    double r0 = abs(pt/q/bz/c_light); // wavenumber is qBm/pz dz
-//    std::cerr<<"pt: "<<pt<<" x0: "<<x0<<" y0: "<<y0<<" r0: "<<r0<<std::endl;
-    //print 'x0:', x0, 'y0:', y0, 'r0:', r0, 'k0:', k0
-    //azimuthal angle of maximum extent (when r is in line with x0, y0)
-    double direction = abs(q*bz)/q/bz;
-    double phi_max = atan2(direction*y0, -direction*x0);
-    while (phi_max < phi_start){// phi_max is always > phi_start
-        phi_max += 2*pi;
-    }
-    double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
-    double r2_start = startx*startx+starty*starty;
-    double r2_end = endx*endx+endy*endy;
-//    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
-    double fiducial_radius;
-    if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
-            fiducial_radius = max_r2;
-    } else {
-            fiducial_radius = max(r2_start, r2_end);
-    }
-        //print "   tp0 p:", tp_0["hit"]["px"], tp_0["hit"]["py"], "tp1 p:", tp_1["hit"]["px"], tp_1["hit"]["py"]
-        //print "   ", str(round(phi_start, 1)).rjust(8), str(round(phi_end, 1)).rjust(8), str(round(phi_max, 1)).rjust(8), str(round(r2_start, 1)).rjust(8), str(round(max_r2, 1)).rjust(8), str(round(r2_end, 1)).rjust(8)  
-//------------------------------------------------------------------------------------------------------
-    
-    
-//     double fiducial_radius = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
-     mcpass_Fid->Fill(fiducial_radius);
-//     mcpass_Fid_wide->Fill(fiducial_radius);
-     if ( fiducial_radius > fiducial_cut_radius){
-        if (cut_fiducial) continue;
-     } 
-
-
-//---------------------------------------------------------------------------------------
-// Misalignment Correction at centre of Absorber 
-//---------------------------------------------------------------------------------------
-    _USMCset.append_instance(USretrieved.E(i));
-    DSsetUncorrected.append_instance(DSretrieved.E(i));
-    if (USretrieved.E(i).isgood && DSretrieved.E(i).isgood){
-      Residual_x->Fill(USretrieved.E(i).X-DSretrieved.E(i).X);
-      Residual_y->Fill(USretrieved.E(i).Y-DSretrieved.E(i).Y);
-      Residual_z->Fill(USretrieved.E(i).Z-DSretrieved.E(i).Z);
-      Residual_px->Fill(USretrieved.E(i).px-DSretrieved.E(i).px);
-      Residual_py->Fill(USretrieved.E(i).py-DSretrieved.E(i).py);
-      Residual_pz->Fill(USretrieved.E(i).pz-DSretrieved.E(i).pz);
-      Residual_dxdz->Fill(USretrieved.E(i).dXdz-DSretrieved.E(i).dXdz);
-      Residual_dydz->Fill(USretrieved.E(i).dYdz-DSretrieved.E(i).dYdz);
-    }
-  }
-  std::cerr<<"Reference Momentum Cut complete and uncorrected residuals calculated. Number of entries: "<<_USMCset.N()<<std::endl;
-  double mean_residual_px=Residual_px->GetMean();
-  double mean_residual_py=Residual_py->GetMean();
-  double mean_residual_pz=Residual_pz->GetMean();
-  for (int i=0; i<_USMCset.N(); i++){
-     Vars tempvarDS=DSsetUncorrected.E(i);
-     tempvarDS.px=DSsetUncorrected.E(i).px+mean_residual_px;
-     tempvarDS.py=DSsetUncorrected.E(i).py+mean_residual_py;
-     tempvarDS.pz=DSsetUncorrected.E(i).pz+mean_residual_pz;
-     tempvarDS.dXdz=tempvarDS.px/tempvarDS.pz;
-     tempvarDS.dYdz=tempvarDS.py/tempvarDS.pz;
-     _DSMCset.append_instance(tempvarDS);
-     if (_USMCset.E(i).isgood && tempvarDS.isgood){
-        Residual_px_corrected->Fill(_USMCset.E(i).px-tempvarDS.px);
-        Residual_py_corrected->Fill(_USMCset.E(i).py-tempvarDS.py);
-        Residual_pz_corrected->Fill(_USMCset.E(i).pz-tempvarDS.pz);
-        Residual_dxdz_corrected->Fill(_USMCset.E(i).dXdz-tempvarDS.dXdz);
-        Residual_dydz_corrected->Fill(_USMCset.E(i).dYdz-tempvarDS.dYdz);
-     }
-  }
-  mcpass_mom->Write();
-  std::cerr<<"Reference Residual Correction complete"<<std::endl;
-  make_beam_histograms(USPostMom, "Upstream, Reference", "ref_10US_PostMom");
-  make_beam_histograms(DSPostMom, "Downstream, Reference", "ref_10DS_PostMom");
-}
-
-
-/////////////////////////////////////////////////////////////////////
-// Function Dataretrieve
-/////////////////////////////////////////////////////////////////////
-
-void MCSAnalysis::dataretrieve(){
-  Collection USretrieved, DSretrieved, EndofDS, StartofDS, USPostFid, DSPostFid, USPostMom, DSPostMom, DSsetUncorrected;
-  std::cerr<<"Retrieving data from USretrieved: "<<USDataname<<std::endl;
-  USretrieved.load_collection(USDataname);
-  std::cerr<<"Retrieving data from DSretrieved: "<<DSDataname<<std::endl;
-  DSretrieved.load_collection(DSDataname);
-  std::cerr<<"Retrieving data from EndofDS: "<<EndofDStrackerdataname<<std::endl;
-  EndofDS.load_collection(EndofDStrackerdataname);
-  std::cerr<<"Retrieving data from StartofDS: "<<StartofDStrackerdataname<<std::endl;
-  StartofDS.load_collection(StartofDStrackerdataname);
-  std::cerr<<"Entries in data USretrieved: "<< USretrieved.N()<<std::endl;
-  std::cerr<<"Entries in data DSretrieved: "<< DSretrieved.N()<<std::endl;
-  std::cerr<<"Entries in EndofDS data: "<< EndofDS.N()<<std::endl;
-  std::cerr<<"Entries in startofDS data: "<< StartofDS.N()<<std::endl;
-  outfile->cd();
-  BTField* field = dynamic_cast<BTField*>(MAUS::Globals::GetMCFieldConstructor());
-  double pi = 3.14159265358979323846;
-  double c_light=299.792458;
-  double x = 0; double y = 0; double t = 0;
-
-  for(int i=0;i<USretrieved.N();i++){
-     double endx=EndofDS.E(i).X;
-     double endy=EndofDS.E(i).Y;
-     double endz=EndofDS.E(i).Z;
-     double endpx=EndofDS.E(i).px;
-     double endpy=EndofDS.E(i).py;
-     double endpz=EndofDS.E(i).pz;
-     double startx=StartofDS.E(i).X;
-     double starty=StartofDS.E(i).Y;
-     double startz=StartofDS.E(i).Z;
-     double startpx=StartofDS.E(i).px;
-     double startpy=StartofDS.E(i).py;
-     double startpz=StartofDS.E(i).pz;
-     std::vector<double> magfield=field->GetFieldValue2(x,y,startz,t);
-     double bz=magfield[2];
-
-
-//------------------------------------------------------------------------------------------------------
-// Fiducial Cut
-//------------------------------------------------------------------------------------------------------
-//     std::cerr<<"Axial magnetic field  : "<<bz<<std::endl;
-
-//------------------------------------------------------------------------------------------------------
-//    Set the maximum r2 on each track point between tp and the next tp that
-//    the track excurts from the axis. Estimate the region between adjacent track
-//    points by extrapolating assuming uniform field and calculate the excursion
-//    analytically. Sets the max_r2 parameter on the track.
-//    Get azimuthal angles
-//    - tp_0: track point with lower z
-//    - tp_1: track point with higher z
-//    - bz: magnetic field
-//    Returns azimuthal angles, sorted for direction of rotation. If more than one
-//    rotation, add the delta phi on (so that we get extra turns).
-
-     double q = 1;
-     double phi_start, phi_end;
-     if (q*bz > 0){
-        phi_start = atan2(startpx, startpy);
-        phi_end = atan2(endpx, endpy);
-     }
-     else if (q*bz < 0){
-        phi_start = atan2(endpx, endpy);
-        phi_end = atan2(startpx, startpy);
-     }
-     double k0 = q*bz*c_light/endpz;
-//     std::cerr<<"q: "<<q<<" bz: "<<bz<<" c_light: "<<c_light<<" endpz: "<<endpz<<" k0: "<<k0<<std::endl;
-     while (phi_start < 0) { //phi_start is always in domain 0 < 2 pi
-        phi_start += 2*pi;
-     }
-     while (phi_end < phi_start) { // phi_end is always > phi_start
-        phi_end += 2*pi;
-     }
-    // for larger steps, we can make more than one rotation
-    double delta_phi = k0*(startz - endz);
-    double n_rot = abs(delta_phi)/pi/2.;
-//    std::cerr<<"delta_phi: "<<delta_phi<<" n_rot: "<<n_rot<<std::endl;
-    phi_end += floor(n_rot)*2.*pi;
-/*
-    Get the azimuthal angle at which the trajectory has maximum excursion from
-    the axis
-    - tp_0: track point with lower z
-    - tp_1: track point with higher z
-    - bz: magnetic field
-    - phi_start: phi at which we start
-    Returns azimuthal angles, sorted for direction of rotation. We add on 2pi so
-    that it is always greater than phi_start.
-*/
-    double tp_start_x, tp_start_y, tp_start_z, tp_start_pt;
-    if (q*bz > 0){
-        tp_start_x = startx;
-        tp_start_y = starty;
-        tp_start_z = startz;
-        tp_start_pt = sqrt(startpx*startpx+startpy*startpy);
-    }
-    else if (q*bz < 0){
-        tp_start_x = endx;
-        tp_start_y = endy;
-        tp_start_z = endz;
-        tp_start_pt = sqrt(endpx*endpx+endpy*endpy);
-    }
-    // coordinates of helix centre
-    double pt = tp_start_pt;
-    double x0 = tp_start_x + pt*cos(phi_start)/q/bz/c_light;
-    double y0 = tp_start_y - pt*sin(phi_start)/q/bz/c_light;
-    double r0 = abs(pt/q/bz/c_light); // wavenumber is qBm/pz dz
-//    std::cerr<<"pt: "<<pt<<" x0: "<<x0<<" y0: "<<y0<<" r0: "<<r0<<std::endl;
-    //print 'x0:', x0, 'y0:', y0, 'r0:', r0, 'k0:', k0
-    //azimuthal angle of maximum extent (when r is in line with x0, y0)
-    double direction = abs(q*bz)/q/bz;
-    double phi_max = atan2(direction*y0, -direction*x0);
-    while (phi_max < phi_start){// phi_max is always > phi_start
-        phi_max += 2*pi;
-    }
-    double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
-    double r2_start = startx*startx+starty*starty;
-    double r2_end = endx*endx+endy*endy;
-//    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
-    double fiducial_radius;
-    if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
-            fiducial_radius = max_r2;
-    } else {
-            fiducial_radius = max(r2_start, r2_end);
-    }
-        //print "   tp0 p:", tp_0["hit"]["px"], tp_0["hit"]["py"], "tp1 p:", tp_1["hit"]["px"], tp_1["hit"]["py"]
-        //print "   ", str(round(phi_start, 1)).rjust(8), str(round(phi_end, 1)).rjust(8), str(round(phi_max, 1)).rjust(8), str(round(r2_start, 1)).rjust(8), str(round(max_r2, 1)).rjust(8), str(round(r2_end, 1)).rjust(8)  
-//------------------------------------------------------------------------------------------------------    
-    
+     double fiducialendx=EndofDS.E(i).X;
+     double fiducialendy=EndofDS.E(i).Y;
+     double fiducialendz=EndofDS.E(i).Z;
+     double fiducialendpx=EndofDS.E(i).px;
+     double fiducialendpy=EndofDS.E(i).py;
+     double fiducialendpz=EndofDS.E(i).pz;
+     double fiducialstartx=StartofDS.E(i).X;
+     double fiducialstarty=StartofDS.E(i).Y;
+     double fiducialstartz=StartofDS.E(i).Z;
+     double fiducialstartpx=StartofDS.E(i).px;
+     double fiducialstartpy=StartofDS.E(i).py;
+     std::vector<double> fiducialmagfield=field->GetFieldValue2(x,y,fiducialstartz,t);
+     double fiducialbz=fiducialmagfield[2];
+     double fiducial_radius=MaxRadius(fiducialbz, fiducialstartx, fiducialstarty, fiducialstartz, fiducialstartpx, fiducialstartpy, fiducialendx, fiducialendy, fiducialendz, fiducialendpx, fiducialendpy, fiducialendpz);    
+//------------------------------------------------------------------------------------------------------        
      double fiducial_radius2 = sqrt(EndofDS.E(i).X*EndofDS.E(i).X + EndofDS.E(i).Y*EndofDS.E(i).Y);
-     pass_Fid->Fill(fiducial_radius);
-     pass_Fid_wide->Fill(fiducial_radius);
-     pass_Fid_old->Fill(fiducial_radius2);
-     if ( fiducial_radius > fiducial_cut_radius){
-        if (cut_fiducial) continue;
-     } 
+     bool CutPassFiducial=false;
+     if (retrieve_mode==0){
+        pass_Fid->Fill(fiducial_radius);
+        pass_Fid_wide->Fill(fiducial_radius);
+        pass_Fid_old->Fill(fiducial_radius2);
+     }else{
+        mcpass_Fid->Fill(fiducial_radius);
+        mcpass_Fid_wide->Fill(fiducial_radius);
+        mcpass_Fid_old->Fill(fiducial_radius2);     
+     }
+     if ( fiducial_radius <= fiducial_cut_radius){
+        CutPassFiducial=true;
+//       if (cut_fiducial) continue;
+
+     }
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial) {    
+        if (retrieve_mode==0){
+          cuts_accept->Fill("Fiducial",1);
+        }else{
+           mccuts_accept->Fill("Fiducial",1);
+        }
+     }
+ 
 
 //---------------------------------------------------------------------------------------
 // Momentum at absorber cut. 
@@ -1300,17 +1431,117 @@ void MCSAnalysis::dataretrieve(){
      double momentum_absorber= sqrt((USretrieved.E(i).px*USretrieved.E(i).px)+
                                  (USretrieved.E(i).py*USretrieved.E(i).py)+ 
                                  (USretrieved.E(i).pz*USretrieved.E(i).pz));
-     pass_mom->Fill(momentum_absorber);
-     if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
-        if (cut_absorber_momentum) continue;
+     bool CutPasMom=true;
+     if (retrieve_mode==0){
+        pass_mom->Fill(momentum_absorber);
+     }else{
+        mcpass_mom->Fill(momentum_absorber);
      }
-     USPostMom.append_instance(USretrieved.E(i));
-     DSPostMom.append_instance(DSretrieved.E(i));
+     if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
+        CutPasMom=false;
+//        if (cut_absorber_momentum) continue;
+     }
+//     std::cerr<<"Pass Momentum: "<<CutPasMom<<" momentum_absorber: "<<momentum_absorber<<" momentum_lower_limit: "<<momentum_lower_limit<<" momentum_upper_limit: "<<momentum_upper_limit<<std::endl;
+     if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom) {    
+        USPostMom.append_instance(USretrieved.E(i));
+        DSPostMom.append_instance(DSretrieved.E(i));
+        if (retrieve_mode==0){
+          cuts_accept->Fill("Momentum",1);
+        }else{
+           mccuts_accept->Fill("Mmentum",1);
+        }
+ 
+     }
+//---------------------------------------------------------------------------------------
+// Apply Cuts 
+//---------------------------------------------------------------------------------------
+
+     if (retrieve_mode==0){                                 //Create Histograms for Data
+        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
+        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
+        }
+//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+           Hist_TOF0Require1SP->Fill(NumberTOF0SP);         
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Hist_TOF1Require1SP->Fill(NumberTOF1SP);         
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+           Hist_TOF01->Fill(rawTOF01HitTime);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+           Hist_Chi2->Fill(TKU_chiSquare_per_ndof);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+           Hist_TKU_max_radius->Fill(TKU_max_rad);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+           Hist_Diff_max_radius->Fill(diff_max_rad);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+           Hist_TOF01Ext->Fill(TOF01Ext);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){
+           if (CutPassUSTOF0){                 
+              Hist_USTOF0->Fill("true",1);               
+           }else{
+              Hist_USTOF0->Fill("false",1);               
+//           }
+        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                  
+           Hist_Fiducial->Fill(fiducial_radius);               
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                  
+           Hist_MOM->Fill(momentum_absorber);               
+//        }
+     }else{                                                 //Create Histograms for MC
+//        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
+        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
+//        }
+//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+           Histref_TOF0Require1SP->Fill(NumberTOF0SP);       
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_TOF1Require1SP->Fill(NumberTOF1SP);       
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_TOF01->Fill(rawTOF01HitTime);             
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_Chi2->Fill(TKU_chiSquare_per_ndof);             
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_TKU_max_radius->Fill(TKU_max_rad);             
+//        }
+//       if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_Diff_max_radius->Fill(diff_max_rad);             
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Histref_TOF01Ext->Fill(TOF01Ext);             
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){                   
+           if (CutPassUSTOF0){                 
+              Histref_USTOF0->Fill("true",1);               
+           }else{
+              Histref_USTOF0->Fill("false",1);               
+           }
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                   
+           Histref_Fiducial->Fill(fiducial_radius);             
+//        }
+//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
+           Histref_MOM->Fill(momentum_absorber);             
+//       }
+     }
   
 //---------------------------------------------------------------------------------------
 // Misalignment Correction at centre of Absorber 
 //---------------------------------------------------------------------------------------
-     _USset.append_instance(USretrieved.E(i));
+     if (retrieve_mode==0){
+        _USset.append_instance(USretrieved.E(i));
+     }else{
+        _USMCset.append_instance(USretrieved.E(i));
+     }
      DSsetUncorrected.append_instance(DSretrieved.E(i));
      if (USretrieved.E(i).isgood && DSretrieved.E(i).isgood){
         Residual_x->Fill(USretrieved.E(i).X-DSretrieved.E(i).X);
@@ -1326,32 +1557,87 @@ void MCSAnalysis::dataretrieve(){
         UpdateRunInfo();
      }
   }
-  std::cerr<<"Data Momentum Cut complete and uncorrected residuals calculated. Number of entries: "<<_USset.N()<<std::endl;
   double mean_residual_px=Residual_px->GetMean();
   double mean_residual_py=Residual_py->GetMean();
   double mean_residual_pz=Residual_pz->GetMean();
-  for (int i=0; i<_USset.N(); i++){
-     Vars tempvarDS=DSsetUncorrected.E(i);
-     tempvarDS.px=DSsetUncorrected.E(i).px+mean_residual_px;
-     tempvarDS.py=DSsetUncorrected.E(i).py+mean_residual_py;
-     tempvarDS.pz=DSsetUncorrected.E(i).pz+mean_residual_pz;
-     tempvarDS.dXdz=tempvarDS.px/tempvarDS.pz;
-     tempvarDS.dYdz=tempvarDS.py/tempvarDS.pz;
-     _DSset.append_instance(tempvarDS);
-     if (_USset.E(i).isgood && tempvarDS.isgood){
-        Residual_px_corrected->Fill(_USset.E(i).px-tempvarDS.px);
-        Residual_py_corrected->Fill(_USset.E(i).py-tempvarDS.py);
-        Residual_pz_corrected->Fill(_USset.E(i).pz-tempvarDS.pz);
-        Residual_dxdz_corrected->Fill(_USset.E(i).dXdz-tempvarDS.dXdz);
-        Residual_dydz_corrected->Fill(_USset.E(i).dYdz-tempvarDS.dYdz);
+  if (retrieve_mode==0){
+     std::cerr<<"Data Momentum Cut complete and uncorrected residuals calculated. Number of entries: "<<_USset.N()<<std::endl;
+     for (int i=0; i<_USset.N(); i++){
+        Vars tempvarDS=DSsetUncorrected.E(i);
+        tempvarDS.px=DSsetUncorrected.E(i).px+mean_residual_px;
+        tempvarDS.py=DSsetUncorrected.E(i).py+mean_residual_py;
+        tempvarDS.pz=DSsetUncorrected.E(i).pz+mean_residual_pz;
+        tempvarDS.dXdz=tempvarDS.px/tempvarDS.pz;
+        tempvarDS.dYdz=tempvarDS.py/tempvarDS.pz;
+        _DSset.append_instance(tempvarDS);
+        if (_USset.E(i).isgood && tempvarDS.isgood){
+           Residual_px_corrected->Fill(_USset.E(i).px-tempvarDS.px);
+           Residual_py_corrected->Fill(_USset.E(i).py-tempvarDS.py);
+           Residual_pz_corrected->Fill(_USset.E(i).pz-tempvarDS.pz);
+           Residual_dxdz_corrected->Fill(_USset.E(i).dXdz-tempvarDS.dXdz);
+           Residual_dydz_corrected->Fill(_USset.E(i).dYdz-tempvarDS.dYdz);
+        }
      }
+     pass_mom->Write();
+     std::cerr<<"Data Residual Correction complete"<<std::endl;
+     make_beam_histograms(USPostMom, "Upstream, Data", "data_10US_PostMom");
+     make_beam_histograms(DSPostMom, "Downstream, Data", "data_10DS_PostMom");
+     PlotRunInfo();
+  }else{
+     std::cerr<<"Reference Momentum Cut complete and uncorrected residuals calculated. Number of entries: "<<_USMCset.N()<<std::endl;
+     for (int i=0; i<_USMCset.N(); i++){
+        Vars tempvarDS=DSsetUncorrected.E(i);
+        tempvarDS.px=DSsetUncorrected.E(i).px+mean_residual_px;
+        tempvarDS.py=DSsetUncorrected.E(i).py+mean_residual_py;
+        tempvarDS.pz=DSsetUncorrected.E(i).pz+mean_residual_pz;
+        tempvarDS.dXdz=tempvarDS.px/tempvarDS.pz;
+        tempvarDS.dYdz=tempvarDS.py/tempvarDS.pz;
+        _DSMCset.append_instance(tempvarDS);
+        if (_USMCset.E(i).isgood && tempvarDS.isgood){
+           Residual_px_corrected->Fill(_USMCset.E(i).px-tempvarDS.px);
+           Residual_py_corrected->Fill(_USMCset.E(i).py-tempvarDS.py);
+           Residual_pz_corrected->Fill(_USMCset.E(i).pz-tempvarDS.pz);
+           Residual_dxdz_corrected->Fill(_USMCset.E(i).dXdz-tempvarDS.dXdz);
+           Residual_dydz_corrected->Fill(_USMCset.E(i).dYdz-tempvarDS.dYdz);
+	}
+     }
+     mcpass_mom->Write();
+     std::cerr<<"Reference Residual Correction complete"<<std::endl;
+     make_beam_histograms(USPostMom, "Upstream, Reference", "ref_10US_PostMom");
+     make_beam_histograms(DSPostMom, "Downstream, Reference", "ref_10DS_PostMom");
+ 
   }
-  pass_mom->Write();
-  std::cerr<<"Data Residual Correction complete"<<std::endl;
-  make_beam_histograms(USPostMom, "Upstream, Data", "data_10US_PostMom");
-  make_beam_histograms(DSPostMom, "Downstream, Data", "data_10DS_PostMom");
-  PlotRunInfo();
+  if(retrieve_mode==0){
+     Hist_TOF0Require1SP->Write();
+     Hist_TOF1Require1SP->Write();
+     Hist_TOF01->Write();
+     Hist_Chi2->Write();
+     Hist_TKU_max_radius->Write();
+     Hist_Diff_max_radius->Write();
+     Hist_TOF01Ext->Write();
+     Hist_USTOF0->Write();
+     Hist_Fiducial->Write();
+     Hist_MOM->Write();
+     cuts_accept->Write();
+  }else{
+     Histref_TOF0Require1SP->Write();
+     Histref_TOF1Require1SP->Write();
+     Histref_TOF01->Write();
+     Histref_Chi2->Write();
+     Histref_TKU_max_radius->Write();
+     Histref_Diff_max_radius->Write();
+     Histref_TOF01Ext->Write();
+     Histref_USTOF0->Write();
+     Histref_Fiducial->Write();
+     Histref_MOM->Write();
+     mccuts_accept->Write();
+  }
 
+  TOF0file.close();
+  TOF1file.close();
+  TOF2file.close();
+  Chi2file.close();
+  doffile.close();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -1367,7 +1653,7 @@ void MCSAnalysis::dataSelection(int mode){
   chain->SetBranchAddress("CkovBranch", &ckovevent);
   chain->SetBranchAddress("KLBranch", &klevent);
   chain->SetBranchAddress("EMRBranch", &emrevent);
-  chain->SetBranchAddress("MCEvent", &mcevent);
+//  chain->SetBranchAddress("MCEvent", &mcevent);
   chain->SetBranchAddress("GlobalBranch", &globalevent);
 
   double dataDS11 = _sys["dataDS11"];
@@ -1385,22 +1671,38 @@ void MCSAnalysis::dataSelection(int mode){
   // < mcchain->GetEntries() ? 
   //  chain->GetEntries() : mcchain->GetEntries();
   // Loop over all tree entries.
-  Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
-  Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex,DSsetUncorrected, EndOfDS, StartOfDS;
-  double pz = 0.;
+  Collection USPostTKU, DSPostTKU;
+  Collection Collect_EndOfDS, Collect_StartOfDS, Collect_USTOF0, Collect_USTOF1, Collect_StartofUST, Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
+
+// Open files to save TOF data to.
+   std::ofstream TOF0file;
+   TOF0file.open(TOF0dataname);
+   std::ofstream TOF1file;
+   TOF1file.open(TOF1dataname);
+   std::ofstream TOF2file;
+   TOF2file.open(TOF2dataname);
+// Open files to save Chi2 and dof data to.
+   std::ofstream Chi2file;
+   Chi2file.open(Chi2dataname);
+   std::ofstream doffile;
+   doffile.open(dofdataname);
+
+//  double pz = 0.;
   // Loop over all tree entries.
-  int Fiducial_Pass = 0;
-  int Fiducial_Fail = 0;
+//  int Events_Pass = 0;
+//  int Events_Fail = 0;
   std::cerr <<"Number of entries in data file: "<< Nentries << std::endl;
-  int Nevents = 0;
+//  int Nevents = 0;
   // Nentries *= int(_sys["FracEvents"]) > 0 ? _sys["FracEvents"] : 1.0;
   for (int i=0; i<Nentries; i++){
-//    std::cerr<<"**********************************************"<< std::endl;
-//    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
-     chain->GetEntry(i);
-     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
-//    if (i>=1000) break;
+    std::cerr<<"**********************************************"<< std::endl;
+    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
+    chain->GetEntry(i);
+//     if (i%100!=0) {
+//        continue;
+//     }     
+    std::cerr<<"Event Got"<<i<<"\n";
+    if (i>=10000) break;
     // Set cuts based on the TOFs, ckov, kl, and EMR information
     // Locate the tracker reference planes. To be agnostic locate
     // the downstream most station of the upstream tracker and the
@@ -1415,6 +1717,8 @@ void MCSAnalysis::dataSelection(int mode){
      globalVars.UScentre_absorber=reset_Vars();
      globalVars.UStrackerUS11=reset_Vars();
      globalVars.UStrackerUS53=reset_Vars();
+     globalVars.DiffuserStart=reset_Vars();
+     globalVars.DiffuserEnd=reset_Vars();
      globalVars.USend_of_DStracker=reset_Vars();
      globalVars.DScentre_absorber=reset_Vars();
      globalVars.USstart_of_DStracker=reset_Vars();
@@ -1423,62 +1727,6 @@ void MCSAnalysis::dataSelection(int mode){
 //    std::cerr<<"centre_absorber_DS created with default values"<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
 
-
-//----------------------------------------------------------------------
-// Require 1 TOF1 Space Point
-//----------------------------------------------------------------------
-
-     double rawTOF1HitTime;
-     if ( tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() == 1 ){
-        rawTOF1HitTime = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF1 time: "<<rawTOF1HitTime<<std::endl;
-     }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
-//      std::cerr<<"**Multiple TOF1 hits - cutting"<<std::endl;
-      pass_Tof1->Fill("Fail",1);
-        if (cut_TOF1_1sp) continue;
-     }else{
-//      std::cerr<<"**No TOF1 hit"<<std::endl;
-        pass_Tof1->Fill("Fail",1);
-        if (cut_TOF1_1sp) continue;
-     }
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-     USAllTOF.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-     DSAllTOF.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-     cuts_accept->Fill("1 TOF1",1);
-     pass_Tof1->Fill("Pass",1);
-
-
-//----------------------------------------------------------------------
-// Require 1 TOF0 Space Point
-//----------------------------------------------------------------------
-
-     double rawTOF0HitTime;
-     if ( tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() == 1 ){
-        rawTOF0HitTime = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF0 time: "<<rawTOF0HitTime<<std::endl;
-     }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
-//      std::cerr<<"**Multiple TOF0 hits - cutting"<<std::endl;
-        pass_Tof0->Fill("Fail",1);
-        if (cut_TOF0_1sp) continue;
-     }else{
-//      std::cerr<<"**No TOF0 hit"<<std::endl;
-        pass_Tof0->Fill("Fail",1);
-        if (cut_TOF0_1sp) continue;
-     }
-    
-//    std::cerr<<"Adding to PostTOF0"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-     USPostTOF0.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USPostTOF0: "<<USPostTOF0.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-     DSPostTOF0.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSPostTOF0: "<<DSPostTOF0.N()<<std::endl;
-     cuts_accept->Fill("1 TOF0",1);
-     pass_Tof0->Fill("Pass",1);
 
 //---------------------------------------------------------------------------------------
 // Require only 1 US track
@@ -1512,55 +1760,16 @@ void MCSAnalysis::dataSelection(int mode){
      cuts_accept->Fill("1 US track",1);
      pass_TKU->Fill("Pass",1);
 
-//---------------------------------------------------------------------------------------
-// mode -2 cut based on Monte Carlo event
-//---------------------------------------------------------------------------------------
-    
-     if (mode==-2) { 
-        if (mcevent->GetVirtualHits()->size() >= 49) {
-	   if (mcevent->GetVirtualHits()->at(48).GetParticleId()!=-13) continue;
-        }
-     }
-
-
-//---------------------------------------------------------------------------------------
-// CHi2/dof cut
-//---------------------------------------------------------------------------------------
-
-    std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
-    std::vector<MAUS::SciFiTrack*>::iterator track_iter;
-    if(tracks.size() != 0){ // use if only want to take the first track
-      track_iter = tracks.begin();
-      double TKU_chiSquare = (*track_iter)->chi2();
-      int TKU_ndof = (*track_iter)->ndf();
-      double TKU_chiSquare_per_ndof = TKU_chiSquare / (1.0*TKU_ndof);
-      pass_chi2->Fill(TKU_chiSquare_per_ndof);  
-      if (TKU_chiSquare_per_ndof>10){
-//        std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
-        if (cut_CHi2_dof) continue;
-      }
-    }else{ 
-//      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
-      if (cut_CHi2_dof) continue;
-    }
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostChi2.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostChi2.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    cuts_accept->Fill("Chi2",1);    
-    
+   
 //----------------------------------------------------------------------
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
 
     globalVars=read_globals(dataDS11, dataDS53, dataUS53, dataUS11, datadiffuserlow, datadiffuserhigh, dataTOF0pos, dataTOF1pos);
+
 //    std::cerr<<"centre_absorber_US has updated globals data"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-//    display_Vars(globalVars.DScentre_absorber);
+//    display_Vars(globalVars.UStrackerUS53);
+//    display_Vars(globalVars.DiffuserStart);
     if (!globalVars.UScentre_absorber.isgood) {
 //      std::cerr<<"**Failed US track Cut - Why not cut earlier ********************"<<std::endl;
       continue;
@@ -1570,119 +1779,44 @@ void MCSAnalysis::dataSelection(int mode){
     }
     cuts_accept->Fill("US Track",1);
 
-//------------------------------------------------------------------------------------------------------
-// US Tracker Radial Cut
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------
+// Save TOF information for future processing
+//----------------------------------------------------------------------
 
-    double TKU_max_rad = Check_Radius_US(_sys["US53"],_sys["US11"]);
-    pass_TKUrad->Fill(TKU_max_rad);
-    if (TKU_max_rad>150.0){
-//      std::cerr<<"**Failed US Tracker Radial Cut"<<std::endl;
-      if (cut_TKU_radial) continue;
-    }
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTKUrad.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTKUrad.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    cuts_accept->Fill("US tracker Radius",1);
+    int TOF0num = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize();
+    int TOF1num = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize();
+    int TOF2num = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize();
+    TOF0file << TOF0num << " ";
+    TOF1file << TOF1num << " ";
+    TOF2file << TOF2num << " ";
+    for (int TOFnum=0; TOFnum<TOF0num; TOFnum++){TOF0file << tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[TOFnum].GetTime()<< " ";}
+    for (int TOFnum=0; TOFnum<TOF1num; TOFnum++){TOF1file << tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[TOFnum].GetTime()<< " ";}
+    for (int TOFnum=0; TOFnum<TOF2num; TOFnum++){TOF2file << tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[TOFnum].GetTime()<< " ";}
+    TOF0file << "\n";
+    TOF1file << "\n";
+    TOF2file << "\n";
+    
+//----------------------------------------------------------------------
+// Save Chi2 and dof for future processing
+//----------------------------------------------------------------------
 
-//------------------------------------------------------------------------------------------------------
-// Diffuser Cut
-//------------------------------------------------------------------------------------------------------
+    std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
+    std::vector<MAUS::SciFiTrack*>::iterator track_iter;
 
-//Check_Radius_US(double low_z, double high_z, double radius)
-    double diff_max_rad = Check_Radius_US(_sys["diffuserlow"],_sys["diffuserhigh"]);
-    pass_Diff->Fill(diff_max_rad);
-    if (diff_max_rad >90.0){
-//      std::cerr<<"**Failed Diffuser Cut"<<std::endl;
-      if (cut_diffuser_radial) continue;
-    }
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostDiff.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostDiff.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    cuts_accept->Fill("Diffuser",1);
-
-//---------------------------------------------------------------------------------------
-// TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
-//---------------------------------------------------------------------------------------
-
-    double rawTOF2HitTime;     
-    if ( tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize() >= 1 ){
-      rawTOF2HitTime = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF2 time: "<<rawTOF2HitTime<<std::endl;
-    }else{
-//      std::cerr<<"No TOF2 hit?"<<std::endl;
-      rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
-    }
-    tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
-    pass_TOF01->Fill(rawTOF01HitTime);
-    if ( rawTOF01HitTime < TOF_lower_limit ||
-         rawTOF01HitTime > TOF_upper_limit){
-//      std::cerr<<"**Failed TOF01 Cut"<<std::endl;
-      if (cut_TOF01) continue;
+    if(tracks.size() == 0){
+        Chi2file << "10000.0" << "\n";
+        doffile << "100" << "\n";
+//      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
+    }else{ 
+      // use if only want to take the first track
+        track_iter = tracks.begin();
+        double TKU_chiSquare = (*track_iter)->chi2();
+        int TKU_ndof = (*track_iter)->ndf();
+        Chi2file << TKU_chiSquare << "\n";
+        doffile << TKU_ndof << "\n";
     }
 
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTOF01.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTOF01.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
 
-    tof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    cuts_accept->Fill("TOF01 Selection",1);
-
-
-//---------------------------------------------------------------------------------------
-// TOF01 Extrapolated cut. 
-//---------------------------------------------------------------------------------------
-
-  double TOF01Ext = globalVars.USTOF1.TOFX-globalVars.USTOF0.TOFX;
-  pass_TOF01Ex->Fill(TOF01Ext);
-  if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
-//    std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
-    if(cut_TOF01ext) continue;
-  }
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTOF01Ex.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTOF01Ex.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    cuts_accept->Fill("Extrapolated TOF01",1);
-
-
-//---------------------------------------------------------------------------------------
-// Successful extrapolation from  US tracker to TOF0
-//---------------------------------------------------------------------------------------
-       
-    if (globalVars.USTOF0.isgood==false){
-//      std::cerr<<"**Failed extrapolation from TKU to TOF0"<<std::endl;
-      pass_ExtTKU0->Fill("Fail",1);
-      if (cut_ext_TKU_TOF0) continue;
-    }
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostExtTKU0.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostExtTKU0.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    cuts_accept->Fill("TKU_TOF0",1);
-    pass_ExtTKU0->Fill("Pass",1);
 
 //------------------------------------------------------------------------------------------------------
 // Saving of events that pass all cuts
@@ -1691,22 +1825,47 @@ void MCSAnalysis::dataSelection(int mode){
 //    std::cerr<<"**Event accepted"<<std::endl;
     _USset.append_instance(globalVars.UScentre_absorber);
     _DSset.append_instance(globalVars.DScentre_absorber);
-    EndOfDS.append_instance(globalVars.USend_of_DStracker);
-    StartOfDS.append_instance(globalVars.USstart_of_DStracker);
+    Collect_EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    Collect_StartOfDS.append_instance(globalVars.USstart_of_DStracker);
+    Collect_USTOF0.append_instance(globalVars.USTOF0);
+    Collect_USTOF1.append_instance(globalVars.USTOF1);
+    Collect_StartofUST.append_instance(globalVars.UStrackerUS53);
+    Collect_EndofUST.append_instance(globalVars.UStrackerUS11);
+    Collect_DiffuserStart.append_instance(globalVars.DiffuserStart);
+    Collect_DiffuserEnd.append_instance(globalVars.DiffuserEnd);
+    
 //    _DSset.append_instance(globalVars.DScentre_absorber);
     cuts_accept->Fill("All Cuts",1);
  
   }
   _USset.save_collection(USDataname);
   _DSset.save_collection(DSDataname);
-  EndOfDS.save_collection(EndofDStrackerdataname);
-  StartOfDS.save_collection(StartofDStrackerdataname);
-  
-//  std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//  std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-//  std::cerr<<"Size of USPreRadSel: "<<USPreRadSel.N()<<std::endl;
-//  std::cerr<<"Size of DSPreRadSel: "<<DSPreRadSel.N()<<std::endl;
+  Collect_EndOfDS.save_collection(EndofDStrackerdataname);
+  Collect_StartOfDS.save_collection(StartofDStrackerdataname);
+  Collect_USTOF0.save_collection(Collect_USTOF0dataname);
+  Collect_USTOF1.save_collection(Collect_USTOF1dataname);
+  Collect_StartofUST.save_collection(Collect_StartofUSTdataname);
+  Collect_EndofUST.save_collection(Collect_EndofUSTdataname);
+  Collect_DiffuserStart.save_collection(Collect_DiffuserStartdataname);
+  Collect_DiffuserEnd.save_collection(Collect_DiffuserEnddataname);
+// Close TOF, Chi2 and dof files
+  TOF0file.close();
+  TOF1file.close();
+  TOF2file.close();
+  Chi2file.close();
+  doffile.close();
 
+  
+  std::cerr<<"Data: Size of USset: "<<_USset.N()<<std::endl;
+  std::cerr<<"Data: Size of DSset: "<<_DSset.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_EndOfDS: "<<Collect_EndOfDS.N()<<std::endl;
+  std::cerr<<"Data: Collect_StartOfDS: "<<Collect_StartOfDS.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_USTOF0: "<<Collect_USTOF0.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_USTOF1: "<<Collect_USTOF1.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_StartofUST: "<<Collect_StartofUST.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_EndofUST: "<<Collect_EndofUST.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_DiffuserStart: "<<Collect_DiffuserStart.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_DiffuserEnd: "<<Collect_DiffuserEnd.N()<<std::endl;
 
 
 //------------------------------------------------------------------------------------------------------
@@ -1714,26 +1873,8 @@ void MCSAnalysis::dataSelection(int mode){
 //------------------------------------------------------------------------------------------------------
   
 
-  make_beam_histograms(USAllTOF, "Upstream, Data", "data_01US_alltof");
-  make_beam_histograms(DSAllTOF, "Downstream, Data", "data_01DS_alltof");
-  make_beam_histograms(USPostTOF0, "Upstream, Data", "data_02US_posttof0");
-  make_beam_histograms(DSPostTOF0, "Downstream, Data", "data_02DS_posttof0");
   make_beam_histograms(USPostTKU, "Upstream, Data", "data_03US_PostTKU");
   make_beam_histograms(DSPostTKU, "Downstream, Data", "data_03DS_PostTKU"); 
-  make_beam_histograms(USPostTKUrad, "Upstream, Data", "data_04US_PostTKUrad");
-  make_beam_histograms(DSPostTKUrad, "Downstream, Data", "data_04DS_PostTKUrad");
-  make_beam_histograms(USPostDiff, "Upstream, Data", "data_05US_PostDiff");
-  make_beam_histograms(DSPostDiff, "Downstream, Data", "data_05DS_PostDiff");
-  make_beam_histograms(USPostFid, "Upstream, Data", "data_06US_PostFid");
-  make_beam_histograms(DSPostFid, "Downstream, Data", "data_06DS_PostFid");
-  make_beam_histograms(USPostExtTKU0, "Upstream, Data", "data_07US_alltof");
-  make_beam_histograms(DSPostExtTKU0, "Downstream, Data", "data_07DS_alltof");
-  make_beam_histograms(USPostTOF01, "Upstream, Data", "data_08US_PostTOF01");
-  make_beam_histograms(DSPostTOF01, "Downstream, Data", "data_08DS_PostTOF01");
-  make_beam_histograms(USPostTOF01Ex, "Upstream, Data", "data_09US_PostTOF01Ex");
-  make_beam_histograms(DSPostTOF01Ex, "Downstream, Data", "data_09DS_PostTOF01Ex"); 
-  std::cerr<<"Number of events Pass fiducial cut: "<<Fiducial_Pass<<std::endl;
-  std::cerr<<"Number of events Fail fiducial cut: "<<Fiducial_Fail<<std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -1771,9 +1912,21 @@ void MCSAnalysis::referenceSelection(){
 //  std::cerr<<"Getting Nentries"<<std::endl;
   int Nentries = refchain->GetEntries();
 //  std::cerr<<"Nentries set"<<std::endl;
-  Collection USAllTOF, DSAllTOF, USPostTOF0, DSPostTOF0, USPostTKU, DSPostTKU, USPostTKUrad, DSPostTKUrad;
-  Collection USPostDiff, DSPostDiff, USPostChi2, DSPostChi2, USPostFid, DSPostFid, USPostExtTKU0, DSPostExtTKU0;
-  Collection USPostTOF01, DSPostTOF01, USPostTOF01Ex, DSPostTOF01Ex, EndOfDS, StartOfDS;
+  Collection USPostTKU, DSPostTKU;
+  Collection Collect_EndOfDS, Collect_StartOfDS, Collect_USTOF0, Collect_USTOF1, Collect_StartofUST, Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
+
+// Open files to save TOF data to.
+   std::ofstream TOF0file;
+   TOF0file.open(TOF0refname);
+   std::ofstream TOF1file;
+   TOF1file.open(TOF1refname);
+   std::ofstream TOF2file;
+   TOF2file.open(TOF2refname);
+   std::ofstream Chi2file;
+   Chi2file.open(Chi2refname);
+   std::ofstream doffile;
+   doffile.open(dofrefname);
+
 //  double pz = 0.;
   std::cerr <<"Number of entries in data file: "<< Nentries << std::endl;
   // Loop over all tree entries.
@@ -1782,7 +1935,7 @@ void MCSAnalysis::referenceSelection(){
  //   std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     refchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-//    if (i>=1000) break;
+    if (i>=10000) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;
@@ -1791,6 +1944,8 @@ void MCSAnalysis::referenceSelection(){
     globalVars.UScentre_absorber=reset_Vars();
     globalVars.UStrackerUS11=reset_Vars();
     globalVars.UStrackerUS53=reset_Vars();
+    globalVars.DiffuserStart=reset_Vars();
+    globalVars.DiffuserEnd=reset_Vars();
     globalVars.USend_of_DStracker=reset_Vars();
     globalVars.DScentre_absorber=reset_Vars();
 //    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
@@ -1799,60 +1954,6 @@ void MCSAnalysis::referenceSelection(){
 //    display_Vars(globalVars.DScentre_absorber);
 
 
-//----------------------------------------------------------------------
-// Require 1 TOF1 Space Point
-//----------------------------------------------------------------------
-
-    double rawTOF1HitTime;
-    if ( tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() == 1 ){
-      rawTOF1HitTime = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF1 time: "<<rawTOF1HitTime<<std::endl;
-    }else if (tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize() > 1 ){
-//      std::cerr<<"**Multiple TOF1 hits - cutting"<<std::endl;
-      mcpass_Tof1->Fill("Fail",1);
-      if(cut_TOF1_1sp) continue;
-    }else{
-//      std::cerr<<"**No TOF1 hit"<<std::endl;
-      mcpass_Tof1->Fill("Fail",1);
-      if(cut_TOF1_1sp) continue;
-    }
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USAllTOF.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSAllTOF.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("1 TOF1",1);
-    mcpass_Tof1->Fill("Pass",1);
-
-
-//----------------------------------------------------------------------
-// Require 1 TOF0 Space Point
-//----------------------------------------------------------------------
-
-    double rawTOF0HitTime;
-    if ( tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() == 1 ){
-      rawTOF0HitTime = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF0 time: "<<rawTOF0HitTime<<std::endl;
-    }else if (tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize() > 1 ){
-//      std::cerr<<"**Multiple TOF0 hits - cutting"<<std::endl;
-      mcpass_Tof0->Fill("Fail",1);
-      if(cut_TOF0_1sp) continue;
-    }else{
-//      std::cerr<<"**No TOF0 hit"<<std::endl;
-      mcpass_Tof0->Fill("Fail",1);
-      if(cut_TOF0_1sp) continue;
-    }
-//    std::cerr<<"Adding to PostTOF0"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTOF0.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USPostTOF0: "<<USPostTOF0.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTOF0.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSPostTOF0: "<<DSPostTOF0.N()<<std::endl;
-    mccuts_accept->Fill("1 TOF0",1);
-    mcpass_Tof0->Fill("Pass",1);
 
 //---------------------------------------------------------------------------------------
 // Require only 1 US track
@@ -1900,39 +2001,7 @@ void MCSAnalysis::referenceSelection(){
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     mccuts_accept->Fill("1 US track",1);
     mcpass_TKU->Fill("Pass",1);
-
-//---------------------------------------------------------------------------------------
-// CHi2/dof cut
-//---------------------------------------------------------------------------------------
-
-    std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
-    std::vector<MAUS::SciFiTrack*>::iterator track_iter;
-
-    if(tracks.size() == 0){
-//      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
-      if(cut_CHi2_dof) continue;
-    }else{ 
-      // use if only want to take the first track
-        track_iter = tracks.begin();
-        double TKU_chiSquare = (*track_iter)->chi2();
-        int TKU_ndof = (*track_iter)->ndf();
-        double TKU_chiSquare_per_ndof = TKU_chiSquare / (1.0*TKU_ndof);
-        mcpass_chi2->Fill(TKU_chiSquare_per_ndof);  
-        if (TKU_chiSquare_per_ndof>10){
- //         std::cerr<<"**Failed Chi2/dof cut"<<std::endl;
-          if(cut_CHi2_dof) continue;
-        }
-    }
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostChi2.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostChi2.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("Chi2",1);    
-    
+   
 //----------------------------------------------------------------------
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
@@ -1950,137 +2019,43 @@ void MCSAnalysis::referenceSelection(){
 
     mccuts_accept->Fill("US Track",1);
 
-//------------------------------------------------------------------------------------------------------
-// US Tracker Radial Cut
-//------------------------------------------------------------------------------------------------------
 
-    double TKU_max_rad = Check_Radius_US(_sys["US53"],_sys["US11"]);
-    mcpass_TKUrad->Fill(TKU_max_rad);
-    if (TKU_max_rad>150.0){
-//      std::cerr<<"**Failed US Tracker Radial Cut"<<std::endl;
-      if(cut_TKU_radial) continue;
+//----------------------------------------------------------------------
+// Save TOF information for future processing
+//----------------------------------------------------------------------
+
+    int TOF0num = tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArraySize();
+    int TOF1num = tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArraySize();
+    int TOF2num = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize();
+    TOF0file << TOF0num << " ";
+    TOF1file << TOF1num << " ";
+    TOF2file << TOF2num << " ";
+    for (int TOFnum=0; TOFnum<TOF0num; TOFnum++){TOF0file << tofevent->GetTOFEventSpacePoint().GetTOF0SpacePointArray()[TOFnum].GetTime()<< " ";}
+    for (int TOFnum=0; TOFnum<TOF1num; TOFnum++){TOF1file << tofevent->GetTOFEventSpacePoint().GetTOF1SpacePointArray()[TOFnum].GetTime()<< " ";}
+    for (int TOFnum=0; TOFnum<TOF2num; TOFnum++){TOF2file << tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[TOFnum].GetTime()<< " ";}
+    TOF0file << "\n";
+    TOF1file << "\n";
+    TOF2file << "\n";
+
+//----------------------------------------------------------------------
+// Save Chi2 and dof for future processing
+//----------------------------------------------------------------------
+
+    std::vector<MAUS::SciFiTrack*> tracks = scifievent->scifitracks();
+    std::vector<MAUS::SciFiTrack*>::iterator track_iter;
+
+    if(tracks.size() == 0){
+        Chi2file << "10000.0" << "\n";
+        doffile << "100" << "\n";
+//      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
+    }else{ 
+      // use if only want to take the first track
+        track_iter = tracks.begin();
+        double TKU_chiSquare = (*track_iter)->chi2();
+        int TKU_ndof = (*track_iter)->ndf();
+        Chi2file << TKU_chiSquare << "\n";
+        doffile << TKU_ndof << "\n";
     }
-    HPt_TKUrad->Fill(Ptot);
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTKUrad.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTKUrad.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("US tracker Radius",1);
-
-//------------------------------------------------------------------------------------------------------
-// Diffuser Cut
-//------------------------------------------------------------------------------------------------------
-
-//Check_Radius_US(double low_z, double high_z, double radius)
-    double diff_max_rad = Check_Radius_US(_sys["diffuserlow"],_sys["diffuserhigh"]);
-    mcpass_Diff->Fill(diff_max_rad);
-    if (diff_max_rad >90.0){
-//      std::cerr<<"**Failed Diffuser Cut"<<std::endl;
-      if(cut_diffuser_radial) continue;
-    }
-    HPt_Diff->Fill(Ptot);
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostDiff.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostDiff.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("Diffuser",1);
-
-
-//---------------------------------------------------------------------------------------
-// TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
-//---------------------------------------------------------------------------------------
-
-    double rawTOF2HitTime;
-    if ( tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArraySize() >= 1 ){
-      rawTOF2HitTime = tofevent->GetTOFEventSpacePoint().GetTOF2SpacePointArray()[0].GetTime();
-//      std::cerr<<"TOF2 time: "<<rawTOF2HitTime<<std::endl;
-    }else{
-//      std::cerr<<"No TOF2 hit?"<<std::endl;
-      rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
-    }
-    tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
-    mcpass_TOF01->Fill(rawTOF01HitTime);
-    if ( rawTOF01HitTime < TOF_lower_limit ||
-	 rawTOF01HitTime > TOF_upper_limit) {
-//      std::cerr<<"**Failed TOF01 Cut"<<std::endl;
-      if(cut_TOF01) continue;
-    }
-    HPt_TKUrad->Fill(Ptot);
-
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTOF01.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTOF01.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-
-    tof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
-    tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
-    mccuts_accept->Fill("TOF01 Selection",1);
-
-
-//---------------------------------------------------------------------------------------
-// TOF01 Extrapolated cut. 
-//---------------------------------------------------------------------------------------
-
-  double TOF01Ext = globalVars.USTOF1.TOFX-globalVars.USTOF0.TOFX;
-  mcpass_TOF01Ex->Fill(TOF01Ext);  
-  if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
-//    std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
-    if(cut_TOF01ext) continue;
-  }
-  HPt_ExtTKU0->Fill(Ptot);
-
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostTOF01Ex.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostTOF01Ex.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("Extrapolated TOF01",1);
-
-
-//---------------------------------------------------------------------------------------
-// Successful extrapolation from  US tracker to TOF0
-//---------------------------------------------------------------------------------------
-       
-    if (globalVars.USTOF0.isgood==false){
-//      std::cerr<<"**Failed extrapolation from TKU to TOF0"<<std::endl;
-      mcpass_ExtTKU0->Fill("Fail",1);
-      if(cut_ext_TKU_TOF0) continue;
-    }
-    HPt_TOF01->Fill(Ptot);
-//    std::cerr<<"Adding to AllTOF"<<std::endl;
-//    display_Vars(globalVars.UScentre_absorber);
-    USPostExtTKU0.append_instance(globalVars.UScentre_absorber);
-//    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
-//    display_Vars(globalVars.DScentre_absorber);
-    DSPostExtTKU0.append_instance(globalVars.DScentre_absorber);
-//    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
-    mccuts_accept->Fill("TKU_TOF0",1);
-    mcpass_ExtTKU0->Fill("Pass",1);
-
-//---------------------------------------------------------------------------------------
-// Successful extrapolation from  US tracker to TOF0
-//---------------------------------------------------------------------------------------
-
-    double momentum_absorber= sqrt((globalVars.UScentre_absorber.px*globalVars.UScentre_absorber.px)+
-                                 (globalVars.UScentre_absorber.py*globalVars.UScentre_absorber.py)+ 
-                                 (globalVars.UScentre_absorber.pz*globalVars.UScentre_absorber.pz));
-    mcpass_mom->Fill(momentum_absorber);
 
 
 //------------------------------------------------------------------------------------------------------
@@ -2090,8 +2065,15 @@ void MCSAnalysis::referenceSelection(){
 //    std::cerr<<"**Event accepted"<<std::endl;
     _USMCset.append_instance(globalVars.UScentre_absorber);
     _DSMCset.append_instance(globalVars.DScentre_absorber);
-    EndOfDS.append_instance(globalVars.USend_of_DStracker);
-    StartOfDS.append_instance(globalVars.USstart_of_DStracker);
+    Collect_EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    Collect_StartOfDS.append_instance(globalVars.USstart_of_DStracker);
+    Collect_USTOF0.append_instance(globalVars.USTOF0);
+    Collect_USTOF1.append_instance(globalVars.USTOF1);
+    Collect_StartofUST.append_instance(globalVars.UStrackerUS53);
+    Collect_EndofUST.append_instance(globalVars.UStrackerUS11);
+    Collect_DiffuserStart.append_instance(globalVars.DiffuserStart);
+    Collect_DiffuserEnd.append_instance(globalVars.DiffuserEnd);
+
 //   std::cerr<<"Cut added to MC data"<<std::endl;
     mccuts_accept->Fill("All Cuts",1);
 
@@ -2099,27 +2081,34 @@ void MCSAnalysis::referenceSelection(){
   }
   _USMCset.save_collection(USRefname);
   _DSMCset.save_collection(DSRefname);
-  EndOfDS.save_collection(EndofDStrackerrefname);
-  StartOfDS.save_collection(StartofDStrackerrefname);
+  Collect_EndOfDS.save_collection(EndofDStrackerrefname);
+  Collect_StartOfDS.save_collection(StartofDStrackerrefname);
+  Collect_USTOF0.save_collection(Collect_USTOF0refname);
+  Collect_USTOF1.save_collection(Collect_USTOF1refname);
+  Collect_StartofUST.save_collection(Collect_StartofUSTrefname);
+  Collect_EndofUST.save_collection(Collect_EndofUSTrefname);
+  Collect_DiffuserStart.save_collection(Collect_DiffuserStartrefname);
+  Collect_DiffuserEnd.save_collection(Collect_DiffuserEndrefname);
+  TOF0file.close();
+  TOF1file.close();
+  TOF2file.close();
+  Chi2file.close();
+  doffile.close();
 
-  make_beam_histograms(USAllTOF, "Upstream, Data Reference", "ref_01US_alltof");
-  make_beam_histograms(DSAllTOF, "Downstream, Data Reference", "ref_01DS_alltof");
-  make_beam_histograms(USPostTOF0, "Upstream, Data Reference", "ref_02US_posttof0");
-  make_beam_histograms(DSPostTOF0, "Downstream, Data Reference", "ref_02DS_posttof0");
+  std::cerr<<"Reference: Size of USset: "<<_USMCset.N()<<std::endl;
+  std::cerr<<"Reference: Size of DSset: "<<_DSMCset.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_EndOfDS: "<<Collect_EndOfDS.N()<<std::endl;
+  std::cerr<<"Reference: Collect_StartOfDS: "<<Collect_StartOfDS.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_USTOF0: "<<Collect_USTOF0.N()<<std::endl;
+  std::cerr<<"Reference: Size of collect_USTOF1: "<<Collect_USTOF1.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_StartofUST: "<<Collect_StartofUST.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_EndofUST: "<<Collect_EndofUST.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_DiffuserStart: "<<Collect_DiffuserStart.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_DiffuserEnd: "<<Collect_DiffuserEnd.N()<<std::endl;
+
+
   make_beam_histograms(USPostTKU, "Upstream, Data Reference", "ref_03US_PostTKU");
   make_beam_histograms(DSPostTKU, "Downstream, Data Reference", "ref_03DS_PostTKU"); 
-  make_beam_histograms(USPostTKUrad, "Upstream, Data Reference", "ref_04US_PostTKUrad");
-  make_beam_histograms(DSPostTKUrad, "Downstream, Data Reference", "ref_04DS_PostTKUrad");
-  make_beam_histograms(USPostDiff, "Upstream, Data Reference", "ref_05US_PostDiff");
-  make_beam_histograms(DSPostDiff, "Downstream, Data Reference", "ref_05DS_PostDiff");
-  make_beam_histograms(USPostFid, "Upstream, Data Reference", "ref_06US_PostFid");
-  make_beam_histograms(DSPostFid, "Downstream, Data Reference", "ref_06DS_PostFid");
-  make_beam_histograms(USPostExtTKU0, "Upstream, Data Reference", "ref_07US_alltof");
-  make_beam_histograms(DSPostExtTKU0, "Downstream, Data Reference", "ref_07DS_alltof");
-  make_beam_histograms(USPostTOF01, "Upstream, Data Reference", "ref_08US_PostTOF01");
-  make_beam_histograms(DSPostTOF01, "Downstream, Data Reference", "ref_08DS_PostTOF01");
-  make_beam_histograms(USPostTOF01Ex, "Upstream, Data Reference", "ref_09US_PostTOF01Ex");
-  make_beam_histograms(DSPostTOF01Ex, "Downstream, Data Reference", "ref_09DS_PostTOF01Ex"); 
 
 }
 
@@ -2245,9 +2234,9 @@ void MCSAnalysis::TruthData(int mode){
   mcemptychain->SetBranchAddress("MCEvent", &mcevent);
   //Collection USTruthSet, DSTruthSet;
   Collection USTruthzero, DSTruthzero;
-  Vars USTruthzeroHit, DSTruthzeroHit;
+//  Vars USTruthzeroHit, DSTruthzeroHit;
   int ngood=0;
-  bool event_ok=true;
+//  bool event_ok=true;
   int Nentries;
   if (mode == 5) {
      Nentries = mcemptychain->GetEntries();
@@ -2332,7 +2321,7 @@ bool MCSAnalysis::MatchUSDS(){
   int notrackUS = 0;
   int notrackDS = 0;
   for ( size_t j=0; j<scifievent->scifitracks().size(); j++){
-      double maxUS=0.0, minDS=44000;
+//      double maxUS=0.0, minDS=44000;
       int tracker = scifievent->scifitracks()[j]->tracker();
       if(tracker==0){
 	  notrackUS += 1;
@@ -2387,7 +2376,7 @@ bool MCSAnalysis::TruthMatchUSDS(){
   kUS=-1;
   kDS=-1;
 
-  for (int jj=0; jj<mcevent->GetVirtualHitsSize();jj++) {
+  for (unsigned int jj=0; jj<mcevent->GetVirtualHitsSize();jj++) {
    int station_id = mcevent->GetVirtualHits()->at(jj).GetStationId();
    if (station_id == 47){
       kUS = 1;
@@ -2468,7 +2457,7 @@ bool MCSAnalysis::TruthTime(bool isdata=true){
   MAUS::TOFHitArray* tofhit = mcevent->GetTOFHits();
   float tof0;
   float tof1;
-  for (int i=0;i<tofhit->size();i++) {
+  for (unsigned int i=0;i<tofhit->size();i++) {
      if (tofhit->at(i).GetPosition().Z() - 5287 < 20 and tofhit->at(i).GetPosition().Z() - 5287 > -20){  
         tof0 = tofhit->at(i).GetTime();   
      }
@@ -2501,9 +2490,9 @@ bool MCSAnalysis::RadialSelection(double pz, double pos, double radius){
       tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
     //      scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().z();
     // if ( sqrt(dXdz*dXdz + dYdz*dYdz) > sigmap) selected = false;
-    double abspos = _sys["abspos"];
+//    double abspos = _sys["abspos"];
     double phi = atan2(USplane.dYdz, USplane.dXdz);
-    double zdiff = 2*fabs(USplane.Z - pos);
+//    double zdiff = 2*fabs(USplane.Z - pos);
     // double xabs  = dXdz > 0 ? (dXdz + sigmap*cos(phi)) * zdiff + xpos : (dXdz - sigmap*cos(phi)) * zdiff + xpos;
     // double yabs  = dYdz > 0 ? (dYdz + sigmap*sin(phi)) * zdiff + ypos : (dYdz - sigmap*sin(phi)) * zdiff + ypos;
     Vars DSproj;
@@ -2544,7 +2533,7 @@ bool MCSAnalysis::TruthRadialSelection(double pz, double pos, double radius, int
     USplane.px   = mcevent->GetVirtualHits()->at(j).GetMomentum().x();
     USplane.py   = mcevent->GetVirtualHits()->at(j).GetMomentum().y();
     double phi = atan2(USplane.dYdz, USplane.dXdz);
-    double zdiff = 2*fabs(USplane.Z - pos);
+//    double zdiff = 2*fabs(USplane.Z - pos);
     USplane.dXdz += sigmap*cos(phi);
     USplane.dYdz += sigmap*sin(phi);
     USplane.px   += sigmap*cos(phi)*USplane.pz;
@@ -2589,7 +2578,7 @@ std::vector<double> MCSAnalysis::RotDefineProjectionAngles(Vars US, Vars DS,int 
   double USnorm = 1./sqrt(1 + US.dXdz*US.dXdz + US.dYdz*US.dYdz);
   TVector3 u(US.dXdz*USnorm, US.dYdz*USnorm, USnorm);
   //double y = -cos(i*3.14/180);
-  double x = sin(i*3.14/180);
+//  double x = sin(i*3.14/180);
   TVector3 s(0, -1, 0);
   s.RotateZ(i*TMath::Pi()/180);
   double snorm = 1./sqrt(s[2]*s[2] + s[1]*s[1] + s[0]*s[0]);
@@ -2646,10 +2635,10 @@ double MCSAnalysis::PathLengthInLH2(double pz){
     float z_down;
     float x_up_it;
     float y_up_it;
-    float z_up_it;
+//    float z_up_it;
     float x_down_it;
     float y_down_it;
-    float z_down_it;
+//    float z_down_it;
     float rad_up = 0;
     float curvey = 0;
     float curvey_down = 0;
@@ -2680,7 +2669,7 @@ double MCSAnalysis::PathLengthInLH2(double pz){
       tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
     USplane.py   = scifievent->scifitracks()[jUS]->scifitrackpoints()[kUS]->mom().y() +
       tan(_sys["thXUS"] * atan(1.)/45.0) * USplane.pz;
-    Vars USabsoproj = PropagateVarsMu(USplane, _sys["abspos"]);
+//    Vars USabsoproj = PropagateVarsMu(USplane, _sys["abspos"]);
     Vars USabsfront = PropagateVarsMu(USplane, 16729.03);
     
     //Path length for muon between absorber and TOF2
@@ -2698,7 +2687,7 @@ double MCSAnalysis::PathLengthInLH2(double pz){
       tan(_sys["thXDS"] * atan(1.)/45.0) * DSplane.pz;
     DSplane.py   = scifievent->scifitracks()[jDS]->scifitrackpoints()[kDS]->mom().y() +
       tan(_sys["thXDS"] * atan(1.)/45.0) * DSplane.pz;
-    Vars DSabsoproj = PropagateVarsMu(DSplane, _sys["abspos"]);
+//    Vars DSabsoproj = PropagateVarsMu(DSplane, _sys["abspos"]);
     Vars DSabsback = PropagateVarsMu(DSplane, 17179.33);
    
                                 x_up = USabsfront.X;
@@ -2933,11 +2922,11 @@ double MCSAnalysis::CorMomFromTOF(double pz, double mat, double diff){
    std::cout << "mostprobBBW " << mostprobBBW << std::endl;
    */
 
-   double BBair = BetheBloch(pzBB,Iair,Zair,Aair,hwair);
-   double BBscin = BetheBloch(pzBB,Iscin,Zscin,Ascin,hwscin);
-   double BBAl = BetheBloch(pzBB,IAl,ZAl,AAl,hwAl);
-   double BBHe = BetheBloch(pzBB,IHe,ZHe,AHe,hwHe);
-   double BBLH2 = BetheBloch(pzBB,ILH2,ZLH2,ALH2,hwLH2);
+//  double BBair = BetheBloch(pzBB,Iair,Zair,Aair,hwair);
+//   double BBscin = BetheBloch(pzBB,Iscin,Zscin,Ascin,hwscin);
+//   double BBAl = BetheBloch(pzBB,IAl,ZAl,AAl,hwAl);
+//   double BBHe = BetheBloch(pzBB,IHe,ZHe,AHe,hwHe);
+//   double BBLH2 = BetheBloch(pzBB,ILH2,ZLH2,ALH2,hwLH2);
    /*
    std::cout << "BBair " << BBair << std::endl;
    std::cout << "BBscin " << BBscin << std::endl;
@@ -2946,11 +2935,11 @@ double MCSAnalysis::CorMomFromTOF(double pz, double mat, double diff){
    std::cout << "BBLH2 " << BBLH2 << std::endl;
    */
 
-   double ELair = BBair*zair*Rair;
-   double ELscin = BBscin*zscin*Rscin;
-   double ELAl = BBAl*zAl*RAl;
-   double ELHe = BBHe*zHe*RHe;
-   double ELLH2 = BBLH2*zLH2*RLH2;
+//   double ELair = BBair*zair*Rair;
+//   double ELscin = BBscin*zscin*Rscin;
+//   double ELAl = BBAl*zAl*RAl;
+//   double ELHe = BBHe*zHe*RHe;
+//   double ELLH2 = BBLH2*zLH2*RLH2;
    /*
    std::cout << "ELair " << ELair << std::endl;
    std::cout << "ELscin " << ELscin << std::endl;
@@ -3115,8 +3104,8 @@ double MCSAnalysis::CorMomFromTOF(double pz, double mat, double diff){
    TOF1Energy->Fill(TOF1E);
    TOF2Energy->Fill(TOF2E);
    if (MCTruth_pz_up != 0 && MCTruth_pz_down != 0){
-   double true_delta = MCTruth_pz_up - MCTruth_pz_down;	   
-   double MCTruth_pz = (MCTruth_pz_up+MCTruth_pz_down)/2;
+//   double true_delta = MCTruth_pz_up - MCTruth_pz_down;	   
+//   double MCTruth_pz = (MCTruth_pz_up+MCTruth_pz_down)/2;
    double res01 = pzBB - MCTruth_pz_mid;
    //double res12 = pz12 - MCTruth_pz_mid;
    //double res12p6 = p12Paul6thfor - MCTruth_pz_mid;
@@ -3217,7 +3206,7 @@ TH1D* MCSAnalysis::trkreffix(TH1D* h1){
 	TGraphAsymmErrors* efficiency_scat_x = (TGraphAsymmErrors*)f->Get("Effx_graph");
 	double x;
 	double y;
-	TCanvas* c1 = new TCanvas();
+//	TCanvas* c1 = new TCanvas();
 	for (int i=1; i<47; i++) {
 		efficiency_scat_x->GetPoint(i,x,y);
 		double ey = efficiency_scat_x->GetErrorYlow(i);
@@ -3241,7 +3230,7 @@ TH1D* MCSAnalysis::trkreffiy(TH1D* h1){
 	TGraphAsymmErrors* efficiency_scat_y = (TGraphAsymmErrors*)f->Get("Effy_graph");
 	double x;
 	double y;
-	TCanvas* c1 = new TCanvas();
+//	TCanvas* c1 = new TCanvas();
 	for (int i=1; i<47; i++) {
 		efficiency_scat_y->GetPoint(i,x,y);
 		double ey = efficiency_scat_y->GetErrorYlow(i);
@@ -3266,7 +3255,7 @@ TH1D* MCSAnalysis::trkreffiscatt(TH1D* h1){
 	TGraphAsymmErrors* efficiency_scat_scatt = (TGraphAsymmErrors*)f->Get("Effscatt_graph");
 	double x;
 	double y;
-	TCanvas* c1 = new TCanvas();
+//	TCanvas* c1 = new TCanvas();
 	for (int i=1; i<47; i++) {
 		efficiency_scat_scatt->GetPoint(i,x,y);
 		double ey = efficiency_scat_scatt->GetErrorYlow(i);
@@ -3291,7 +3280,7 @@ TH1D* MCSAnalysis::trkreffi2scatt(TH1D* h1){
 	TGraphAsymmErrors* efficiency_scat_2scatt = (TGraphAsymmErrors*)f->Get("Eff2scatt_graph");
 	double x;
 	double y;
-	TCanvas* c1 = new TCanvas();
+//	TCanvas* c1 = new TCanvas();
 	for (int i=1; i<47; i++) {
 		efficiency_scat_2scatt->GetPoint(i,x,y);
 		double ey = efficiency_scat_2scatt->GetErrorYlow(i);
@@ -3335,7 +3324,7 @@ double MCSAnalysis::MomentumFromTOF(bool isdata=true){
     // Better estimate of the longitudinal momentum
     dt0 = (_sys["TOF2_z"] - _sys["TOF1_z"]) / 0.299792458 / 1000.; // ns. 
     dt  = rawTOF2HitTime - rawTOF1HitTime; 
-    double pz1 = pz;
+//    double pz1 = pz;
     pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0);
     //TOFcom->Fill(pz1,pz);
   }
@@ -3348,7 +3337,7 @@ double MCSAnalysis::MomentumFromTOF(bool isdata=true){
 void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
   int failcount = 0;
   int passcount = 0;
-  int isfirst = 0;
+//  int isfirst = 0;
   bool isGEANT;
   bool isCobb;
   bool isMoliere;
@@ -3366,20 +3355,21 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
   TH1D* hiswY = new TH1D("hiswY","", 1000, -5, 5);
 
   // Efficiency plots
-  TH1D* scatx = 
-    new TH1D("scatx","Change in Projected Angle (X);#Delta#theta_{X}; Events per 4 mrad",
-	     _histlimits["NbinsXY"], _histlimits["minXY"], _histlimits["maxXY"]);
+//  TH1D* scatx = 
+//    new TH1D("scatx","Change in Projected Angle (X);#Delta#theta_{X}; Events per 4 mrad",
+//	     _histlimits["NbinsXY"], _histlimits["minXY"], _histlimits["maxXY"]);
 
-  TH1D* scaty = 
-    new TH1D("scaty","Change in Projected Angle (Y);#Delta#theta_{Y}; Events per 4 mrad",
-	     _histlimits["NbinsXY"], _histlimits["minXY"], _histlimits["maxXY"]);
+//  TH1D* scaty = 
+//    new TH1D("scaty","Change in Projected Angle (Y);#Delta#theta_{Y}; Events per 4 mrad",
+//	     _histlimits["NbinsXY"], _histlimits["minXY"], _histlimits["maxXY"]);
 
-  TH1D* scatscat = 
-    new TH1D("scatscat","Scattering Angle between Momentum Vectors;#theta_{Scatt}; Events per mrad",
-	     _histlimits["NbinsTh"], _histlimits["minTh"], _histlimits["maxTh"]);
+//  TH1D* scatscat = 
+//    new TH1D("scatscat","Scattering Angle between Momentum Vectors;#theta_{Scatt}; Events per mrad",
+//	     _histlimits["NbinsTh"], _histlimits["minTh"], _histlimits["maxTh"]);
 
-  TH1D* scat2scatt = 
-    new TH1D("scat2scatt","Scattering Angle between Momentum Vectors;#theta^{2}_{Scatt}; Events per mrad",_histlimits["NbinsTh2"], _histlimits["minTh2"], _histlimits["maxTh2"]);
+//  TH1D* scat2scatt = 
+//    new TH1D("scat2scatt","Scattering Angle between Momentum Vectors;#theta^{2}_{Scatt}; Events per mrad",
+// _histlimits["NbinsTh2"], _histlimits["minTh2"], _histlimits["maxTh2"]);
   std::string tmpname = "thetaX_refconv_";
   tmpname += distname;
   TH1D* thetaX_refconv = 
@@ -3431,9 +3421,9 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
   // for (int l=0; l<10; l++){
   for (int i=0; i<_USMCset.N(); i++){
       std::vector<double> nominalTheta = RotDefineProjectionAngles(_USMCset.E(i), _DSMCset.E(i), angdef);
-      double nomthetaX = nominalTheta[0];
-      double nomthetaY = nominalTheta[1];
-      double nomthetascat = nominalTheta[2];
+//      double nomthetaX = nominalTheta[0];
+//      double nomthetaY = nominalTheta[1];
+//      double nomthetascat = nominalTheta[2];
     for (int j=0; j<20; j++){
       double dthetaX = hx->GetRandom() * _sys["resX"];
       double dthetaY = hy->GetRandom() * _sys["resY"];
@@ -3668,7 +3658,7 @@ void MCSAnalysis::ConvolveWithInputDistribution(std::string distname){
 }
 
 void MCSAnalysis::ConvolveWithVirtualInputDistribution(std::string distname){
-  int isfirst = 0;
+//  int isfirst = 0;
   bool isGEANT;
   bool isCobb;
   bool isMoliere;
@@ -3732,8 +3722,8 @@ void MCSAnalysis::ConvolveWithVirtualInputDistribution(std::string distname){
   // for (int l=0; l<10; l++){
   for (int i=0; i<USTruthSet.N(); i++){
       std::vector<double> nominalTheta = RotDefineProjectionAngles(USTruthSet.E(i), DSTruthSet.E(i), angdef);
-      double nomthetaX = nominalTheta[0];
-      double nomthetaY = nominalTheta[1];
+//      double nomthetaX = nominalTheta[0];
+//      double nomthetaY = nominalTheta[1];
     for (int j=0; j<20; j++){
       double dthetaX = hx->GetRandom() * _sys["resX"];
       double dthetaY = hy->GetRandom() * _sys["resY"];
@@ -4022,9 +4012,9 @@ void MCSAnalysis::DoDeconvolution(std::string model, int n_sel=1){
   // The basic methods associated with the RooUnfolding package
   // First generate a histogram of the measured data.
   
-  int isfirst = 0;
-  if (model.find(modelname1.c_str()) != std::string::npos)
-    isfirst = 1;
+//  int isfirst = 0;
+//  if (model.find(modelname1.c_str()) != std::string::npos)
+//    isfirst = 1;
 
   // int n_base = int(2 * _DSset.N() / (n_sel * (n_sel + 1)));
   // int k=0;
@@ -5197,8 +5187,8 @@ void MCSAnalysis::FillVarsVirtual(Vars &tmpvar, int j){
     mcevent->GetVirtualHits()->at(j).GetMomentum().z();
   tmpvar.px = mcevent->GetVirtualHits()->at(j).GetMomentum().x();
   tmpvar.py = mcevent->GetVirtualHits()->at(j).GetMomentum().y();
-  double px = mcevent->GetVirtualHits()->at(j).GetMomentum().x();
-  double py = mcevent->GetVirtualHits()->at(j).GetMomentum().y();
+//  double px = mcevent->GetVirtualHits()->at(j).GetMomentum().x();
+//  double py = mcevent->GetVirtualHits()->at(j).GetMomentum().y();
   double pz = mcevent->GetVirtualHits()->at(j).GetMomentum().z();
   tmpvar.TOF12 = 27.5 * sqrt(1 + 105.65*105.65/pz/pz);
   tmpvar.TOF01 = 26.5 * sqrt(1 + 105.65*105.65/pz/pz);
@@ -6309,6 +6299,113 @@ Vars MCSAnalysis::FillVars3(MAUS::ThreeVector b_track_mom, MAUS::ThreeVector b_t
 //Vars Find_Track_Point(TLorentzVector pos, TLorentzVector mom, MAUS::DataStructure::Global::DetectorPoint Detector){
 //}
 
+void MCSAnalysis::ReturnWords(std::string inputstring,std::vector<std::string> &v){
+  std::string word="";
+  v.clear();
+
+//  std::cerr<<"Input String: "<<inputstring<<std::endl;
+  for (auto x : inputstring){
+    if (x == ' '){
+      v.push_back(word);
+//      std::cerr<<"Word being added: "<<word<<std::endl;
+      word="";
+    } else {
+      word=word+x;
+//      std::cerr<<"Still constructing word: "<<word<<std::endl;
+    }
+  }
+  v.push_back(word);
+}
+
+double MCSAnalysis::MaxRadius(double bz,double startx, double starty, double startz, double startpx, double startpy, double endx, double endy, double endz, double endpx, double endpy, double endpz){
+//     std::cerr<<"Axial magnetic field  : "<<bz<<std::endl;
+
+//------------------------------------------------------------------------------------------------------
+//    Set the maximum r2 on each track point between tp and the next tp that
+//    the track excurts from the axis. Estimate the region between adjacent track
+//    points by extrapolating assuming uniform field and calculate the excursion
+//    analytically. Sets the max_r2 parameter on the track.
+//    Get azimuthal angles
+//    - tp_0: track point with lower z
+//    - tp_1: track point with higher z
+//    - bz: magnetic field
+//    Returns azimuthal angles, sorted for direction of rotation. If more than one
+//    rotation, add the delta phi on (so that we get extra turns).
+
+     double q = 1;
+     double phi_start, phi_end;
+     if (q*bz > 0){
+        phi_start = atan2(startpx, startpy);
+        phi_end = atan2(endpx, endpy);
+     }
+     else if (q*bz < 0){
+        phi_start = atan2(endpx, endpy);
+        phi_end = atan2(startpx, startpy);
+     }
+     double k0 = q*bz*c_light/endpz;
+     while (phi_start < 0) { //phi_start is always in domain 0 < 2 pi
+        phi_start += 2*pi;
+     }
+     while (phi_end < phi_start) { // phi_end is always > phi_start
+        phi_end += 2*pi;
+     }
+    // for larger steps, we can make more than one rotation
+     double delta_phi = k0*(startz - endz);
+     double n_rot = abs(delta_phi)/pi/2.;
+//    std::cerr<<"delta_phi: "<<delta_phi<<" n_rot: "<<n_rot<<std::endl;
+     phi_end += floor(n_rot)*2.*pi;
+/*
+    Get the azimuthal angle at which the trajectory has maximum excursion from
+    the axis
+    - tp_0: track point with lower z
+    - tp_1: track point with higher z
+    - bz: magnetic field
+    - phi_start: phi at which we start
+    Returns azimuthal angles, sorted for direction of rotation. We add on 2pi so
+    that it is always greater than phi_start.
+*/
+     double tp_start_x, tp_start_y, tp_start_pt;//tp_start_z,
+     if (q*bz > 0){
+        tp_start_x = startx;
+        tp_start_y = starty;
+//        tp_start_z = startz;
+        tp_start_pt = sqrt(startpx*startpx+startpy*startpy);
+     }
+     else if (q*bz < 0){
+        tp_start_x = endx;
+        tp_start_y = endy;
+//        tp_start_z = endz;
+        tp_start_pt = sqrt(endpx*endpx+endpy*endpy);
+     }
+    // coordinates of helix centre
+     double pt = tp_start_pt;
+     double x0 = tp_start_x + pt*cos(phi_start)/q/bz/c_light;
+     double y0 = tp_start_y - pt*sin(phi_start)/q/bz/c_light;
+     double r0 = abs(pt/q/bz/c_light); // wavenumber is qBm/pz dz
+//    std::cerr<<"pt: "<<pt<<" x0: "<<x0<<" y0: "<<y0<<" r0: "<<r0<<std::endl;
+    //print 'x0:', x0, 'y0:', y0, 'r0:', r0, 'k0:', k0
+    //azimuthal angle of maximum extent (when r is in line with x0, y0)
+     double direction = abs(q*bz)/q/bz;
+     double phi_max = atan2(direction*y0, -direction*x0);
+     while (phi_max < phi_start){// phi_max is always > phi_start
+        phi_max += 2*pi;
+     }
+     double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
+     double r2_start = startx*startx+starty*starty;
+     double r2_end = endx*endx+endy*endy;
+//    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
+     double fiducial_radius;
+     if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
+        fiducial_radius = max_r2;
+     } else {
+        fiducial_radius = max(r2_start, r2_end);
+     }
+     return fiducial_radius;
+}
+        //print "   tp0 p:", tp_0["hit"]["px"], tp_0["hit"]["py"], "tp1 p:", tp_1["hit"]["px"], tp_1["hit"]["py"]
+        //print "   ", str(round(phi_start, 1)).rjust(8), str(round(phi_end, 1)).rjust(8), str(round(phi_max, 1)).rjust(8), str(round(r2_start, 1)).rjust(8), str(round(max_r2, 1)).rjust(8), str(round(r2_end, 1)).rjust(8)
+
+
 
 multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos){
 // This is the main function to read the data from the root files
@@ -6321,6 +6418,9 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
   tempMV.USTOF1=reset_Vars();
   tempMV.DScentre_absorber=reset_Vars();
   tempMV.UStrackerUS11=reset_Vars();
+  tempMV.UStrackerUS53=reset_Vars();
+  tempMV.DiffuserStart=reset_Vars();
+  tempMV.DiffuserEnd=reset_Vars();
   tempMV.UScentre_absorber.Z=_sys["abspos"];
   tempMV.USend_of_DStracker.Z= DS53;
   tempMV.USstart_of_DStracker.Z= DS11;
@@ -6329,7 +6429,8 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
   tempMV.DScentre_absorber.Z=_sys["abspos"];
   tempMV.UStrackerUS11.Z= US11;
   tempMV.UStrackerUS53.Z= US53;
-     
+  tempMV.DiffuserStart.Z= diffuserlow;
+  tempMV.DiffuserEnd.Z= diffuserhigh;    
     
 //    std::cerr << "Globals..."<<std::endl;
   MAUS::DataStructure::Global::DetectorPoint virtual_plane = MAUS::DataStructure::Global::kVirtual;
@@ -6380,62 +6481,34 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
-//                            if ( track_points.at(p)->get_detector() == 1){
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
-//                            }
-
-//                            std::cerr<<"Time: "<< a_track_pos.T()<<std::endl;
-//                            std::cerr << " Looking for z=" << tempMV.UScentre_absorber.Z <<" and have z=" << a_track_pos.Z() << std::endl;
-//                                      " or "<< tempMV.end_of_DStracker.Z <<" or "
-//                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
-//                                std::cerr<<"Found global data from US track at centre of absorber"<<std::endl;
-//                                display_Vars(tempMV.UScentre_absorber);
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-//                                std::cerr << "-------------- FOUND US 53!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.DiffuserStart.Z-dz && a_track_pos.Z() <= tempMV.DiffuserStart.Z+dz){
+                                tempMV.DiffuserStart = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.DiffuserEnd.Z-dz && a_track_pos.Z() <= tempMV.DiffuserEnd.Z+dz){
+                                tempMV.DiffuserEnd = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
-//                            std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
-//                            if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true  
-//                                 && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
-//                              std::cerr<<"Found all trackpoints"<<std::endl;
-//                              break;
-//                            }
                         }
                     }
                   }
-//                }
             }
 
 //Chain5 - Get Downstream data from DSDaughter
 
             MAUS::DataStructure::Global::PrimaryChain* DSchain=chain->GetDSDaughter();
             some_tracks = DSchain->GetMatchedTracks();
-//            std::cerr<<"Downstream track - Through"<<std::endl;
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
@@ -6444,26 +6517,16 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
-//                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
-//                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if((a_track_pos.Z() >= DS11-dz && a_track_pos.Z() <= DS11+dz)&&tempMV.DScentre_absorber.isgood==false){
-//                                std::cerr << "-------------- FOUND Centre of Absorber from DS!!!"<<std::endl;
-//                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
-//                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }else if((a_track_pos.Z() >= DS11+0.65-dz && a_track_pos.Z() <= DS11+0.65+dz)&&tempMV.DScentre_absorber.isgood==false){
-//                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
-//                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }else if((a_track_pos.Z() >= DS11+1.3-dz && a_track_pos.Z() <= DS11+1.3+dz)&&tempMV.DScentre_absorber.isgood==false){
-//                                std::cerr<<"Starting propagation from DS tracker to centre of absorber"<<std::endl;
-//                                std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                                 tempMV.DScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
-//                            std::cerr<<a_track_pos.Z()<<" "<<a_track_pos.X()<<" "<<a_track_pos.Y()<<std::endl;
                         }
                     }
                 }
@@ -6482,37 +6545,24 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
                             TLorentzVector a_track_pos = track_points.at(p)->get_position();
-//                            std::cerr << " Looking for z=" << tempMV.UStrackerUS11.Z <<" and have z=" << a_track_pos.Z() << std::endl;
-//                            std::cerr << " Looking for z=" << tempMV.centre_absorber.Z << " or "<< tempMV.end_of_DStracker.Z <<" or "
-//                                      << tempMV.Diffuser.Z <<" or "<< tempMV.TOF0.Z <<" and have z=" << a_track_pos.Z() << std::endl;
                             if(a_track_pos.Z() >= tempMV.UScentre_absorber.Z-dz && a_track_pos.Z() <= tempMV.UScentre_absorber.Z+dz){
-//                                std::cerr << "-------------- FOUND Centre of Absorber!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
-//                                std::cerr << "-------------- FOUND END OF DS Tracker!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF0!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF1.Z-dz && a_track_pos.Z() <= tempMV.USTOF1.Z+dz){
-//                                std::cerr << "-------------- FOUND TOF1!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.USTOF1 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS11.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS11.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS11 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.UStrackerUS53.Z-dz && a_track_pos.Z() <= tempMV.UStrackerUS53.Z+dz){
-//                                std::cerr << "-------------- FOUND US 11!!!"<<std::endl;
-//                                std::cerr << "Detector type: " << track_points.at(p)->get_detector() << std::endl;
                                 tempMV.UStrackerUS53 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.DiffuserStart.Z-dz && a_track_pos.Z() <= tempMV.DiffuserStart.Z+dz){
+                                tempMV.DiffuserStart = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.DiffuserEnd.Z-dz && a_track_pos.Z() <= tempMV.DiffuserEnd.Z+dz){
+                                tempMV.DiffuserEnd = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                             if (tempMV.UScentre_absorber.isgood==true && tempMV.USend_of_DStracker.isgood==true   && tempMV.USstart_of_DStracker.isgood==true
                                  && tempMV.USTOF0.isgood==true && tempMV.UStrackerUS11.isgood==true && tempMV.UStrackerUS53.isgood==true) {
@@ -6582,6 +6632,12 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
      }              
      if(tempMV.UStrackerUS53.isgood==false){
         tempMV.UStrackerUS53=PropagateVarsMu(tempMV.UStrackerUS11, US53);
+     }              
+     if(tempMV.DiffuserStart.isgood==false){
+        tempMV.DiffuserStart=PropagateVarsMu(tempMV.UStrackerUS11, diffuserlow);
+     }              
+     if(tempMV.DiffuserEnd.isgood==false){
+        tempMV.DiffuserEnd=PropagateVarsMu(tempMV.UStrackerUS11, diffuserhigh);
      }              
   }
   return tempMV;

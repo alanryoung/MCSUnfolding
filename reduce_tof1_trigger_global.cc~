@@ -390,7 +390,7 @@ int main(int argc, char* argv[]) {
 	      }
 	    }
 	    if( plane0digit && plane1digit ){
-              std::cout<<"Write data to tree/mctree"<<std::endl;
+//              std::cout<<"Write data to tree/mctree"<<std::endl;
 	      TOF1count++;
 	      tofevent   = tof_event;
 	      scifievent = (*spill->GetReconEvents())[ii]->GetSciFiEvent();

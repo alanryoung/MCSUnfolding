@@ -1140,8 +1140,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      if ( NumberTOF0SP == 1 ){
         rawTOF0HitTime = std::stod(TOF0results[1]);
         CutPassRequire1TOF0SP=true;
-        if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
-        else{mcpass_Tof1->Fill("Pass",1);}
+     }else if (NumberTOF0SP > 1 ){
+        if(retrieve_mode==0){pass_Tof0->Fill("Fail",1);}
+        else{mcpass_Tof0->Fill("Fail",1);}
      }else{
         if(retrieve_mode==0){pass_Tof0->Fill("Fail",1);}
         else{mcpass_Tof0->Fill("Fail",1);}
@@ -1172,6 +1173,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
         CutPassRequire1TOF1SP=true;
         if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
         else{mcpass_Tof1->Fill("Pass",1);}
+     }else if (NumberTOF1SP > 1 ){
+        if(retrieve_mode==0){pass_Tof1->Fill("Fail",1);}
+        else{mcpass_Tof1->Fill("Fail",1);}
      }else{
         if(retrieve_mode==0){pass_Tof1->Fill("Fail",1);
         }else{mcpass_Tof1->Fill("Fail",1);}
@@ -1457,81 +1461,75 @@ void MCSAnalysis::retrieve(int retrieve_mode){
 //---------------------------------------------------------------------------------------
 
      if (retrieve_mode==0){                                 //Create Histograms for Data
-        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
-        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
-        }
-//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+        if (true){//(CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
            Hist_TOF0Require1SP->Fill(NumberTOF0SP);         
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
-           Hist_TOF1Require1SP->Fill(NumberTOF1SP);         
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+           Hist_TOF1Require1SP->Fill(NumberTOF0SP);         
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TOF01->Fill(rawTOF01HitTime);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_Chi2->Fill(TKU_chiSquare_per_ndof);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TKU_max_radius->Fill(TKU_max_rad);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_Diff_max_radius->Fill(diff_max_rad);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TOF01Ext->Fill(TOF01Ext);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){
            if (CutPassUSTOF0){                 
               Hist_USTOF0->Fill("true",1);               
            }else{
               Hist_USTOF0->Fill("false",1);               
-//           }
+           }
         }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                  
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                  
            Hist_Fiducial->Fill(fiducial_radius);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                  
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                  
            Hist_MOM->Fill(momentum_absorber);               
-//        }
+        }
      }else{                                                 //Create Histograms for MC
-//        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
-        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
-//        }
-//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
-           Histref_TOF0Require1SP->Fill(NumberTOF0SP);       
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        if (true){//(CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+           Histref_TOF0Require1SP->Fill(NumberTOF1SP);       
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
            Histref_TOF1Require1SP->Fill(NumberTOF1SP);       
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TOF01->Fill(rawTOF01HitTime);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_Chi2->Fill(TKU_chiSquare_per_ndof);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TKU_max_radius->Fill(TKU_max_rad);             
-//        }
-//       if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_Diff_max_radius->Fill(diff_max_rad);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TOF01Ext->Fill(TOF01Ext);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){                   
            if (CutPassUSTOF0){                 
               Histref_USTOF0->Fill("true",1);               
            }else{
               Histref_USTOF0->Fill("false",1);               
            }
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                   
            Histref_Fiducial->Fill(fiducial_radius);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
+        }
+        if (true){//(CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
            Histref_MOM->Fill(momentum_absorber);             
-//       }
+       }
      }
   
 //---------------------------------------------------------------------------------------
@@ -1695,14 +1693,11 @@ void MCSAnalysis::dataSelection(int mode){
 //  int Nevents = 0;
   // Nentries *= int(_sys["FracEvents"]) > 0 ? _sys["FracEvents"] : 1.0;
   for (int i=0; i<Nentries; i++){
-    std::cerr<<"**********************************************"<< std::endl;
-    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
-    chain->GetEntry(i);
-//     if (i%100!=0) {
-//        continue;
-//     }     
-    std::cerr<<"Event Got"<<i<<"\n";
-    if (i>=10000) break;
+//    std::cerr<<"**********************************************"<< std::endl;
+//    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
+     chain->GetEntry(i);
+     if (i%100000==0) std::cout<<"Event "<<i<<"\n";
+//    if (i>=100) break;
     // Set cuts based on the TOFs, ckov, kl, and EMR information
     // Locate the tracker reference planes. To be agnostic locate
     // the downstream most station of the upstream tracker and the
@@ -1935,7 +1930,7 @@ void MCSAnalysis::referenceSelection(){
  //   std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     refchain->GetEntry(i);
     if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-    if (i>=10000) break;
+//    if (i>=100) break;
     mccuts_accept->Fill("All Events",1);
 
     multiVars globalVars;

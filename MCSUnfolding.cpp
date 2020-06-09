@@ -25,6 +25,28 @@ struct specvals {
   std::string EndofDStrackerdataname;
   std::string StartofDStrackerrefname;
   std::string StartofDStrackerdataname;
+  std::string Collect_USTOF0refname;
+  std::string Collect_USTOF0dataname;
+  std::string Collect_USTOF1refname;
+  std::string Collect_USTOF1dataname;
+  std::string Chi2dataname;
+  std::string Chi2refname;
+  std::string Collect_DiffuserEnddataname;
+  std::string Collect_DiffuserEndrefname;
+  std::string Collect_DiffuserStartdataname;
+  std::string Collect_DiffuserStartrefname;
+  std::string Collect_EndofUSTdataname;
+  std::string Collect_EndofUSTrefname;
+  std::string Collect_StartofUSTdataname;
+  std::string Collect_StartofUSTrefname;
+  std::string dofdataname;
+  std::string dofrefname;
+  std::string TOF0dataname;
+  std::string TOF0refname;
+  std::string TOF1dataname;
+  std::string TOF1refname;
+  std::string TOF2dataname;
+  std::string TOF2refname;
 
   std::string model1;			       
   std::string model2;
@@ -98,6 +120,50 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.StartofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("StartofDStrackerdataname")) ){
 	  spec.StartofDStrackerdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_USTOF0refname")) ){
+	  spec.Collect_USTOF0refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_USTOF0dataname")) ){
+	  spec.Collect_USTOF0dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_USTOF1refname")) ){
+	  spec.Collect_USTOF1refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_USTOF1dataname")) ){
+	  spec.Collect_USTOF1dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Chi2dataname")) ){
+	  spec.Chi2dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Chi2refname")) ){
+	  spec.Chi2refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_DiffuserEnddataname")) ){
+	  spec.Collect_DiffuserEnddataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_DiffuserEndrefname")) ){
+	  spec.Collect_DiffuserEndrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_DiffuserStartdataname")) ){
+	  spec.Collect_DiffuserStartdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_DiffuserStartrefname")) ){
+	  spec.Collect_DiffuserStartrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_EndofUSTdataname")) ){
+	  spec.Collect_EndofUSTdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_EndofUSTrefname")) ){
+	  spec.Collect_EndofUSTrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_StartofUSTdataname")) ){
+	  spec.Collect_StartofUSTdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("Collect_StartofUSTrefname")) ){
+	  spec.Collect_StartofUSTrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("dofdataname")) ){
+	  spec.dofdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("dofrefname")) ){
+	  spec.dofrefname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF0dataname")) ){
+	  spec.TOF0dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF0refname")) ){
+	  spec.TOF0refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF1dataname")) ){
+	  spec.TOF1dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF1refname")) ){
+	  spec.TOF1refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF2dataname")) ){
+	  spec.TOF2dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF2refname")) ){
+	  spec.TOF2refname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model1")) ) {
 	  spec.model1 = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("model2")) ) {
@@ -211,6 +277,29 @@ int main(int argc, char* argv[]) {
   spec.EndofDStrackerdataname = "";
   spec.StartofDStrackerrefname = "";
   spec.StartofDStrackerdataname = "";
+  spec.Collect_USTOF0refname = "";
+  spec.Collect_USTOF0dataname = "";
+  spec.Collect_USTOF1refname = "";
+  spec.Collect_USTOF1dataname = "";
+  spec.Chi2dataname = "";
+  spec.Chi2refname = "";
+  spec.Collect_DiffuserEnddataname = "";
+  spec.Collect_DiffuserEndrefname = "";
+  spec.Collect_DiffuserStartdataname = "";
+  spec.Collect_DiffuserStartrefname = "";
+  spec.Collect_EndofUSTdataname = "";
+  spec.Collect_EndofUSTrefname = "";
+  spec.Collect_StartofUSTdataname = "";
+  spec.Collect_StartofUSTrefname = "";
+  spec.dofdataname = "";
+  spec.dofrefname = "";
+  spec.TOF0dataname = "";
+  spec.TOF0refname = "";
+  spec.TOF1dataname = "";
+  spec.TOF1refname = "";
+  spec.TOF2dataname = "";
+  spec.TOF2refname = "";
+
   spec.TOF_ll = 27.0;
   spec.TOF_ul = 42.0;
   spec.mom_ll = 140;
@@ -273,6 +362,28 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading End of Downstream tracker data "<<spec.EndofDStrackerdataname<<std::endl;
   std::cout<<"Reading Start of Downstream tracker Ref "<<spec.StartofDStrackerrefname<<std::endl;
   std::cout<<"Reading Start of Downstream tracker data "<<spec.StartofDStrackerdataname<<std::endl;
+  std::cout<<"Reading USTOF0 Ref "<<spec.Collect_USTOF0refname<<std::endl;
+  std::cout<<"Reading USTOF0 data "<<spec.Collect_USTOF0dataname<<std::endl;
+  std::cout<<"Reading USTOF1 Ref "<<spec.Collect_USTOF1refname<<std::endl;
+  std::cout<<"Reading USTOF1 data "<<spec.Collect_USTOF1dataname<<std::endl;
+  std::cout<<"Reading Chi2 data "<<spec.Chi2dataname<<std::endl;
+  std::cout<<"Reading Chi2 ref"<<spec.Chi2refname<<std::endl;
+  std::cout<<"Reading Collect_DiffuserEnd data "<<spec.Collect_DiffuserEnddataname<<std::endl;
+  std::cout<<"Reading Collect_DiffuserEnd ref "<<spec.Collect_DiffuserEndrefname<<std::endl;
+  std::cout<<"Reading Collect_DiffuserStart data "<<spec.Collect_DiffuserStartdataname<<std::endl;
+  std::cout<<"Reading Collect_DiffuserStart ref "<<spec.Collect_DiffuserStartrefname<<std::endl;
+  std::cout<<"Reading Collect_EndofUST data "<<spec.Collect_EndofUSTdataname<<std::endl;
+  std::cout<<"Reading Collect_EndofUST ref "<<spec.Collect_EndofUSTrefname<<std::endl;
+  std::cout<<"Reading Collect_StartofUST data "<<spec.Collect_StartofUSTdataname<<std::endl;
+  std::cout<<"Reading Collect_StartofUST ref "<<spec.Collect_StartofUSTrefname<<std::endl;
+  std::cout<<"Reading dof data "<<spec.dofdataname<<std::endl;
+  std::cout<<"Reading dof ref "<<spec.dofrefname<<std::endl;
+  std::cout<<"Reading TOF0 data "<<spec.TOF0dataname<<std::endl;
+  std::cout<<"Reading TOF0 ref "<<spec.TOF0refname<<std::endl;
+  std::cout<<"Reading TOF1 data "<<spec.TOF1dataname<<std::endl;
+  std::cout<<"Reading TOF1 ref "<<spec.TOF1refname<<std::endl;
+  std::cout<<"Reading TOF2 data "<<spec.TOF2dataname<<std::endl;
+  std::cout<<"Reading TOF2 ref "<<spec.TOF2refname<<std::endl;
 
 
   std::cout<<"Use "<<spec.geometryname<<" for propagation\n";
@@ -337,6 +448,30 @@ int main(int argc, char* argv[]) {
   anal.SetEndofDStrackerdataname(spec.EndofDStrackerdataname);
   anal.SetStartofDStrackerrefname(spec.StartofDStrackerrefname);
   anal.SetStartofDStrackerdataname(spec.StartofDStrackerdataname);
+  anal.SetCollect_USTOF0refname(spec.Collect_USTOF0refname);
+  anal.SetCollect_USTOF0dataname(spec.Collect_USTOF0dataname);
+  anal.SetCollect_USTOF1refname(spec.Collect_USTOF1refname);
+  anal.SetCollect_USTOF1dataname(spec.Collect_USTOF1dataname);
+
+  anal.SetChi2dataname(spec.Chi2dataname);
+  anal.SetChi2refname(spec.Chi2refname);
+  anal.SetCollect_DiffuserEnddataname(spec.Collect_DiffuserEnddataname);
+  anal.SetCollect_DiffuserEndrefname(spec.Collect_DiffuserEndrefname);
+  anal.SetCollect_DiffuserStartdataname(spec.Collect_DiffuserStartdataname);
+  anal.SetCollect_DiffuserStartrefname(spec.Collect_DiffuserStartrefname);
+  anal.SetCollect_EndofUSTdataname(spec.Collect_EndofUSTdataname);
+  anal.SetCollect_EndofUSTrefname(spec.Collect_EndofUSTrefname);
+  anal.SetCollect_StartofUSTdataname(spec.Collect_StartofUSTdataname);
+  anal.SetCollect_StartofUSTrefname(spec.Collect_StartofUSTrefname);
+  anal.Setdofdataname(spec.dofdataname);
+  anal.Setdofrefname(spec.dofrefname);
+  anal.SetTOF0dataname(spec.TOF0dataname);
+  anal.SetTOF0refname(spec.TOF0refname);
+  anal.SetTOF1dataname(spec.TOF1dataname);
+  anal.SetTOF1refname(spec.TOF1refname);
+  anal.SetTOF2dataname(spec.TOF2dataname);
+  anal.SetTOF2refname(spec.TOF2refname);
+
   anal.SetTrkrEffiName(spec.trkreffiname.c_str());
   anal.SetTrkrEffiEmptyName(spec.trkreffiemptyname.c_str());
   anal.SetParentGeometryFile(spec.geometryname.c_str());
@@ -442,7 +577,7 @@ int main(int argc, char* argv[]) {
   std::cout<<"Executing MCSAnalysis\n";
   anal.Execute(spec.mode);
 
-  anal.Write();
+//  anal.Write();
 
   return 0;
 
