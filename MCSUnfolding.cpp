@@ -23,6 +23,12 @@ struct specvals {
   std::string DSreffile;
   std::string EndofDStrackerrefname;
   std::string EndofDStrackerdataname;
+  std::string DStrackerStation22refname;
+  std::string DStrackerStation32refname;
+  std::string DStrackerStation42refname;
+  std::string DStrackerStation22dataname;
+  std::string DStrackerStation32dataname;
+  std::string DStrackerStation42dataname;
   std::string StartofDStrackerrefname;
   std::string StartofDStrackerdataname;
   std::string Collect_USTOF0refname;
@@ -41,6 +47,8 @@ struct specvals {
   std::string Collect_StartofUSTrefname;
   std::string dofdataname;
   std::string dofrefname;
+//  std::string piddataname;
+//  std::string pidrefname;
   std::string TOF0dataname;
   std::string TOF0refname;
   std::string TOF1dataname;
@@ -116,6 +124,18 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	  spec.EndofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("EndofDStrackerdataname")) ){
 	  spec.EndofDStrackerdataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation22refname")) ){
+	  spec.DStrackerStation22refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation32refname")) ){
+	  spec.DStrackerStation32refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation42refname")) ){
+	  spec.DStrackerStation42refname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation22dataname")) ){
+	  spec.DStrackerStation22dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation32dataname")) ){
+	  spec.DStrackerStation32dataname = (char*)xmlGetProp(cur_node, nm);
+	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("DStrackerStation42dataname")) ){
+	  spec.DStrackerStation42dataname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("StartofDStrackerrefname")) ){
 	  spec.StartofDStrackerrefname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("StartofDStrackerdataname")) ){
@@ -151,6 +171,10 @@ static void print_element_names(xmlNode * a_node, specvals& spec)
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("dofdataname")) ){
 	  spec.dofdataname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("dofrefname")) ){
+//	  spec.pidrefname = (char*)xmlGetProp(cur_node, nm);
+//	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("piddataname")) ){
+//	  spec.piddataname = (char*)xmlGetProp(cur_node, nm);
+//	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("pidrefname")) ){
 	  spec.dofrefname = (char*)xmlGetProp(cur_node, nm);
 	} else if ( xmlStrEqual(xmlGetProp(cur_node, id), xmlCharStrdup("TOF0dataname")) ){
 	  spec.TOF0dataname = (char*)xmlGetProp(cur_node, nm);
@@ -275,6 +299,12 @@ int main(int argc, char* argv[]) {
   spec.DSreffile = "";
   spec.EndofDStrackerrefname = "";
   spec.EndofDStrackerdataname = "";
+  spec.DStrackerStation22refname="";
+  spec.DStrackerStation32refname="";
+  spec.DStrackerStation42refname="";
+  spec.DStrackerStation22dataname="";
+  spec.DStrackerStation32dataname="";
+  spec.DStrackerStation42dataname="";
   spec.StartofDStrackerrefname = "";
   spec.StartofDStrackerdataname = "";
   spec.Collect_USTOF0refname = "";
@@ -293,6 +323,8 @@ int main(int argc, char* argv[]) {
   spec.Collect_StartofUSTrefname = "";
   spec.dofdataname = "";
   spec.dofrefname = "";
+//  spec.piddataname = "";
+//  spec.pidrefname = "";
   spec.TOF0dataname = "";
   spec.TOF0refname = "";
   spec.TOF1dataname = "";
@@ -360,6 +392,12 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading Downstream Ref "<<spec.DSreffile<<std::endl;
   std::cout<<"Reading End of Downstream tracker Ref "<<spec.EndofDStrackerrefname<<std::endl;
   std::cout<<"Reading End of Downstream tracker data "<<spec.EndofDStrackerdataname<<std::endl;
+  std::cout<<"Reading DS tracker Station 22 ref"<<spec.DStrackerStation22refname<<std::endl;
+  std::cout<<"Reading DS tracker Station 32 ref"<<spec.DStrackerStation32refname<<std::endl;
+  std::cout<<"Reading DS tracker Station 42 ref"<<spec.DStrackerStation42refname<<std::endl;
+  std::cout<<"Reading DS tracker Station 22 data"<<spec.DStrackerStation22dataname<<std::endl;
+  std::cout<<"Reading DS tracker Station 32 data"<<spec.DStrackerStation32dataname<<std::endl;
+  std::cout<<"Reading DS tracker Station 42 data"<<spec.DStrackerStation42dataname<<std::endl;
   std::cout<<"Reading Start of Downstream tracker Ref "<<spec.StartofDStrackerrefname<<std::endl;
   std::cout<<"Reading Start of Downstream tracker data "<<spec.StartofDStrackerdataname<<std::endl;
   std::cout<<"Reading USTOF0 Ref "<<spec.Collect_USTOF0refname<<std::endl;
@@ -378,6 +416,8 @@ int main(int argc, char* argv[]) {
   std::cout<<"Reading Collect_StartofUST ref "<<spec.Collect_StartofUSTrefname<<std::endl;
   std::cout<<"Reading dof data "<<spec.dofdataname<<std::endl;
   std::cout<<"Reading dof ref "<<spec.dofrefname<<std::endl;
+//  std::cout<<"Reading pid data "<<spec.piddataname<<std::endl;
+//  std::cout<<"Reading pid ref "<<spec.pidrefname<<std::endl;
   std::cout<<"Reading TOF0 data "<<spec.TOF0dataname<<std::endl;
   std::cout<<"Reading TOF0 ref "<<spec.TOF0refname<<std::endl;
   std::cout<<"Reading TOF1 data "<<spec.TOF1dataname<<std::endl;
@@ -414,16 +454,16 @@ int main(int argc, char* argv[]) {
   MCSAnalysis anal("reduced_tree", "Truth_reduced_tree", "reduced_tree", spec.outfile, spec.histlimits);
   std::cout<<"Analysis object created"<<std::endl;
   
-  TFile* data = new TFile(spec.dataname.c_str());
-  if(data->IsZombie()){
-    std::cout<<"Data file is a zombie. Aborting."<<std::endl;
-    return -1;
-  }
-  TFile* training = new TFile(spec.trainname.c_str());
-  if(training->IsZombie()){
-    std::cout<<"Training file is a zombie. Aborting."<<std::endl;
-    return -1;
-  }
+//  TFile* data = new TFile(spec.dataname.c_str());
+//  if(data->IsZombie()){
+//    std::cout<<"Data file is a zombie. Aborting."<<std::endl;
+//    return -1;
+//  }
+//  TFile* training = new TFile(spec.trainname.c_str());
+//  if(training->IsZombie()){
+//    std::cout<<"Training file is a zombie. Aborting."<<std::endl;
+//    return -1;
+//  }
   
   anal.Setangdef(spec.angdef);
   anal.SetTOFLowerLimit(spec.TOF_ll);
@@ -447,12 +487,17 @@ int main(int argc, char* argv[]) {
   anal.SetEndofDStrackerrefname(spec.EndofDStrackerrefname);
   anal.SetEndofDStrackerdataname(spec.EndofDStrackerdataname);
   anal.SetStartofDStrackerrefname(spec.StartofDStrackerrefname);
+  anal.SetDStrackerStation22refname(spec.DStrackerStation22refname);
+  anal.SetDStrackerStation32refname(spec.DStrackerStation32refname);
+  anal.SetDStrackerStation42refname(spec.DStrackerStation42refname);
+  anal.SetDStrackerStation22dataname(spec.DStrackerStation22dataname);
+  anal.SetDStrackerStation32dataname(spec.DStrackerStation32dataname);
+  anal.SetDStrackerStation42dataname(spec.DStrackerStation42dataname);
   anal.SetStartofDStrackerdataname(spec.StartofDStrackerdataname);
   anal.SetCollect_USTOF0refname(spec.Collect_USTOF0refname);
   anal.SetCollect_USTOF0dataname(spec.Collect_USTOF0dataname);
   anal.SetCollect_USTOF1refname(spec.Collect_USTOF1refname);
   anal.SetCollect_USTOF1dataname(spec.Collect_USTOF1dataname);
-
   anal.SetChi2dataname(spec.Chi2dataname);
   anal.SetChi2refname(spec.Chi2refname);
   anal.SetCollect_DiffuserEnddataname(spec.Collect_DiffuserEnddataname);
@@ -465,6 +510,8 @@ int main(int argc, char* argv[]) {
   anal.SetCollect_StartofUSTrefname(spec.Collect_StartofUSTrefname);
   anal.Setdofdataname(spec.dofdataname);
   anal.Setdofrefname(spec.dofrefname);
+//  anal.Setpiddataname(spec.piddataname);
+//  anal.Setpidrefname(spec.pidrefname);
   anal.SetTOF0dataname(spec.TOF0dataname);
   anal.SetTOF0refname(spec.TOF0refname);
   anal.SetTOF1dataname(spec.TOF1dataname);
@@ -490,7 +537,7 @@ int main(int argc, char* argv[]) {
   anal.SetCutAbsorberMomentum(spec.cut_AbsorberMomentum);
   anal.SetCutExtrudeTKUTOF0(spec.cut_ExtrudeTKUTOF0);
   std::cout<<"Check for segmentation fault 4"<<std::endl;
-/*  
+  
   void* dir = gSystem->OpenDirectory(spec.trainname.c_str());
   std::cout<<"Main Training File Directory: "<< dir <<std::endl;
   const char *ent;
@@ -503,6 +550,7 @@ int main(int argc, char* argv[]) {
           if (fn.Contains("ZeroAbs")) {
           if (fn.Contains(".root")) {
 	          anal.GetRefTree()->Add(fn);
+                  std::cout<<"File added to reference tree"<<std::endl;
 	  }
       }
       fn = spec.trainname.c_str();
@@ -520,6 +568,8 @@ int main(int argc, char* argv[]) {
           if (fn.Contains("LiH")) {
           if (fn.Contains(".root")) {
 	          anal.GetTree()->Add(fn);
+                  std::cout<<"File added to main tree"<<std::endl;
+
 	  }
       }
       fn = spec.dataname.c_str();
@@ -527,7 +577,7 @@ int main(int argc, char* argv[]) {
   std::cout<<"Check for segmentation fault 7"<<std::endl;
 
   gSystem->FreeDirectory(dir);
-
+/*
   dir = gSystem->OpenDirectory(spec.dataname.c_str());
   fn = spec.dataname.c_str();
   std::cout<<"MC Data File: "<< fn <<std::endl;
@@ -564,9 +614,9 @@ int main(int argc, char* argv[]) {
   gSystem->FreeDirectory(dir);
 
 */
-  anal.GetRefTree()->Add(spec.trainname.c_str());
+//  anal.GetRefTree()->Add(spec.trainname.c_str());
 
-  anal.GetTree()->Add(spec.dataname.c_str());
+//  anal.GetTree()->Add(spec.dataname.c_str());
   
   for(std::map<std::string, double>::iterator it=spec.sys.begin();
       it != spec.sys.end(); ++it){

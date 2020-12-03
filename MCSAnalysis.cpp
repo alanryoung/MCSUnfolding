@@ -37,6 +37,9 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   _sys["project"] = true;
 
   _sys["dataDS11"] = 18836.9;
+  _sys["dataDS22"] = 19387.4;
+  _sys["dataDS32"] = 19287.3;
+  _sys["dataDS42"] = 19587.3;
   _sys["dataDS53"] = 19937.9;
   _sys["dataUS53"] = 13967.7;
   _sys["dataUS11"] = 15068.9;
@@ -65,6 +68,12 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   DSRefname = "DSRef.txt";
   EndofDStrackerrefname= "EndofDStrackerRef.txt";
   EndofDStrackerdataname= "EndofDStrackerData.txt";
+  DStrackerStation22refname="DStrackerStation22ref.txt";
+  DStrackerStation32refname="DStrackerStation32ref.txt";
+  DStrackerStation42refname="DStrackerStation42ref.txt";
+  DStrackerStation22dataname="DStrackerStation22data.txt";
+  DStrackerStation32dataname="DStrackerStation22data.txt";
+  DStrackerStation42dataname="DStrackerStation22data.txt";
   StartofDStrackerrefname= "StartofDStrackerRef.txt";
   StartofDStrackerdataname= "StartofDStrackerData.txt";
   Collect_USTOF0dataname= "Collect_USTOF0Data.txt";
@@ -81,6 +90,8 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   Chi2refname="Chi2ref.txt";
   dofdataname="dofdata.txt";
   dofrefname="dofref.txt";
+//  piddataname="piddata.txt";
+//  pidrefname="pidref.txt";
   Collect_StartofUSTdataname="Collect_StartofUSTdata.txt";
   Collect_StartofUSTrefname="Collect_StartofUSTref.txt";
   Collect_EndofUSTdataname="Collect_EndofUSTdata.txt";
@@ -221,6 +232,9 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   Bfield_DStrackerX = new TH1D("BfieldDSTrackerX","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
   Bfield_DStrackerY = new TH1D("BfieldDSTrackerY","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
   Bfield_DStrackerZ = new TH1D("BfieldDSTrackerZ","BFieldDSTracker; Axial Position (m)",1000, _sys["dataDS11"], _sys["dataDS53"]);
+
+  USTMomvsTOF01Mom  = new TH2D("USTMomvsTOF01Mom","USTMomvsTOF01Mom", 100, 100, 250,100, 70, 200);
+  USTMomvsTOF01Momref  = new TH2D("USTMomvsTOF01MomRef","USTMomvsTOF01MomRef", 100, 100, 250,100, 70, 200);
   
 
 // Cuts and accepted muon histograms for absorber present data
@@ -244,16 +258,16 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   Hist_TOF1Require1SP = new TH1D("Hist Data require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
   Histref_TOF0Require1SP = new TH1D("Hist Ref require 1 TOF0 SP",";Number of SP; Events", 10, 0, 10);
   Histref_TOF1Require1SP = new TH1D("Hist Ref require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
-  Hist_TOF01 = new TH1D("Hist Data_TOF01",";TOF01 time; Events",100, 23, 40);
-  Histref_TOF01 = new TH1D("Hist Ref TOF01",";TOF01 time; Events",100, 23, 40);
+  Hist_TOF01 = new TH1D("Hist Data_TOF01",";TOF01 time; Events",200, 24, 40);
+  Histref_TOF01 = new TH1D("Hist Ref TOF01",";TOF01 time; Events",200, 24, 40);
   Hist_Chi2 = new TH1D("Hist Data Chi2",";Chi2; Events",100, 0, 15);
   Histref_Chi2 = new TH1D("Hist Ref Chi2",";chi2; Events",100,0, 15);
   Hist_TKU_max_radius = new TH1D("Hist Data TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
   Histref_TKU_max_radius = new TH1D("Hist Ref TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
   Hist_Diff_max_radius = new TH1D("Hist Data Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
   Histref_Diff_max_radius = new TH1D("Hist Ref Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
-  Hist_TOF01Ext = new TH1D("Hist Data_TOF01Ext",";TOF01 time; Events",100, 23, 35);
-  Histref_TOF01Ext = new TH1D("Hist Ref_TOF01Ext",";TOF01 time; Events",100, 23, 35);
+  Hist_TOF01Ext = new TH1D("Hist Data_TOF01Ext",";TOF01 time; Events",100, 23, 40);
+  Histref_TOF01Ext = new TH1D("Hist Ref_TOF01Ext",";TOF01 time; Events",100, 23, 40);
   Hist_USTOF0 = new TH1D("Hist Data USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
   Histref_USTOF0 = new TH1D("Hist Ref USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
   Hist_Fiducial = new TH1D("Hist Data Fiducial",";Fiducial radius; Events",100, 0, 250);
@@ -261,8 +275,30 @@ MCSAnalysis::MCSAnalysis(std::string tree, std::string mctree, std::string reftr
   Hist_MOM =  new TH1D("Hist Data Mom",";Absorber Momentum; Events",100, 0, 250);
   Histref_MOM =  new TH1D("Hist Ref Mom",";Absorber Momentum; Events",100, 0, 250);
 
+  Hist_NC_TOF0Require1SP = new TH1D("Hist Data NC require 1 TOF0 SP",";Number of SP; Events", 10, 0, 10);
+  Hist_NC_TOF1Require1SP = new TH1D("Hist Data NC require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
+  Histref_NC_TOF0Require1SP = new TH1D("Hist Ref NC require 1 TOF0 SP",";Number of SP; Events", 10, 0, 10);
+  Histref_NC_TOF1Require1SP = new TH1D("Hist Ref NC require 1 TOF1 SP",";Number of SP; Events", 10, 0, 10);
+  Hist_NC_TOF01 = new TH1D("Hist Data_NC TOF01",";TOF01 time; Events",200, 24, 34);
+  Histref_NC_TOF01 = new TH1D("Hist Ref NC TOF01",";TOF01 time; Events",200, 24, 34);
+  Hist_NC_Chi2 = new TH1D("Hist Data NC Chi2",";Chi2; Events",100, 0, 15);
+  Histref_NC_Chi2 = new TH1D("Hist Ref NC Chi2",";chi2; Events",100,0, 15);
+  Hist_NC_TKU_max_radius = new TH1D("Hist Data NC TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
+  Histref_NC_TKU_max_radius = new TH1D("Hist Ref NC TKU_max_radius",";TKU_max_radius; Events",100, 0, 250);
+  Hist_NC_Diff_max_radius = new TH1D("Hist Data NC Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
+  Histref_NC_Diff_max_radius = new TH1D("Hist Ref NC Diff_max_radius",";Diff_max_radius; Events",100, 0, 200);
+  Hist_NC_TOF01Ext = new TH1D("Hist Data_NC TOF01Ext",";TOF01 time; Events",100, 23, 35);
+  Histref_NC_TOF01Ext = new TH1D("Hist Ref_NC TOF01Ext",";TOF01 time; Events",100, 23, 35);
+  Hist_NC_USTOF0 = new TH1D("Hist Data NC USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
+  Histref_NC_USTOF0 = new TH1D("Hist Ref NC USTOF0",";Successful Extrapolation; Events", 4, 0, 4);
+  Hist_NC_Fiducial = new TH1D("Hist Data NC Fiducial",";Fiducial radius; Events",100, 0, 250);
+  Histref_NC_Fiducial = new TH1D("Hist Ref NC Fiducial",";Fiducial radius; Events",100, 0, 250);
+  Hist_NC_MOM =  new TH1D("Hist Data NC Mom",";Absorber Momentum; Events",100, 0, 250);
+  Histref_NC_MOM =  new TH1D("Hist Ref NC Mom",";Absorber Momentum; Events",100, 0, 250);
+
+
 // Cuts and accepted muon histograms for no absorber reference data
-  mccuts_accept = new TH1D("mccuts_accept", 
+  mccuts_accept = new TH1D("empty_cuts_accept", 
 			   ";Selection Criteria; Surviving Events", 14, 0, 14);
   mcpass_Tof1 = new TH1D("refpass_TOF1",";Passed Cut; Events",3, 0, 3);
   mcpass_Tof0 = new TH1D("refpass_TOF0",";Passed Cut; Events",3, 0, 3);
@@ -406,7 +442,7 @@ Vars MCSAnalysis::reset_Vars(){
   tmpVars.TOF12=8.22475 / 0.299792458;;
   tmpVars.TOF01=7.64186 / 0.299792458;
   tmpVars.isgood=false;
-  tmpVars.pid=-13;
+  tmpVars.pid=1000;
   tmpVars.TOFX=0.0;
   return tmpVars;
 }
@@ -606,6 +642,18 @@ void MCSAnalysis::Write(){
   line36->SetLineColor(kRed);
   line36->Draw();
   c1->SaveAs("TOF12cobbvsMCTruth.pdf");
+  c1->Clear();
+  USTMomvsTOF01Mom->GetXaxis()->SetTitle("pz TOF01"); 
+  USTMomvsTOF01Mom->GetYaxis()->SetTitle("pz UST");
+  USTMomvsTOF01Mom->Draw("colz");
+  USTMomvsTOF01Mom->Write();
+  c1->SaveAs("USTMomvsTOF01Mom.pdf");
+  c1->Clear();
+  USTMomvsTOF01Momref->GetXaxis()->SetTitle("pz TOF01"); 
+  USTMomvsTOF01Momref->GetYaxis()->SetTitle("pz UST");
+  USTMomvsTOF01Momref->Draw("colz");
+  USTMomvsTOF01Momref->Write();
+  c1->SaveAs("USTMomvsTOF01Momref.pdf");
   c1->Clear();
   TOF01forupvsTOF01fordown->GetXaxis()->SetTitle("pz Ryan's formula downstream TOF12");
   TOF01forupvsTOF01fordown->GetYaxis()->SetTitle("pz John's formula TOF01");
@@ -895,6 +943,9 @@ void MCSAnalysis::Execute(int mode=0){
   std::cerr<<"Momentum at Absorber: "<<cut_absorber_momentum<<std::endl;
   std::cerr<<"Successfully extrude from Upstream tracker to TOF0: "<<cut_ext_TKU_TOF0<<std::endl;
   std::cerr<<"End of DS tracker data file: "<<EndofDStrackerdataname<<std::endl;
+  std::cerr<<"UST to DST Station 22 data file: "<<DStrackerStation22dataname<<std::endl;
+  std::cerr<<"UST to DST Station 32 data file: "<<DStrackerStation32dataname<<std::endl;
+  std::cerr<<"UST to DST Station 42 data file: "<<DStrackerStation42dataname<<std::endl;
   std::cerr<<"End of DS tracker ref file: "<<EndofDStrackerrefname<<std::endl;
   std::cerr<<"Start of DS tracker data file: "<<StartofDStrackerdataname<<std::endl;
   std::cerr<<"Start of DS tracker ref file: "<<StartofDStrackerrefname<<std::endl;
@@ -1012,7 +1063,41 @@ void MCSAnalysis::retrieve(int retrieve_mode){
   Collection DSPostChi2, USPostTOF01, DSPostTOF01, USPostTOF0, DSPostTOF0, USAllTOF, DSAllTOF;
   Collection Collect_USTOF0, Collect_USTOF1, Collect_StartofUS, Collect_EndofUS, Collect_StartofUST;
   Collection Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
-  std::cerr<<"Retrieving Data from either data or ref"<<std::endl;
+  Collection Collect_DS22, Collect_DS32, Collect_DS42;
+
+  int CountRequire1TOF0SPPass=0;
+  int CountRequire1TOF0SPFail=0;
+  int CountRequire1TOF1SPPass=0;
+  int CountRequire1TOF1SPFail=0;
+  int CountTOF01Pass=0;
+  int CountTOF01Fail=0;
+  int CountChi2Pass=0;
+  int CountChi2Fail=0;
+  int CountTKU_Max_RadPass=0;
+  int CountTKU_Max_RadFail=0;
+  int CountDiff_Max_RadPass=0;
+  int CountDiff_Max_RadFail=0;
+  int CountTOF01ExtPass=0;
+  int CountTOF01ExtFail=0;
+  int CountUSTOF0Pass=0;
+  int CountUSTOF0Fail=0;
+  int CountFiducialPass=0;
+  int CountFiducialFail=0;
+  int CountmomPass=0;
+  int CountmomFail=0;
+  
+  int CountFiducialPassDT=0;
+  int CountFiducialPassNoDT=0;
+  int CountFiducialFailDT=0;
+  int CountFiducialFailNoDT=0;
+  
+  int CountFiducialPassDT_AC=0;
+  int CountFiducialPassNoDT_AC=0;
+  int CountFiducialFailDT_AC=0;
+  int CountFiducialFailNoDT_AC=0;
+
+
+  std::cerr<<"Retrieving Data from "<<(retrieve_mode?"ref":"data")<<std::endl;
   if(retrieve_mode==0){
      std::cerr<<"Retrieving data from USretrieved: "<<USDataname<<std::endl;
      USretrieved.load_collection(USDataname);
@@ -1020,6 +1105,12 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      DSretrieved.load_collection(DSDataname);
      std::cerr<<"Retrieving data from EndofDS: "<<EndofDStrackerdataname<<std::endl;
      EndofDS.load_collection(EndofDStrackerdataname);
+     std::cerr<<"Retrieving data from Collect_DS22: "<<DStrackerStation22dataname<<std::endl;
+     Collect_DS22.load_collection(DStrackerStation22dataname);
+     std::cerr<<"Retrieving data from Collect_DS32: "<<DStrackerStation32dataname<<std::endl;
+     Collect_DS32.load_collection(DStrackerStation32dataname);
+     std::cerr<<"Retrieving data from Collect_DS42: "<<DStrackerStation42dataname<<std::endl;
+     Collect_DS42.load_collection(DStrackerStation42dataname);
      std::cerr<<"Retrieving data from StartofDS: "<<StartofDStrackerdataname<<std::endl;
      StartofDS.load_collection(StartofDStrackerdataname);
      std::cerr<<"Retrieving data from Collect_USTOF0: "<<Collect_USTOF0dataname<<std::endl;
@@ -1041,6 +1132,12 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      DSretrieved.load_collection(DSRefname);
      std::cerr<<"Retrieving ref from EndofDS: "<<EndofDStrackerrefname<<std::endl;
      EndofDS.load_collection(EndofDStrackerrefname);
+     std::cerr<<"Retrieving data from Collect_DS22: "<<DStrackerStation22refname<<std::endl;
+     Collect_DS22.load_collection(DStrackerStation22refname);
+     std::cerr<<"Retrieving data from Collect_DS32: "<<DStrackerStation32refname<<std::endl;
+     Collect_DS32.load_collection(DStrackerStation32refname);
+     std::cerr<<"Retrieving data from Collect_DS42: "<<DStrackerStation42refname<<std::endl;
+     Collect_DS42.load_collection(DStrackerStation42refname);
      std::cerr<<"Retrieving ref from StartofDS: "<<StartofDStrackerrefname<<std::endl;
      StartofDS.load_collection(StartofDStrackerrefname);
      std::cerr<<"Retrieving ref from Collect_USTOF0: "<<Collect_USTOF0refname<<std::endl;
@@ -1059,6 +1156,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
   std::cerr<<"Entries in USretrieved: "<< USretrieved.N()<<std::endl;
   std::cerr<<"Entries in DSretrieved: "<< DSretrieved.N()<<std::endl;
   std::cerr<<"Entries in EndofDS: "<< EndofDS.N()<<std::endl;
+  std::cerr<<"Entries in Collect_DS22: "<< Collect_DS22.N()<<std::endl;
+  std::cerr<<"Entries in Collect_DS32: "<< Collect_DS32.N()<<std::endl;
+  std::cerr<<"Entries in Collect_DS42: "<< Collect_DS42.N()<<std::endl;
   std::cerr<<"Entries in startofDS: "<< StartofDS.N()<<std::endl;
   std::cerr<<"Entries in Collect_USTOF0: "<< Collect_USTOF0.N()<<std::endl; 
   std::cerr<<"Entries in Collect_USTOF1: "<< Collect_USTOF1.N()<<std::endl; 
@@ -1088,6 +1188,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
    std::ifstream doffile;
    std::string dofline;
    std::vector<std::string> dofresults;
+//   std::ifstream pidfile;
+//   std::string pidline;
+//   std::vector<std::string> pidresults;
 
    if(retrieve_mode==0){   
       TOF0file.open(TOF0dataname);
@@ -1095,12 +1198,14 @@ void MCSAnalysis::retrieve(int retrieve_mode){
       TOF2file.open(TOF2dataname);
       Chi2file.open(Chi2dataname);
       doffile.open(dofdataname);
+//      pidfile.open(piddataname);
    }else{
       TOF0file.open(TOF0refname);
       TOF1file.open(TOF1refname);
       TOF2file.open(TOF2refname);
       Chi2file.open(Chi2refname);
       doffile.open(dofrefname);
+//      pidfile.open(pidrefname);
    }
 
 //Plot axial magnetic field
@@ -1112,6 +1217,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      Bfield_DStrackerZ->Fill(z,magfield[2]);
   }
   for(int i=0;i<USretrieved.N();i++){
+     if (i%10000==0) std::cerr<<(retrieve_mode?"Ref":"Data")<<" Event Number: "<<i<<" of "<<USretrieved.N()<<std::endl;
+//     if (i>50000 && i<60000 && i%100==0) std::cerr<<(retrieve_mode?"Ref":"Data")<<" Event Number: "<<i<<" of "<<USretrieved.N()<<std::endl;
+//     if (i>100000) break;
      double AbsCenterpx=USretrieved.E(i).px;
      double AbsCenterpy=USretrieved.E(i).py;
      double AbsCenterpz=USretrieved.E(i).pz;
@@ -1128,6 +1236,8 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      ReturnWords(Chi2line, Chi2results);
      getline(doffile,dofline);
      ReturnWords(dofline, dofresults);
+//     getline(pidfile,pidline);
+//     ReturnWords(pidline, pidresults);
 
 
 //----------------------------------------------------------------------
@@ -1140,9 +1250,11 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      if ( NumberTOF0SP == 1 ){
         rawTOF0HitTime = std::stod(TOF0results[1]);
         CutPassRequire1TOF0SP=true;
+        CountRequire1TOF0SPPass++;
         if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
         else{mcpass_Tof1->Fill("Pass",1);}
      }else{
+        CountRequire1TOF0SPFail++;
         if(retrieve_mode==0){pass_Tof0->Fill("Fail",1);}
         else{mcpass_Tof0->Fill("Fail",1);}
      }
@@ -1170,9 +1282,11 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      if ( NumberTOF1SP == 1 ){
         rawTOF1HitTime = std::stod(TOF1results[1]);
         CutPassRequire1TOF1SP=true;
+        CountRequire1TOF1SPPass++;
         if(retrieve_mode==0){pass_Tof1->Fill("Pass",1);}
         else{mcpass_Tof1->Fill("Pass",1);}
      }else{
+        CountRequire1TOF1SPFail++;
         if(retrieve_mode==0){pass_Tof1->Fill("Fail",1);
         }else{mcpass_Tof1->Fill("Fail",1);}
      }
@@ -1192,15 +1306,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
 // TOF01 cut. Require TOF0 and TOF1 hit and TOF01 in bounds set by Upper and lower limits
 //---------------------------------------------------------------------------------------
 
-     double rawTOF2HitTime;
-     if ( std::stoi(TOF2results[0]) >= 1 ){
-        rawTOF2HitTime = std::stod(TOF2results[1]);
-     }else{
-        rawTOF2HitTime = rawTOF1HitTime + 100.0 * 8.22475 / 0.299792458; // ns.
-     }
-
+       
      tof10->Fill(rawTOF1HitTime - rawTOF0HitTime);
-     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
+//     tof21->Fill(rawTOF2HitTime - rawTOF1HitTime);
      double rawTOF01HitTime = rawTOF1HitTime - rawTOF0HitTime;
      bool CutPassTOF01=false;     
      if(retrieve_mode==0){
@@ -1210,10 +1318,12 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      }
      if ( rawTOF01HitTime < TOF_lower_limit || rawTOF01HitTime > TOF_upper_limit){
         CutPassTOF01=false;
+        CountTOF01Fail++;
      }else{
         CutPassTOF01=true;
+        CountTOF01Pass++;
         tof10_sel->Fill(rawTOF1HitTime - rawTOF0HitTime);
-        tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
+//        tof21_sel->Fill(rawTOF2HitTime - rawTOF1HitTime);
      }
 
 
@@ -1228,6 +1338,19 @@ void MCSAnalysis::retrieve(int retrieve_mode){
            DSPostTOF01.append_instance(DSretrieved.E(i));
         }
      }
+//---------------------------------------------------------------------------------------
+// Calculate momentum from TOF01 time
+//---------------------------------------------------------------------------------------
+
+  double dt0 = (_sys["TOF1_z"] - _sys["TOF0_z"]) / 0.299792458 / 1000.; // ns. 
+  double dt  = 10.0 * dt0; // something rediculously large as a default number
+  double pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0);
+  if ( rawTOF1HitTime != -100. && rawTOF0HitTime != -100. ){
+    dt  = rawTOF1HitTime - rawTOF0HitTime; 
+    pz  = 105.65 / sqrt(dt*dt/dt0/dt0 - 1.0)/* - 36.1*/;
+  }
+
+
 //     std::cerr<<"TOF01 :"<<rawTOF01HitTime<<" Pass or fail? "<<CutPassTOF01<<std::endl;
 //---------------------------------------------------------------------------------------
 // CHi2/dof cut
@@ -1238,6 +1361,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      bool CutPassChi2=false;     
      if (TKU_chiSquare_per_ndof<=10){
         CutPassChi2=true;
+        CountChi2Pass++;
+     }else{
+        CountChi2Fail++;
      }
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2){    
         USPostChi2.append_instance(USretrieved.E(i));
@@ -1275,6 +1401,9 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      }
      if (TKU_max_rad<=150.0){
         CutPassTKU_max_rad=true;
+        CountTKU_Max_RadPass++;
+     }else{
+        CountTKU_Max_RadFail++;
      }
 
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad){    
@@ -1315,7 +1444,10 @@ void MCSAnalysis::retrieve(int retrieve_mode){
         mcpass_Diff->Fill(diff_max_rad);
      }
      if (diff_max_rad <=90.0){
-        CutPassDiff_max_rad=true;         
+        CutPassDiff_max_rad=true;
+        CountDiff_Max_RadPass++;         
+     }else{
+        CountDiff_Max_RadFail++;
      }
 
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad){    
@@ -1336,8 +1468,11 @@ void MCSAnalysis::retrieve(int retrieve_mode){
   bool CutPassTOF01Ext=true;
   if (TOF01Ext < TOF_lower_limit || TOF01Ext > TOF_upper_limit) {
      CutPassTOF01Ext=false;
+     CountTOF01ExtFail++;
 //    std::cerr<<"**Failed TOF01 Extrapolation Cut"<<std::endl;
 //    if(cut_TOF01ext) continue;
+  }else{
+      CountTOF01ExtPass++;
   }
   if(retrieve_mode==0){
      HPt_ExtTKU0->Fill(Ptot);
@@ -1361,6 +1496,7 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      bool CutPassUSTOF0=true;
      if (Collect_USTOF0.E(i).isgood==false){
         CutPassUSTOF0=false;
+        CountUSTOF0Fail++;
         if (retrieve_mode==0){
            pass_ExtTKU0->Fill("Fail",1);           
 //           if (cut_ext_TKU_TOF0) continue;
@@ -1368,7 +1504,10 @@ void MCSAnalysis::retrieve(int retrieve_mode){
 	   mcpass_ExtTKU0->Fill("Fail",1);
 //	   if (cut_ext_TKU_TOF0) continue;
 	}
+     }else{
+        CountUSTOF0Pass++;
      }
+    
 
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 ) {    
         USPostExtTKU0.append_instance(USretrieved.E(i));
@@ -1385,12 +1524,13 @@ void MCSAnalysis::retrieve(int retrieve_mode){
 //------------------------------------------------------------------------------------------------------
 // Fiducial Cut
 //------------------------------------------------------------------------------------------------------
-     double fiducialendx=EndofDS.E(i).X;
-     double fiducialendy=EndofDS.E(i).Y;
-     double fiducialendz=EndofDS.E(i).Z;
-     double fiducialendpx=EndofDS.E(i).px;
-     double fiducialendpy=EndofDS.E(i).py;
-     double fiducialendpz=EndofDS.E(i).pz;
+     Collection Fiducial_End = Collect_DS32;
+     double fiducialendx=Fiducial_End.E(i).X;
+     double fiducialendy=Fiducial_End.E(i).Y;
+     double fiducialendz=Fiducial_End.E(i).Z;
+     double fiducialendpx=Fiducial_End.E(i).px;
+     double fiducialendpy=Fiducial_End.E(i).py;
+     double fiducialendpz=Fiducial_End.E(i).pz;
      double fiducialstartx=StartofDS.E(i).X;
      double fiducialstarty=StartofDS.E(i).Y;
      double fiducialstartz=StartofDS.E(i).Z;
@@ -1413,7 +1553,21 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      }
      if ( fiducial_radius <= fiducial_cut_radius){
         CutPassFiducial=true;
+        CountFiducialPass++;
+        if ( DSretrieved.E(i).isgood == 0){
+           CountFiducialPassNoDT++;
+        }else{
+           CountFiducialPassDT++;
+        }
 //       if (cut_fiducial) continue;
+
+     }else{
+        CountFiducialFail++;
+        if ( DSretrieved.E(i).isgood == 0){
+           CountFiducialFailNoDT++;
+        }else{
+           CountFiducialFailDT++;
+        }
 
      }
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial) {    
@@ -1439,7 +1593,10 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      }
      if (momentum_absorber < momentum_lower_limit || momentum_absorber > momentum_upper_limit) {
         CutPasMom=false;
+        CountmomFail++;
 //        if (cut_absorber_momentum) continue;
+     }else{
+        CountmomPass++;
      }
 //     std::cerr<<"Pass Momentum: "<<CutPasMom<<" momentum_absorber: "<<momentum_absorber<<" momentum_lower_limit: "<<momentum_lower_limit<<" momentum_upper_limit: "<<momentum_upper_limit<<std::endl;
      if (CutPassRequire1TOF1SP && CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom) {    
@@ -1448,90 +1605,150 @@ void MCSAnalysis::retrieve(int retrieve_mode){
         if (retrieve_mode==0){
           cuts_accept->Fill("Momentum",1);
         }else{
-           mccuts_accept->Fill("Mmentum",1);
+           mccuts_accept->Fill("Momentum",1);
         }
  
      }
+
 //---------------------------------------------------------------------------------------
 // Apply Cuts 
 //---------------------------------------------------------------------------------------
 
      if (retrieve_mode==0){                                 //Create Histograms for Data
-        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
+/*        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
         std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
+        }*/
+        Hist_NC_TOF0Require1SP->Fill(NumberTOF0SP);         
+        Hist_NC_TOF1Require1SP->Fill(NumberTOF1SP);         
+        Hist_NC_TOF01->Fill(rawTOF01HitTime);               
+        Hist_NC_Chi2->Fill(TKU_chiSquare_per_ndof);               
+        Hist_NC_TKU_max_radius->Fill(TKU_max_rad);               
+        Hist_NC_Diff_max_radius->Fill(diff_max_rad);               
+        Hist_NC_TOF01Ext->Fill(TOF01Ext);               
+        if (CutPassUSTOF0){                 
+           Hist_NC_USTOF0->Fill("true",1);               
+        }else{
+           Hist_NC_USTOF0->Fill("false",1);              
         }
-//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+        Hist_NC_Fiducial->Fill(fiducial_radius);               
+        Hist_NC_MOM->Fill(momentum_absorber);
+        USTMomvsTOF01Mom->Fill(pz,USretrieved.E(i).pz);
+               
+
+        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
            Hist_TOF0Require1SP->Fill(NumberTOF0SP);         
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Hist_TOF1Require1SP->Fill(NumberTOF1SP);         
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TOF01->Fill(rawTOF01HitTime);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_Chi2->Fill(TKU_chiSquare_per_ndof);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TKU_max_radius->Fill(TKU_max_rad);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_Diff_max_radius->Fill(diff_max_rad);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                  
            Hist_TOF01Ext->Fill(TOF01Ext);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){
            if (CutPassUSTOF0){                 
               Hist_USTOF0->Fill("true",1);               
            }else{
               Hist_USTOF0->Fill("false",1);               
-//           }
+           }
         }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                  
-           Hist_Fiducial->Fill(fiducial_radius);               
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                  
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                  
+           Hist_Fiducial->Fill(fiducial_radius);
+           if ( fiducial_radius <= fiducial_cut_radius){
+              if ( DSretrieved.E(i).isgood == 0){
+                 CountFiducialPassNoDT_AC++;
+              }else{
+                 CountFiducialPassDT_AC++;
+              }
+           }else{
+              if ( DSretrieved.E(i).isgood == 0){
+                 CountFiducialFailNoDT_AC++;
+              }else{
+                 CountFiducialFailDT_AC++;
+              }
+           }
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                  
            Hist_MOM->Fill(momentum_absorber);               
-//        }
+        }
      }else{                                                 //Create Histograms for MC
 //        if (CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){
-        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
+//        std::cerr<<" CutPassRequire1TOF0SP: "<<CutPassRequire1TOF0SP<<" NumberTOF0SP: "<<NumberTOF0SP<<" CutPassRequire1TOF1SP: "<<CutPassRequire1TOF1SP<<" NumberTOF1SP: "<<NumberTOF1SP<<std::endl;
 //        }
-//        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
+           Histref_NC_TOF0Require1SP->Fill(NumberTOF0SP);       
+           Histref_NC_TOF1Require1SP->Fill(NumberTOF1SP);       
+           Histref_NC_TOF01->Fill(rawTOF01HitTime);             
+           Histref_NC_Chi2->Fill(TKU_chiSquare_per_ndof);             
+           Histref_NC_TKU_max_radius->Fill(TKU_max_rad);             
+           Histref_NC_Diff_max_radius->Fill(diff_max_rad);             
+           Histref_NC_TOF01Ext->Fill(TOF01Ext);             
+           if (CutPassUSTOF0){                 
+              Histref_NC_USTOF0->Fill("true",1);               
+           }else{
+              Histref_NC_USTOF0->Fill("false",1);               
+           }
+           Histref_NC_Fiducial->Fill(fiducial_radius);             
+           Histref_NC_MOM->Fill(momentum_absorber);
+           USTMomvsTOF01Momref->Fill(pz,USretrieved.E(i).pz);
+             
+        if (CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                         
            Histref_TOF0Require1SP->Fill(NumberTOF0SP);       
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TOF1Require1SP->Fill(NumberTOF1SP);       
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TOF01->Fill(rawTOF01HitTime);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_Chi2->Fill(TKU_chiSquare_per_ndof);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TKU_max_radius->Fill(TKU_max_rad);             
-//        }
-//       if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+       if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_Diff_max_radius->Fill(diff_max_rad);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassUSTOF0 && CutPassFiducial && CutPasMom){                   
            Histref_TOF01Ext->Fill(TOF01Ext);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassFiducial && CutPasMom){                   
            if (CutPassUSTOF0){                 
               Histref_USTOF0->Fill("true",1);               
            }else{
               Histref_USTOF0->Fill("false",1);               
            }
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                   
-           Histref_Fiducial->Fill(fiducial_radius);             
-//        }
-//        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPasMom){                   
+           Histref_Fiducial->Fill(fiducial_radius);
+           if ( fiducial_radius <= fiducial_cut_radius){
+              if ( DSretrieved.E(i).isgood == 0){
+                 CountFiducialPassNoDT_AC++;
+              }else{
+                 CountFiducialPassDT_AC++;
+              }
+           }else{
+              if ( DSretrieved.E(i).isgood == 0){
+                 CountFiducialFailNoDT_AC++;
+              }else{
+                 CountFiducialFailDT_AC++;
+              }
+           }             
+        }
+        if (CutPassRequire1TOF0SP && CutPassRequire1TOF1SP && CutPassTOF01 && CutPassChi2 && CutPassTKU_max_rad && CutPassDiff_max_rad && CutPassTOF01Ext && CutPassUSTOF0 && CutPassFiducial){                   
            Histref_MOM->Fill(momentum_absorber);             
-//       }
+       }
      }
   
 //---------------------------------------------------------------------------------------
@@ -1607,6 +1824,22 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      make_beam_histograms(DSPostMom, "Downstream, Reference", "ref_10DS_PostMom");
  
   }
+  std::cerr<<"Number of events that pass require 1 TOF0 SP: "<< CountRequire1TOF0SPPass<<" and fail: "<< CountRequire1TOF0SPFail<<" total: "<<CountRequire1TOF0SPPass+CountRequire1TOF0SPFail<<std::endl;
+  std::cerr<<"Number of events that pass require 1 TOF1 SP: "<< CountRequire1TOF1SPPass<<" and fail: "<< CountRequire1TOF1SPFail<<" total: "<<CountRequire1TOF1SPPass+CountRequire1TOF1SPFail<<std::endl;
+  std::cerr<<"Number of events that pass TOF01: "<< CountTOF01Pass<<" and fail: "<< CountTOF01Fail<<" total: "<<CountTOF01Pass+CountTOF01Fail<<std::endl;
+  std::cerr<<"Number of events that pass Chi2/dof: "<< CountChi2Pass<<" and fail: "<< CountChi2Fail<<" total: "<<CountChi2Pass+CountChi2Fail<<std::endl;
+  std::cerr<<"Number of events that pass upstream tracker maximum radius: "<< CountTKU_Max_RadPass<<" and fail: "<< CountTKU_Max_RadFail<<" total: "<<CountTKU_Max_RadPass+CountTKU_Max_RadFail<<std::endl;
+  std::cerr<<"Number of events that pass diffuser maximum radius: "<< CountDiff_Max_RadPass<<" and fail: "<< CountDiff_Max_RadFail<<" total: "<<CountDiff_Max_RadPass+CountDiff_Max_RadFail<<std::endl;
+  std::cerr<<"Number of events that pass Extrapolated TOF01: "<< CountTOF01ExtPass<<" and fail: "<< CountTOF01ExtFail<<" total: "<<CountTOF01ExtPass+CountTOF01ExtFail<<std::endl;
+  std::cerr<<"Number of events that pass US tracker to TOF01: "<< CountUSTOF0Pass<<" and fail: "<< CountUSTOF0Fail<<" total: "<<CountUSTOF0Pass+CountUSTOF0Fail<<std::endl;
+  std::cerr<<"Number of events that pass Fiducial: "<< CountFiducialPass<<" and fail: "<< CountFiducialFail<<" total: "<<CountFiducialPass+CountFiducialFail<<std::endl;
+  std::cerr<<"Number of events that pass momentum: "<< CountmomPass<<" and fail: "<< CountmomFail<<" total: "<<CountmomPass+CountmomFail<<std::endl;
+  std::cerr<<"Number of events that Pass Fiducial and make track in DST: "<<CountFiducialPassDT<<" and make no track in DST: "<<CountFiducialPassNoDT<<std::endl;
+  std::cerr<<"Number of events that Fail Fiducial and make track in DST: "<<CountFiducialFailDT<<" and make no track in DST: "<<CountFiducialFailNoDT<<std::endl;
+  std::cerr<<"Number of events that Pass Fiducial and make track in DST after all other cuts: "<<CountFiducialPassDT_AC<<" and make no track in DST: "<<CountFiducialPassNoDT_AC<<std::endl;
+  std::cerr<<"Number of events that Fail Fiducial and make track in DST after all other cuts: "<<CountFiducialFailDT_AC<<" and make no track in DST: "<<CountFiducialFailNoDT_AC<<std::endl;
+
+
   if(retrieve_mode==0){
      Hist_TOF0Require1SP->Write();
      Hist_TOF1Require1SP->Write();
@@ -1618,7 +1851,66 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      Hist_USTOF0->Write();
      Hist_Fiducial->Write();
      Hist_MOM->Write();
+     Hist_NC_TOF0Require1SP->Write();
+     Hist_NC_TOF1Require1SP->Write();
+     Hist_NC_TOF01->Write();
+     Hist_NC_Chi2->Write();
+     Hist_NC_TKU_max_radius->Write();
+     Hist_NC_Diff_max_radius->Write();
+     Hist_NC_TOF01Ext->Write();
+     Hist_NC_USTOF0->Write();
+     Hist_NC_Fiducial->Write();
+     Hist_NC_MOM->Write();
      cuts_accept->Write();
+     TCanvas *c1 = new TCanvas();
+     USTMomvsTOF01Mom->GetXaxis()->SetTitle("pz TOF01"); 
+     USTMomvsTOF01Mom->GetYaxis()->SetTitle("pz UST");
+     USTMomvsTOF01Mom->Draw("colz");
+     USTMomvsTOF01Mom->Write();
+     double dt0 = (_sys["TOF1_z"] - _sys["TOF0_z"]) / 0.299792458 / 1000.; // ns. 
+     double pz_ll = 105.65 / sqrt(28*28/dt0/dt0 - 1.0)/* - 36.1*/;
+     double pz_ul = 105.65 / sqrt(30.5*30.5/dt0/dt0 - 1.0)/* - 36.1*/;
+     TLine *line106 = new TLine(70,70,200,200);
+     TLine *line107 = new TLine(pz_ll,70,pz_ll,200);
+     TLine *line108 = new TLine(pz_ul,70,pz_ul,200);
+     TLine *line109 = new TLine(70,momentum_lower_limit,200,momentum_lower_limit);
+     TLine *line110 = new TLine(70,momentum_upper_limit,200,momentum_upper_limit);
+     line106->SetLineColor(kRed);
+     line106->Draw();
+     line107->SetLineColor(kRed);
+     line107->Draw();
+     line108->SetLineColor(kRed);
+     line108->Draw();
+     line109->SetLineColor(kRed);
+     line109->Draw();
+     line110->SetLineColor(kRed);
+     line110->Draw();
+     c1->SaveAs("USTMomvsTOF01Mom.gif");
+     c1->SaveAs("USTMomvsTOF01Mom.pdf");
+     delete c1;
+     TCanvas *c2 = new TCanvas();
+     USTMomvsTOF01Mom->GetXaxis()->SetTitle("pz TOF01"); 
+     USTMomvsTOF01Mom->GetYaxis()->SetTitle("pz UST");
+     USTMomvsTOF01Mom->Draw();
+     USTMomvsTOF01Mom->Write();
+     TLine *line111 = new TLine(70,70,200,200);
+     TLine *line112 = new TLine(pz_ll,70,pz_ll,200);
+     TLine *line113 = new TLine(pz_ul,70,pz_ul,200);
+     TLine *line114 = new TLine(70,momentum_lower_limit,200,momentum_lower_limit);
+     TLine *line115 = new TLine(70,momentum_upper_limit,200,momentum_upper_limit);
+     line111->SetLineColor(kRed);
+     line111->Draw();
+     line112->SetLineColor(kRed);
+     line112->Draw();
+     line113->SetLineColor(kRed);
+     line113->Draw();
+     line114->SetLineColor(kRed);
+     line114->Draw();
+     line115->SetLineColor(kRed);
+     line115->Draw();
+     c1->SaveAs("USTMomvsTOF01MomScatt.gif");
+     c1->SaveAs("USTMomvsTOF01MomScatt.pdf");
+     delete c2;
   }else{
      Histref_TOF0Require1SP->Write();
      Histref_TOF1Require1SP->Write();
@@ -1630,14 +1922,74 @@ void MCSAnalysis::retrieve(int retrieve_mode){
      Histref_USTOF0->Write();
      Histref_Fiducial->Write();
      Histref_MOM->Write();
+     Histref_NC_TOF0Require1SP->Write();
+     Histref_NC_TOF1Require1SP->Write();
+     Histref_NC_TOF01->Write();
+     Histref_NC_Chi2->Write();
+     Histref_NC_TKU_max_radius->Write();
+     Histref_NC_Diff_max_radius->Write();
+     Histref_NC_TOF01Ext->Write();
+     Histref_NC_USTOF0->Write();
+     Histref_NC_Fiducial->Write();
+     Histref_NC_MOM->Write();
      mccuts_accept->Write();
-  }
+     TCanvas *c1 = new TCanvas();
+     USTMomvsTOF01Momref->GetXaxis()->SetTitle("pz TOF01"); 
+     USTMomvsTOF01Momref->GetYaxis()->SetTitle("pz UST");
+     USTMomvsTOF01Momref->Draw("colz");
+     USTMomvsTOF01Momref->Write();
+     double dt0 = (_sys["TOF1_z"] - _sys["TOF0_z"]) / 0.299792458 / 1000.; // ns. 
+     double pz_ll = 105.65 / sqrt(28*28/dt0/dt0 - 1.0)/* - 36.1*/;
+     double pz_ul = 105.65 / sqrt(30.5*30.5/dt0/dt0 - 1.0)/* - 36.1*/;
+     TLine *line106 = new TLine(100,100,250,250);
+     TLine *line107 = new TLine(pz_ll,70,pz_ll,200);
+     TLine *line108 = new TLine(pz_ul,70,pz_ul,200);
+     TLine *line109 = new TLine(70,153,200,153);
+     TLine *line110 = new TLine(70,164,200,164);
+     line106->SetLineColor(kRed);
+     line106->Draw();
+     line107->SetLineColor(kRed);
+     line107->Draw();
+     line108->SetLineColor(kRed);
+     line108->Draw();
+     line109->SetLineColor(kRed);
+     line109->Draw();
+     line110->SetLineColor(kRed);
+     line110->Draw();
+     c1->SaveAs("USTMomvsTOF01Momref.gif");
+     c1->SaveAs("USTMomvsTOF01Momref.pdf");
+     delete c1;
+     TCanvas *c2 = new TCanvas();
+     USTMomvsTOF01Momref->GetXaxis()->SetTitle("pz TOF01"); 
+     USTMomvsTOF01Momref->GetYaxis()->SetTitle("pz UST");
+     USTMomvsTOF01Momref->Draw();
+     USTMomvsTOF01Momref->Write();
+     TLine *line111 = new TLine(100,100,250,250);
+     TLine *line112 = new TLine(pz_ll,70,pz_ll,200);
+     TLine *line113 = new TLine(pz_ul,70,pz_ul,200);
+     TLine *line114 = new TLine(70,153,200,153);
+     TLine *line115 = new TLine(70,164,200,164);
+     line111->SetLineColor(kRed);
+     line111->Draw();
+     line112->SetLineColor(kRed);
+     line112->Draw();
+     line113->SetLineColor(kRed);
+     line113->Draw();
+     line114->SetLineColor(kRed);
+     line114->Draw();
+     line115->SetLineColor(kRed);
+     line115->Draw();
+     c2->SaveAs("USTMomvsTOF01MomrefScatt.gif");
+     c2->SaveAs("USTMomvsTOF01MomrefScatt.pdf");
+     delete c2;
+ }
 
   TOF0file.close();
   TOF1file.close();
   TOF2file.close();
   Chi2file.close();
   doffile.close();
+//  pidfile.close();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -1657,6 +2009,9 @@ void MCSAnalysis::dataSelection(int mode){
   chain->SetBranchAddress("GlobalBranch", &globalevent);
 
   double dataDS11 = _sys["dataDS11"];
+  double dataDS22 = _sys["dataDS22"];
+  double dataDS32 = _sys["dataDS32"];
+  double dataDS42 = _sys["dataDS42"];
   double dataDS53 = _sys["dataDS53"];
   double dataUS53 = _sys["dataUS53"];
   double dataUS11 = _sys["dataUS11"];
@@ -1673,6 +2028,7 @@ void MCSAnalysis::dataSelection(int mode){
   // Loop over all tree entries.
   Collection USPostTKU, DSPostTKU;
   Collection Collect_EndOfDS, Collect_StartOfDS, Collect_USTOF0, Collect_USTOF1, Collect_StartofUST, Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
+  Collection Collect_DS22, Collect_DS32, Collect_DS42;
 
 // Open files to save TOF data to.
    std::ofstream TOF0file;
@@ -1686,6 +2042,8 @@ void MCSAnalysis::dataSelection(int mode){
    Chi2file.open(Chi2dataname);
    std::ofstream doffile;
    doffile.open(dofdataname);
+//   std::ofstream pidfile;
+//   pidfile.open(piddataname);
 
 //  double pz = 0.;
   // Loop over all tree entries.
@@ -1695,14 +2053,13 @@ void MCSAnalysis::dataSelection(int mode){
 //  int Nevents = 0;
   // Nentries *= int(_sys["FracEvents"]) > 0 ? _sys["FracEvents"] : 1.0;
   for (int i=0; i<Nentries; i++){
-    std::cerr<<"**********************************************"<< std::endl;
-    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
+//    std::cerr<<"**********************************************"<< std::endl;
+//    std::cerr<<"Data Event number " << i << " of " << Nentries << std::endl;
     chain->GetEntry(i);
-//     if (i%100!=0) {
-//        continue;
-//     }     
-    std::cerr<<"Event Got"<<i<<"\n";
-    if (i>=10000) break;
+//    std::cerr<<"Event Got"<<i<<"\n";
+    if (i%10000==0) std::cerr<<"Event "<<i<<"\n"; 
+
+//    if (i>=10000) break;
     // Set cuts based on the TOFs, ckov, kl, and EMR information
     // Locate the tracker reference planes. To be agnostic locate
     // the downstream most station of the upstream tracker and the
@@ -1720,6 +2077,9 @@ void MCSAnalysis::dataSelection(int mode){
      globalVars.DiffuserStart=reset_Vars();
      globalVars.DiffuserEnd=reset_Vars();
      globalVars.USend_of_DStracker=reset_Vars();
+     globalVars.USTtoDST_Station2=reset_Vars();
+     globalVars.USTtoDST_Station3=reset_Vars();
+     globalVars.USTtoDST_Station4=reset_Vars();
      globalVars.DScentre_absorber=reset_Vars();
      globalVars.USstart_of_DStracker=reset_Vars();
 //    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
@@ -1752,10 +2112,10 @@ void MCSAnalysis::dataSelection(int mode){
   
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
-     USPostTKU.append_instance(globalVars.UScentre_absorber);
+//     USPostTKU.append_instance(globalVars.UScentre_absorber);
 //    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
-     DSPostTKU.append_instance(globalVars.DScentre_absorber);
+//     DSPostTKU.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
      cuts_accept->Fill("1 US track",1);
      pass_TKU->Fill("Pass",1);
@@ -1765,7 +2125,7 @@ void MCSAnalysis::dataSelection(int mode){
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
 
-    globalVars=read_globals(dataDS11, dataDS53, dataUS53, dataUS11, datadiffuserlow, datadiffuserhigh, dataTOF0pos, dataTOF1pos);
+    globalVars=read_globals(dataDS11, dataDS22 ,dataDS32 , dataDS42, dataDS53, dataUS53, dataUS11, datadiffuserlow, datadiffuserhigh, dataTOF0pos, dataTOF1pos);
 
 //    std::cerr<<"centre_absorber_US has updated globals data"<<std::endl;
 //    display_Vars(globalVars.UStrackerUS53);
@@ -1806,14 +2166,17 @@ void MCSAnalysis::dataSelection(int mode){
     if(tracks.size() == 0){
         Chi2file << "10000.0" << "\n";
         doffile << "100" << "\n";
+//        pidfile << "1000" << "\n";
 //      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
     }else{ 
       // use if only want to take the first track
         track_iter = tracks.begin();
         double TKU_chiSquare = (*track_iter)->chi2();
         int TKU_ndof = (*track_iter)->ndf();
+//        int TKU_pid = (*track_iter)->get_pid();
         Chi2file << TKU_chiSquare << "\n";
         doffile << TKU_ndof << "\n";
+//        pidfile << TKU_pid << "\n";
     }
 
 
@@ -1826,6 +2189,9 @@ void MCSAnalysis::dataSelection(int mode){
     _USset.append_instance(globalVars.UScentre_absorber);
     _DSset.append_instance(globalVars.DScentre_absorber);
     Collect_EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    Collect_DS22.append_instance(globalVars.USTtoDST_Station2);
+    Collect_DS32.append_instance(globalVars.USTtoDST_Station3);
+    Collect_DS42.append_instance(globalVars.USTtoDST_Station4);
     Collect_StartOfDS.append_instance(globalVars.USstart_of_DStracker);
     Collect_USTOF0.append_instance(globalVars.USTOF0);
     Collect_USTOF1.append_instance(globalVars.USTOF1);
@@ -1841,6 +2207,9 @@ void MCSAnalysis::dataSelection(int mode){
   _USset.save_collection(USDataname);
   _DSset.save_collection(DSDataname);
   Collect_EndOfDS.save_collection(EndofDStrackerdataname);
+  Collect_DS22.save_collection(DStrackerStation22dataname);
+  Collect_DS32.save_collection(DStrackerStation32dataname);
+  Collect_DS42.save_collection(DStrackerStation42dataname);
   Collect_StartOfDS.save_collection(StartofDStrackerdataname);
   Collect_USTOF0.save_collection(Collect_USTOF0dataname);
   Collect_USTOF1.save_collection(Collect_USTOF1dataname);
@@ -1854,11 +2223,15 @@ void MCSAnalysis::dataSelection(int mode){
   TOF2file.close();
   Chi2file.close();
   doffile.close();
+//  pidfile.close();
 
   
   std::cerr<<"Data: Size of USset: "<<_USset.N()<<std::endl;
   std::cerr<<"Data: Size of DSset: "<<_DSset.N()<<std::endl;
   std::cerr<<"Data: Size of Collect_EndOfDS: "<<Collect_EndOfDS.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_DS22: "<<Collect_DS22.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_DS32: "<<Collect_DS32.N()<<std::endl;
+  std::cerr<<"Data: Size of Collect_DS42: "<<Collect_DS42.N()<<std::endl;
   std::cerr<<"Data: Collect_StartOfDS: "<<Collect_StartOfDS.N()<<std::endl;
   std::cerr<<"Data: Size of Collect_USTOF0: "<<Collect_USTOF0.N()<<std::endl;
   std::cerr<<"Data: Size of Collect_USTOF1: "<<Collect_USTOF1.N()<<std::endl;
@@ -1897,6 +2270,9 @@ void MCSAnalysis::referenceSelection(){
 //  std::cerr<<"Branches set"<<std::endl;
 
   double refDS11 = _sys["refDS11"];
+  double refDS22 = _sys["refDS22"];
+  double refDS32 = _sys["refDS32"];
+  double refDS42 = _sys["refDS42"];
   double refDS53 = _sys["refDS53"];
   double refUS53 = _sys["refUS53"];
   double refUS11 = _sys["refUS11"];
@@ -1914,6 +2290,7 @@ void MCSAnalysis::referenceSelection(){
 //  std::cerr<<"Nentries set"<<std::endl;
   Collection USPostTKU, DSPostTKU;
   Collection Collect_EndOfDS, Collect_StartOfDS, Collect_USTOF0, Collect_USTOF1, Collect_StartofUST, Collect_EndofUST, Collect_DiffuserStart, Collect_DiffuserEnd;
+  Collection Collect_DS22, Collect_DS32, Collect_DS42;
 
 // Open files to save TOF data to.
    std::ofstream TOF0file;
@@ -1926,17 +2303,19 @@ void MCSAnalysis::referenceSelection(){
    Chi2file.open(Chi2refname);
    std::ofstream doffile;
    doffile.open(dofrefname);
+//   std::ofstream pidfile;
+//   pidfile.open(pidrefname);
 
 //  double pz = 0.;
-  std::cerr <<"Number of entries in data file: "<< Nentries << std::endl;
+  std::cerr <<"Number of entries in reference file: "<< Nentries << std::endl;
   // Loop over all tree entries.
   for (int i=0; i<Nentries; i++){
 //    std::cerr<<"**********************************************"<< std::endl;
  //   std::cerr<<"Reference Event number " << i << " of " << Nentries << std::endl;
     refchain->GetEntry(i);
-    if (i%100000==0) std::cout<<"Event "<<i<<"\n"; 
-    if (i>=10000) break;
+    if (i%1000==0) std::cerr<<"Event "<<i<<std::endl; 
     mccuts_accept->Fill("All Events",1);
+//    if (i>=10000) break;
 
     multiVars globalVars;
     globalVars.USTOF0=reset_Vars();
@@ -1946,6 +2325,9 @@ void MCSAnalysis::referenceSelection(){
     globalVars.UStrackerUS53=reset_Vars();
     globalVars.DiffuserStart=reset_Vars();
     globalVars.DiffuserEnd=reset_Vars();
+    globalVars.USTtoDST_Station2=reset_Vars();
+    globalVars.USTtoDST_Station3=reset_Vars();
+    globalVars.USTtoDST_Station4=reset_Vars();
     globalVars.USend_of_DStracker=reset_Vars();
     globalVars.DScentre_absorber=reset_Vars();
 //    std::cerr<<"centre_absorber_US created with default values"<<std::endl;
@@ -1994,10 +2376,10 @@ void MCSAnalysis::referenceSelection(){
 */
 //    std::cerr<<"Adding to AllTOF"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
-    USPostTKU.append_instance(globalVars.UScentre_absorber);
+//    USPostTKU.append_instance(globalVars.UScentre_absorber);
 //    std::cerr<<"Size of USAllTOF: "<<USAllTOF.N()<<std::endl;
 //    display_Vars(globalVars.DScentre_absorber);
-    DSPostTKU.append_instance(globalVars.DScentre_absorber);
+//    DSPostTKU.append_instance(globalVars.DScentre_absorber);
 //    std::cerr<<"Size of DSAllTOF: "<<DSAllTOF.N()<<std::endl;
     mccuts_accept->Fill("1 US track",1);
     mcpass_TKU->Fill("Pass",1);
@@ -2006,7 +2388,7 @@ void MCSAnalysis::referenceSelection(){
 // Retrieve Global Data - US track and DS track if present. Cut if no US track
 //----------------------------------------------------------------------
 
-    globalVars=read_globals(refDS11, refDS53, refUS53, refUS11, refdiffuserlow, refdiffuserhigh, refTOF0pos, refTOF1pos);
+    globalVars=read_globals(refDS11, refDS22, refDS32, refDS42, refDS53, refUS53, refUS11, refdiffuserlow, refdiffuserhigh, refTOF0pos, refTOF1pos);
 //    std::cerr<<"centre_absorber_US has updated globals data"<<std::endl;
 //    display_Vars(globalVars.UScentre_absorber);
 //    display_Vars(globalVars.DScentre_absorber);
@@ -2047,14 +2429,17 @@ void MCSAnalysis::referenceSelection(){
     if(tracks.size() == 0){
         Chi2file << "10000.0" << "\n";
         doffile << "100" << "\n";
+//        pidfile << "1000" << "\n";
 //      std::cerr<<"************************No tracks - why not cut earlier**************************"<<std::endl;
     }else{ 
       // use if only want to take the first track
         track_iter = tracks.begin();
         double TKU_chiSquare = (*track_iter)->chi2();
         int TKU_ndof = (*track_iter)->ndf();
+//        int TKU_pid = (*track_iter)->get_pid();
         Chi2file << TKU_chiSquare << "\n";
         doffile << TKU_ndof << "\n";
+//        pidfile << TKU_pid << "\n";
     }
 
 
@@ -2066,6 +2451,9 @@ void MCSAnalysis::referenceSelection(){
     _USMCset.append_instance(globalVars.UScentre_absorber);
     _DSMCset.append_instance(globalVars.DScentre_absorber);
     Collect_EndOfDS.append_instance(globalVars.USend_of_DStracker);
+    Collect_DS22.append_instance(globalVars.USTtoDST_Station2);
+    Collect_DS32.append_instance(globalVars.USTtoDST_Station3);
+    Collect_DS42.append_instance(globalVars.USTtoDST_Station4);
     Collect_StartOfDS.append_instance(globalVars.USstart_of_DStracker);
     Collect_USTOF0.append_instance(globalVars.USTOF0);
     Collect_USTOF1.append_instance(globalVars.USTOF1);
@@ -2079,9 +2467,13 @@ void MCSAnalysis::referenceSelection(){
 
     
   }
+  std::cerr<<"Reference Loop complete - writing files"<<std::endl;
   _USMCset.save_collection(USRefname);
   _DSMCset.save_collection(DSRefname);
   Collect_EndOfDS.save_collection(EndofDStrackerrefname);
+  Collect_DS22.save_collection(DStrackerStation22refname);
+  Collect_DS32.save_collection(DStrackerStation32refname);
+  Collect_DS42.save_collection(DStrackerStation42refname);
   Collect_StartOfDS.save_collection(StartofDStrackerrefname);
   Collect_USTOF0.save_collection(Collect_USTOF0refname);
   Collect_USTOF1.save_collection(Collect_USTOF1refname);
@@ -2094,10 +2486,14 @@ void MCSAnalysis::referenceSelection(){
   TOF2file.close();
   Chi2file.close();
   doffile.close();
+//  pidfile.close();
 
   std::cerr<<"Reference: Size of USset: "<<_USMCset.N()<<std::endl;
   std::cerr<<"Reference: Size of DSset: "<<_DSMCset.N()<<std::endl;
   std::cerr<<"Reference: Size of Collect_EndOfDS: "<<Collect_EndOfDS.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_DS22: "<<Collect_DS22.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_DS32: "<<Collect_DS32.N()<<std::endl;
+  std::cerr<<"Reference: Size of Collect_DS42: "<<Collect_DS42.N()<<std::endl;
   std::cerr<<"Reference: Collect_StartOfDS: "<<Collect_StartOfDS.N()<<std::endl;
   std::cerr<<"Reference: Size of Collect_USTOF0: "<<Collect_USTOF0.N()<<std::endl;
   std::cerr<<"Reference: Size of collect_USTOF1: "<<Collect_USTOF1.N()<<std::endl;
@@ -6189,6 +6585,7 @@ Vars MCSAnalysis::PropagateVarsMuVerbose(Vars event, double z0){
     prop.TOF12 = event.TOF12;
     prop.TOF01 = event.TOF01;
     prop.TOFX = event_vector[0];
+    prop.pid = event.pid;
   }
 /*
   //straight track
@@ -6391,8 +6788,8 @@ double MCSAnalysis::MaxRadius(double bz,double startx, double starty, double sta
         phi_max += 2*pi;
      }
      double max_r2 = (sqrt(x0*x0 + y0*y0)+r0); // vector to centre + radius of track
-     double r2_start = startx*startx+starty*starty;
-     double r2_end = endx*endx+endy*endy;
+     double r2_start = sqrt(startx*startx+starty*starty);
+     double r2_end = sqrt(endx*endx+endy*endy);
 //    std::cerr<<"max_r2: "<<max_r2<<" r2_start: "<<r2_start<<" r2_end: "<<r2_end<<std::endl;
      double fiducial_radius;
      if ((phi_max > phi_start) and (phi_end > phi_max)){ // phi_max is between phi_end and phi_start
@@ -6407,12 +6804,16 @@ double MCSAnalysis::MaxRadius(double bz,double startx, double starty, double sta
 
 
 
-multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos){
+multiVars MCSAnalysis::read_globals(double DS11, double DS22, double DS32, double DS42, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos){
 // This is the main function to read the data from the root files
   double dz = 0.2;
   multiVars tempMV;
+  int temppid = 1000;
   tempMV.UScentre_absorber=reset_Vars();
   tempMV.USend_of_DStracker=reset_Vars();
+  tempMV.USTtoDST_Station2=reset_Vars();
+  tempMV.USTtoDST_Station3=reset_Vars();
+  tempMV.USTtoDST_Station4=reset_Vars();
   tempMV.USstart_of_DStracker=reset_Vars();
   tempMV.USTOF0=reset_Vars();
   tempMV.USTOF1=reset_Vars();
@@ -6423,6 +6824,9 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
   tempMV.DiffuserEnd=reset_Vars();
   tempMV.UScentre_absorber.Z=_sys["abspos"];
   tempMV.USend_of_DStracker.Z= DS53;
+  tempMV.USTtoDST_Station2.Z=DS22;
+  tempMV.USTtoDST_Station3.Z=DS32;
+  tempMV.USTtoDST_Station4.Z=DS42;
   tempMV.USstart_of_DStracker.Z= DS11;
   tempMV.USTOF0.Z= TOF0pos;
   tempMV.USTOF1.Z= TOF1pos;
@@ -6476,7 +6880,8 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
 //                  std::cerr<<"Detector Point: "<<some_detector_points.at(q)<<std::endl;;
                   if(a_track != NULL){
 //                    std::cerr<<"Track Number: "<<track_number<<" Track Pid: "<<a_track->get_pid()<<std::endl;
-                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
+                    temppid=a_track->get_pid();
+//                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
                         std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
@@ -6485,7 +6890,13 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
-                            } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station2.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station2.Z+dz){
+                                tempMV.USTtoDST_Station2 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station3.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station3.Z+dz){
+                                tempMV.USTtoDST_Station3 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station4.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station4.Z+dz){
+                                tempMV.USTtoDST_Station4 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                             } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
                                 tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
                                 tempMV.USTOF0 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
@@ -6501,7 +6912,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                                 tempMV.DiffuserEnd = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             }
                         }
-                    }
+//                    }
                   }
             }
 
@@ -6512,7 +6923,8 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
-                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
+                    temppid=a_track->get_pid();
+//                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
                         std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
@@ -6528,7 +6940,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                                 tempMV.DScentre_absorber=PropagateVarsMu(tempMV.DScentre_absorber,_sys["abspos"]);
                             }
                         }
-                    }
+//                    }
                 }
            }
 
@@ -6540,7 +6952,8 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
             for(some_track_iterator = some_tracks.begin(); some_track_iterator < some_tracks.end(); ++some_track_iterator){
                 MAUS::DataStructure::Global::Track* a_track = (*some_track_iterator);
                 if(a_track != NULL){
-                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
+                    temppid=a_track->get_pid();
+//                    if(a_track->get_pid() == -13 || a_track->get_pid() == 13){
                         std::vector< const MAUS::DataStructure::Global::TrackPoint * > track_points = a_track->GetTrackPoints(virtual_plane);
                         for(unsigned int p = 0; p < track_points.size(); p++){
                             TLorentzVector a_track_mom = track_points.at(p)->get_momentum();
@@ -6549,6 +6962,12 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                                 tempMV.UScentre_absorber=FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USend_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USend_of_DStracker.Z+dz){
                                 tempMV.USend_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station2.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station2.Z+dz){
+                                tempMV.USTtoDST_Station2 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station3.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station3.Z+dz){
+                                tempMV.USTtoDST_Station3 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
+                            } else if(a_track_pos.Z() >= tempMV.USTtoDST_Station4.Z-dz && a_track_pos.Z() <= tempMV.USTtoDST_Station4.Z+dz){
+                                tempMV.USTtoDST_Station4 = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USstart_of_DStracker.Z-dz && a_track_pos.Z() <= tempMV.USstart_of_DStracker.Z+dz){
                                 tempMV.USstart_of_DStracker = FillVars(a_track_mom,a_track_pos,a_track->get_pid());
                             } else if(a_track_pos.Z() >= tempMV.USTOF0.Z-dz && a_track_pos.Z() <= tempMV.USTOF0.Z+dz){
@@ -6570,7 +6989,7 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                               break;
                             }
                         }
-                    }
+//                    }
                 }
             }
         }
@@ -6591,13 +7010,13 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
                  MAUS::ThreeVector b_track_pos=scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos();
                  MAUS::ThreeVector b_track_mom=scifievent->scifitracks()[j]->scifitrackpoints()[k]->mom();
                  maxUS=b_track_pos.z();
-                 tempMV.UStrackerUS11 = FillVars3(b_track_mom,b_track_pos,-13);
+                 tempMV.UStrackerUS11 = FillVars3(b_track_mom,b_track_pos,temppid);
 	      }
 	      if(tracker==1 && zpos < minDS){      
                  MAUS::ThreeVector b_track_pos=scifievent->scifitracks()[j]->scifitrackpoints()[k]->pos();
                  MAUS::ThreeVector b_track_mom=scifievent->scifitracks()[j]->scifitrackpoints()[k]->mom();
                  minDS=b_track_pos.z();
-                 tempMV.DScentre_absorber=FillVars3(b_track_mom,b_track_pos,-13);
+                 tempMV.DScentre_absorber=FillVars3(b_track_mom,b_track_pos,temppid);
 	      }
            }
         }
@@ -6620,6 +7039,15 @@ multiVars MCSAnalysis::read_globals(double DS11, double DS53, double US53, doubl
      }
      if(tempMV.USend_of_DStracker.isgood==false){
         tempMV.USend_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11, DS53);
+     } 
+     if(tempMV.USTtoDST_Station2.isgood==false){
+        tempMV.USTtoDST_Station2=PropagateVarsMu(tempMV.UStrackerUS11, DS22);
+     } 
+     if(tempMV.USTtoDST_Station3.isgood==false){
+        tempMV.USTtoDST_Station3=PropagateVarsMu(tempMV.UStrackerUS11, DS32);
+     } 
+     if(tempMV.USTtoDST_Station4.isgood==false){
+        tempMV.USTtoDST_Station4=PropagateVarsMu(tempMV.UStrackerUS11, DS42);
      } 
      if(tempMV.USstart_of_DStracker.isgood==false){
         tempMV.USstart_of_DStracker=PropagateVarsMu(tempMV.UStrackerUS11, DS11);

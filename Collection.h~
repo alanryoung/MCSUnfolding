@@ -95,5 +95,5 @@ struct multiVars {
     Vars USstart_of_DStracker;
     Vars DScentre_absorber;
     Vars DiffuserStart;
-    vars DiffuserEnd;
+    Vars DiffuserEnd;
 };

@@ -129,6 +129,12 @@ class MCSAnalysis {
   void SetDSRefname(std::string a) {DSRefname=a; }
   void SetEndofDStrackerrefname(std::string a) {EndofDStrackerrefname=a; }
   void SetEndofDStrackerdataname(std::string a) {EndofDStrackerdataname=a; }
+  void SetDStrackerStation22refname(std::string a) {DStrackerStation22refname=a; }
+  void SetDStrackerStation32refname(std::string a) {DStrackerStation32refname=a;  }
+  void SetDStrackerStation42refname(std::string a) {DStrackerStation42refname=a; }
+  void SetDStrackerStation22dataname(std::string a) {DStrackerStation22dataname=a; }
+  void SetDStrackerStation32dataname(std::string a) {DStrackerStation32dataname=a; }
+  void SetDStrackerStation42dataname(std::string a) {DStrackerStation42dataname=a; }
   void SetStartofDStrackerrefname(std::string a) {StartofDStrackerrefname=a; }
   void SetStartofDStrackerdataname(std::string a) {StartofDStrackerdataname=a; }
   void SetCollect_USTOF0refname(std::string a) {Collect_USTOF0refname=a; }
@@ -147,6 +153,8 @@ class MCSAnalysis {
   void SetCollect_StartofUSTrefname(std::string a) {Collect_StartofUSTrefname=a;}
   void Setdofdataname(std::string a) {dofdataname=a;}
   void Setdofrefname(std::string a) {dofrefname=a;}
+//  void Setpiddataname(std::string a) {piddataname=a;}
+//  void Setpidrefname(std::string a) {pidrefname=a;}
   void SetTOF0dataname(std::string a) {TOF0dataname=a;}
   void SetTOF0refname(std::string a) {TOF0refname=a;}
   void SetTOF1dataname(std::string a) {TOF1dataname=a;}
@@ -221,6 +229,12 @@ class MCSAnalysis {
   std::string DSRefname;
   std::string StartofDStrackerrefname;
   std::string StartofDStrackerdataname;
+  std::string DStrackerStation22refname;
+  std::string DStrackerStation32refname;
+  std::string DStrackerStation42refname;
+  std::string DStrackerStation22dataname;
+  std::string DStrackerStation32dataname;
+  std::string DStrackerStation42dataname;
   std::string EndofDStrackerrefname;
   std::string EndofDStrackerdataname;
   std::string Collect_USTOF0dataname;
@@ -246,6 +260,8 @@ class MCSAnalysis {
   std::string Chi2refname;
   std::string dofdataname;
   std::string dofrefname;
+//  std::string piddataname;
+//  std::string pidrefname;
 
   double USrefplaneZ;
   double DSrefplaneZ;
@@ -353,6 +369,9 @@ class MCSAnalysis {
   TH2D* TOF12fordownvsMCTruth;
   TH2D* TOF12cobbvsMCTruth;
   TH2D* TOF01forupvsTOF01fordown;
+  TH2D* USTMomvsTOF01Mom;
+  TH2D* USTMomvsTOF01Momref;
+
   TH1D* cor_mom;
   TH1D* mctof10;
   TH1D* mctof10_sel;
@@ -399,6 +418,27 @@ class MCSAnalysis {
   TH1D* Histref_Fiducial;
   TH1D* Hist_MOM;
   TH1D* Histref_MOM;
+
+  TH1D* Hist_NC_TOF0Require1SP;
+  TH1D* Hist_NC_TOF1Require1SP;
+  TH1D* Histref_NC_TOF0Require1SP;
+  TH1D* Histref_NC_TOF1Require1SP;
+  TH1D* Histref_NC_TOF01;
+  TH1D* Hist_NC_TOF01;
+  TH1D* Hist_NC_Chi2;
+  TH1D* Histref_NC_Chi2;
+  TH1D* Hist_NC_TKU_max_radius;
+  TH1D* Histref_NC_TKU_max_radius;
+  TH1D* Hist_NC_Diff_max_radius;
+  TH1D* Histref_NC_Diff_max_radius;
+  TH1D* Histref_NC_TOF01Ext;
+  TH1D* Hist_NC_TOF01Ext;
+  TH1D* Hist_NC_USTOF0;
+  TH1D* Histref_NC_USTOF0;
+  TH1D* Hist_NC_Fiducial;
+  TH1D* Histref_NC_Fiducial;
+  TH1D* Hist_NC_MOM;
+  TH1D* Histref_NC_MOM;
 
   TH1D* mcpass_Tof1;
   TH1D* mcpass_Tof0;
@@ -511,7 +551,7 @@ class MCSAnalysis {
   Vars PropagateVarsMuVerbose(Vars event, double z0);
   Vars FillVars(TLorentzVector a_track_mom, TLorentzVector a_track_pos, int pid);
   Vars FillVars3(MAUS::ThreeVector b_track_mom, MAUS::ThreeVector b_track_pos, int pid);
-  multiVars read_globals(double DS11, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos);
+  multiVars read_globals(double DS11, double DS22, double DS32, double DS42, double DS53, double US53, double US11, double diffuserlow, double diffuserhigh, double TOF0pos, double TOF1pos);
   double Check_Radius_US(double low_z, double high_z);
   Vars reset_Vars();
   void display_Vars(Vars tmpVars);
